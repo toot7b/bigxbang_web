@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import "@/styles/horizon.css";
+import Asterisk from "@/components/ui/Asterisk";
 
 export default function Hero() {
     const heroRef = useRef<HTMLDivElement>(null);
@@ -99,9 +100,7 @@ export default function Hero() {
                     <h1 className="font-clash text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight leading-none">
                         Human <span className="text-[#306EE8]">Intelligence</span>
                         <span className="inline-block align-top ml-2 mt-0 md:mt-1">
-                            <svg viewBox="0 0 50 51" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-8 md:h-8 animate-[spin_60s_linear_infinite]">
-                                <path d="M26.8767 50.0341L24.3807 31.4734L31.4158 24.9413L49.7407 28.805L47.0866 37.4099L33.996 31.6884L30.9182 34.5462L35.6546 48.0245L26.8767 50.0341ZM45.9361 11.1863L31.0757 22.6644L21.8426 19.7748L16.0647 1.94148L24.7693 -6.9784e-05L26.4385 14.1429L30.495 15.4255L39.7391 4.659L45.9361 11.1863ZM2.5808 14.4612L19.9372 21.5439L22.1353 30.9656L9.58822 44.9353L3.53771 38.2718L14.9592 29.8504L13.9805 25.7101L-2.68031e-05 22.9982L2.5808 14.4612Z" fill="white" />
-                            </svg>
+                            <Asterisk className="text-white animate-[spin_60s_linear_infinite]" />
                         </span>
                     </h1>
                     <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
