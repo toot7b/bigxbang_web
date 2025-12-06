@@ -282,15 +282,18 @@ export default function Problem() {
             {/* Background Stars Container */}
             <div ref={bgStarsRef} className="absolute inset-0 pointer-events-none z-0"></div>
 
-            {/* Nebula Glows (Depth) */}
-            <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+            {/* Nebula Glows (Depth) - REMOVED overflow-hidden to allow glow to bleed into next section */}
+            <div className="absolute inset-0 pointer-events-none z-0">
                 <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#306EE8] opacity-[0.12] blur-[120px] rounded-full animate-pulse-slow"></div>
                 <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-purple-900 opacity-[0.15] blur-[150px] rounded-full animate-pulse-slow delay-1000"></div>
                 <div className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] bg-white opacity-[0.05] blur-[100px] rounded-full animate-pulse-slow delay-700"></div>
             </div>
 
-            {/* Top Gradient Transition */}
-            <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-black via-black/80 to-transparent z-10 pointer-events-none"></div>
+            {/* Top Gradient Transition - Plus progressif (h-48) avec une courbe plus douce (via-black/40) */}
+            <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-black via-black/40 to-transparent z-10 pointer-events-none"></div>
+
+            {/* Bottom Gradient Transition */}
+            <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-black via-black/40 to-transparent z-10 pointer-events-none"></div>
 
             {/* Section Header */}
             <div className="relative z-20 flex flex-col items-center text-center max-w-4xl mx-auto px-4 mb-8">

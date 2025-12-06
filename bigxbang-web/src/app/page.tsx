@@ -1,6 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
 import Problem from "@/components/sections/Problem";
+import Method from "@/components/sections/Method";
 
 export default function Home() {
   return (
@@ -8,6 +9,8 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Problem />
+      <Method />
+      <div className="h-screen"></div> {/* Spacer for scrolling */}
     </main>
   );
 }
