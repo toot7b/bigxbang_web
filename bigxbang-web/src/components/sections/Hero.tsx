@@ -34,7 +34,7 @@ export default function Hero() {
             const particlesContainer = document.getElementById("particles-container");
             if (particlesContainer) {
                 // CHANGE THIS NUMBER to adjust star count
-                const particleCount = 8; // Reduced from 15
+                const particleCount = 15; // Reduced from 40
 
                 for (let i = 0; i < particleCount; i++) {
                     const particle = document.createElement("div");
@@ -75,6 +75,14 @@ export default function Hero() {
                 }
             }
 
+            // Asterisk Rotation
+            gsap.to(".hero-asterisk", {
+                rotation: 360,
+                duration: 40, // Slower rotation
+                repeat: -1,
+                ease: "linear",
+            });
+
         }, heroRef);
 
         return () => ctx.revert();
@@ -95,12 +103,12 @@ export default function Hero() {
             </div>
 
             {/* Content */}
-            <div className="relative z-30 text-center px-4 mb-12">
+            <div className="relative z-30 text-center px-4 mb-16">
                 <div ref={textRef} className="flex flex-col items-center gap-6">
                     <h1 className="font-clash text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight leading-none">
                         Human <span className="text-[#306EE8]">Intelligence</span>
-                        <span className="inline-block align-top ml-2 mt-0 md:mt-1">
-                            <Asterisk className="text-white animate-[spin_60s_linear_infinite]" />
+                        <span className="inline-block align-top ml-2 -mt-1 md:-mt-2">
+                            <Asterisk className="hero-asterisk w-5 h-5 md:w-8 md:h-8 text-white" />
                         </span>
                     </h1>
                     <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
@@ -108,7 +116,7 @@ export default function Hero() {
                     </p>
 
                     <div className="mt-8">
-                        <button className="btn-shiny text-base">
+                        <button className="btn-shiny text-lg">
                             Je contacte
                         </button>
                     </div>

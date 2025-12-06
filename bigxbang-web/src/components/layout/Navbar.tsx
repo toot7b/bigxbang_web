@@ -34,10 +34,10 @@ export default function Navbar() {
 
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex items-center gap-6 border-l border-white/10 pl-6 h-5">
-                    {["Problème", "Méthode", "Cas concrets", "Offres", "Le manifeste"].map((item) => (
+                    {["Méthode", "Cas concrets", "Offres", "Le manifeste"].map((item) => (
                         <Link
                             key={item}
-                            href={`#${item.toLowerCase().replace(" ", "-").replace("è", "e")}`}
+                            href={`#${item.toLowerCase().replace(" ", "-")}`}
                             className="text-xs font-medium text-gray-400 hover:text-white transition-colors tracking-wide"
                         >
                             {item}
@@ -68,10 +68,10 @@ export default function Navbar() {
                     isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
                 )}
             >
-                {["Problème", "Méthode", "Cas concrets", "Offres", "Le manifeste"].map((item) => (
+                {["Méthode", "Cas concrets", "Offres", "Le manifeste"].map((item) => (
                     <Link
                         key={item}
-                        href={`#${item.toLowerCase().replace(" ", "-").replace("è", "e")}`}
+                        href={`#${item.toLowerCase().replace(" ", "-")}`}
                         className="text-2xl font-medium text-white hover:text-blue-400 transition-colors"
                         onClick={() => setIsMobileMenuOpen(false)}
                     >

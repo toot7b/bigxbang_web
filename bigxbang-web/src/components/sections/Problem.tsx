@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
-import Asterisk from "@/components/ui/Asterisk";
+import Asterisk from "../ui/Asterisk";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,12 +19,12 @@ interface Point {
 
 // --- Data: The 6 Major Problems ---
 const STARS: Point[] = [
-    { id: 1, x: 10, y: 60, label: "Temps Perdu", description: "Des heures gaspillées sur des tâches répétitives." },
-    { id: 2, x: 28, y: 25, label: "Complexité", description: "Une stack technique devenue ingérable." },
-    { id: 3, x: 45, y: 55, label: "Déshumanisation", description: "L'humain s'efface derrière les process." },
-    { id: 4, x: 62, y: 80, label: "Coûts Cachés", description: "Abonnements et maintenance qui s'accumulent." },
-    { id: 5, x: 78, y: 30, label: "Stress", description: "La peur constante que tout casse." },
-    { id: 6, x: 94, y: 65, label: "Stagnation", description: "Votre croissance plafonne malgré vos efforts." }, // Far right, continues flow
+    { id: 1, x: 5, y: 70, label: "Temps Perdu", description: "Des heures gaspillées sur des tâches répétitives." },
+    { id: 2, x: 22, y: 20, label: "Complexité", description: "Une stack technique devenue ingérable." },
+    { id: 3, x: 35, y: 55, label: "Déshumanisation", description: "L'humain s'efface derrière les process." },
+    { id: 4, x: 58, y: 80, label: "Coûts Cachés", description: "Abonnements et maintenance qui s'accumulent." },
+    { id: 5, x: 64, y: 35, label: "Stress", description: "La peur constante que tout casse." },
+    { id: 6, x: 96, y: 65, label: "Stagnation", description: "Votre croissance plafonne malgré vos efforts." },
 ];
 
 // Connections between stars (indices) - Sequential chain
@@ -43,57 +43,45 @@ export default function Problem() {
     const linesRef = useRef<(SVGLineElement | null)[]>([]);
     const bgStarsRef = useRef<HTMLDivElement>(null);
     const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+    const hasInteractedRef = useRef(false); // To track first interaction
 
     // --- 1. Background Stars Animation (Organic & Dense) ---
     useEffect(() => {
         const ctx = gsap.context(() => {
             const bgContainer = bgStarsRef.current;
             if (bgContainer) {
-                // Clear existing stars if any (though useEffect runs once)
                 bgContainer.innerHTML = '';
-
-                // Create ~100 random background stars for a denser "cosmic" look
-                for (let i = 0; i < 100; i++) {
+                for (let i = 0; i < 200; i++) {
                     const star = document.createElement("div");
                     star.className = "absolute bg-white rounded-full opacity-0";
-
-                    // Random size (1px to 3px)
                     const size = Math.random() * 2 + 1;
                     star.style.width = `${size}px`;
                     star.style.height = `${size}px`;
-
-                    // Random position - RESTRICTED to avoid top overlap
                     star.style.left = `${Math.random() * 100}%`;
-                    star.style.top = `${Math.random() * 80 + 20}%`; // Start at 20% down
-
-                    // Random base opacity
+                    star.style.top = `${Math.random() * 80 + 20}%`;
                     star.style.opacity = `${Math.random() * 0.5 + 0.1}`;
-
                     bgContainer.appendChild(star);
 
-                    // Desynchronized Float & Pulse animation
                     gsap.to(star, {
-                        y: `random(-30, 30)`, // Larger drift
+                        y: `random(-30, 30)`,
                         x: `random(-30, 30)`,
-                        scale: `random(0.5, 1.5)`, // Pulsing size
-                        opacity: `random(0.1, 0.7)`, // Pulsing opacity
-                        duration: `random(5, 15)`, // Very slow, desynchronized
+                        scale: `random(0.5, 1.5)`,
+                        opacity: `random(0.1, 0.7)`,
+                        duration: `random(5, 15)`,
                         repeat: -1,
                         yoyo: true,
                         ease: "sine.inOut",
-                        delay: Math.random() * 10, // Random start time
+                        delay: Math.random() * 10,
                     });
                 }
             }
         }, containerRef);
-
         return () => ctx.revert();
     }, []);
 
     // --- 2. Major Stars Floating Animation & Line Sync ---
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Animate stars
             starsRef.current.forEach((star, i) => {
                 if (star) {
                     gsap.to(star, {
@@ -108,7 +96,6 @@ export default function Problem() {
                 }
             });
 
-            // Sync lines on every frame using getBoundingClientRect for precision
             const updateLines = () => {
                 if (!constellationRef.current) return;
                 const parentRect = constellationRef.current.getBoundingClientRect();
@@ -121,14 +108,11 @@ export default function Problem() {
                     if (line && startStar && endStar) {
                         const startRect = startStar.getBoundingClientRect();
                         const endRect = endStar.getBoundingClientRect();
-
-                        // Calculate centers relative to the constellation container
                         const startX = startRect.left - parentRect.left + startRect.width / 2;
                         const startY = startRect.top - parentRect.top + startRect.height / 2;
                         const endX = endRect.left - parentRect.left + endRect.width / 2;
                         const endY = endRect.top - parentRect.top + endRect.height / 2;
 
-                        // Update line attributes
                         line.setAttribute("x1", `${startX}`);
                         line.setAttribute("y1", `${startY}`);
                         line.setAttribute("x2", `${endX}`);
@@ -138,12 +122,9 @@ export default function Problem() {
             };
 
             gsap.ticker.add(updateLines);
-
-            // Cleanup ticker on revert
             return () => {
                 gsap.ticker.remove(updateLines);
             };
-
         }, containerRef);
         return () => ctx.revert();
     }, []);
@@ -153,12 +134,10 @@ export default function Problem() {
         if (hoveredStar === null) return;
 
         const ctx = gsap.context(() => {
-            // Find connected lines and stars - FORWARD ONLY
             const connectedIndices = new Set<number>();
             const connectedLines: SVGLineElement[] = [];
 
             CONNECTIONS.forEach((pair, index) => {
-                // Only highlight if current star is the START of the connection
                 if (pair[0] === hoveredStar - 1) {
                     const targetIndex = pair[1];
                     connectedIndices.add(targetIndex);
@@ -166,14 +145,12 @@ export default function Problem() {
                 }
             });
 
-            // 1. Base Lines: Glow + Pull
             gsap.to(connectedLines, {
                 stroke: "rgba(255, 255, 255, 0.8)",
                 strokeWidth: 2,
                 duration: 0.3,
             });
 
-            // 2. Stars: Pull
             connectedIndices.forEach((idx) => {
                 const targetStar = starsRef.current[idx];
                 const sourceStar = starsRef.current[hoveredStar - 1];
@@ -193,18 +170,15 @@ export default function Problem() {
                     });
                 }
             });
-
         }, containerRef);
 
         return () => {
-            // Reset Base Lines
             gsap.to(linesRef.current, {
-                stroke: "rgba(255, 255, 255, 0.2)", // Match new base opacity
+                stroke: "rgba(255, 255, 255, 0.2)",
                 strokeWidth: 1,
                 duration: 0.3,
             });
 
-            // Reset Stars
             starsRef.current.forEach((star) => {
                 if (star) {
                     gsap.to(star, {
@@ -232,28 +206,23 @@ export default function Problem() {
 
             {/* Nebula Glows (Depth) */}
             <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#306EE8] opacity-[0.08] blur-[120px] rounded-full animate-pulse-slow"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-purple-900 opacity-[0.1] blur-[150px] rounded-full animate-pulse-slow delay-1000"></div>
-                <div className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] bg-white opacity-[0.03] blur-[100px] rounded-full animate-pulse-slow delay-700"></div>
+                <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#306EE8] opacity-[0.12] blur-[120px] rounded-full animate-pulse-slow"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-purple-900 opacity-[0.15] blur-[150px] rounded-full animate-pulse-slow delay-1000"></div>
+                <div className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] bg-white opacity-[0.05] blur-[100px] rounded-full animate-pulse-slow delay-700"></div>
             </div>
 
-            {/* Top Gradient Transition (Deep Black to Transparent) */}
+            {/* Top Gradient Transition */}
             <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-black via-black/80 to-transparent z-10 pointer-events-none"></div>
 
             {/* Section Header */}
             <div className="relative z-20 flex flex-col items-center text-center max-w-4xl mx-auto px-4 mb-8">
-                {/* Badge */}
                 <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
                     <span className="font-jakarta text-xs font-medium text-white/80">Le problème</span>
                 </div>
-
-                {/* H1 Title */}
                 <h2 className="font-clash text-3xl md:text-5xl font-medium text-white mb-6 leading-tight">
                     D'un fonctionnement manuel à un <br className="hidden md:block" />
                     système qui s'exécute <span className="text-[#306EE8]">seul</span>
                 </h2>
-
-                {/* H2 Subtitle */}
                 <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
                     On analyse ce que tu fais. On automatise ce qui se répète. On garde l'humain.
                 </p>
@@ -266,9 +235,9 @@ export default function Problem() {
                 <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
                     {CONNECTIONS.map(([start, end], i) => (
                         <line
-                            key={`${start}-${end}`} // Unique key to force proper re-rendering
+                            key={`${start}-${end}`}
                             ref={(el) => { linesRef.current[i] = el; }}
-                            stroke="rgba(255, 255, 255, 0.2)" // Increased visibility
+                            stroke="rgba(255, 255, 255, 0.2)"
                             strokeWidth="1"
                             className="transition-colors duration-300"
                         />
@@ -280,15 +249,35 @@ export default function Problem() {
                     <div
                         key={star.id}
                         ref={(el) => { starsRef.current[i] = el; }}
-                        className="absolute -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
-                        style={{ left: `${star.x}%`, top: `${star.y}%` }}
-                        onMouseEnter={() => setHoveredStar(star.id)}
+                        className="absolute group cursor-pointer"
+                        style={{
+                            left: `${star.x}%`,
+                            top: `${star.y}%`,
+                            transform: 'translate(-50%, -50%)'
+                        }}
+                        onMouseEnter={() => {
+                            setHoveredStar(star.id);
+                            if (i === 0) {
+                                // Only set interacted if not already done
+                                if (!hasInteractedRef.current) {
+                                    hasInteractedRef.current = true;
+                                    // Force re-render to remove halo
+                                    setHoveredStar(null);
+                                    setTimeout(() => setHoveredStar(star.id), 0);
+                                }
+                            }
+                        }}
                         onMouseLeave={() => setHoveredStar(null)}
                     >
                         {/* The Star (Asterisk) */}
                         <div className="relative flex items-center justify-center">
                             {/* Glow behind */}
                             <div className="absolute inset-0 bg-white/20 blur-xl rounded-full scale-0 group-hover:scale-150 transition-transform duration-500"></div>
+
+                            {/* Guidance Glow - First Star Only */}
+                            {i === 0 && !hasInteractedRef.current && (
+                                <div className="absolute inset-0 -z-10 bg-white blur-lg rounded-full opacity-20 scale-150 animate-pulse pointer-events-none"></div>
+                            )}
 
                             {/* The Icon */}
                             <div className="relative z-10 p-2 transition-transform duration-300 group-hover:scale-110">
@@ -299,7 +288,7 @@ export default function Problem() {
                             <div className={cn(
                                 "absolute left-1/2 -translate-x-1/2 mt-4 pt-2 w-48 text-center pointer-events-none transition-all duration-300",
                                 "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0",
-                                star.y > 80 ? "bottom-full mb-4 mt-0" : "top-full" // Flip if too close to bottom
+                                star.y > 80 ? "bottom-full mb-4 mt-0" : "top-full"
                             )}>
                                 <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-xl">
                                     <h3 className="font-clash text-sm font-medium text-white mb-1">{star.label}</h3>
