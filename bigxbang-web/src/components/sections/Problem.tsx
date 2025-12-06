@@ -15,6 +15,7 @@ interface Point {
     y: number; // Percentage 0-100
     label: string;
     description: string;
+    labelPos?: "top" | "bottom";
 }
 
 // --- Data: The 6 Major Problems ---
@@ -23,7 +24,7 @@ const STARS: Point[] = [
     { id: 2, x: 22, y: 20, label: "Complexité", description: "Une stack technique devenue ingérable." },
     { id: 3, x: 35, y: 55, label: "Déshumanisation", description: "L'humain s'efface derrière les process." },
     { id: 4, x: 58, y: 80, label: "Coûts Cachés", description: "Abonnements et maintenance qui s'accumulent." },
-    { id: 5, x: 64, y: 35, label: "Stress", description: "La peur constante que tout casse." },
+    { id: 5, x: 64, y: 35, label: "Stress", description: "La peur constante que tout casse.", labelPos: "top" },
     { id: 6, x: 96, y: 65, label: "Stagnation", description: "Votre croissance plafonne malgré vos efforts." },
 ];
 
@@ -43,8 +44,9 @@ export default function Problem() {
     const linesRef = useRef<(SVGLineElement | null)[]>([]);
     const bgStarsRef = useRef<HTMLDivElement>(null);
     const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+
     const hasInteractedRef = useRef(false); // To track first interaction
-    const [showScrollHint, setShowScrollHint] = useState(false);
+    const scrollHintRef = useRef<HTMLDivElement>(null);
 
     // --- 1. Background Stars Animation (Organic & Dense) ---
     useEffect(() => {
@@ -76,6 +78,77 @@ export default function Problem() {
                     });
                 }
             }
+
+
+        }, containerRef);
+        return () => ctx.revert();
+    }, []);
+
+    // --- 1.5. Neural Trace Intro Animation ---
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: constellationRef.current,
+                    start: "top 60%", // Trigger when section is cleanly in view
+                    toggleActions: "play none none reverse"
+                },
+                onComplete: () => {
+                    // Fail-safe: Only trigger hint after timeline is 100% DONE
+                    gsap.delayedCall(2, () => {
+                        if (scrollHintRef.current) {
+                            gsap.to(scrollHintRef.current, {
+                                autoAlpha: 1,
+                                y: 0,
+                                duration: 1,
+                                ease: "power2.out"
+                            });
+                        }
+                    });
+                }
+            });
+
+            // Init state: All Hidden
+            // Init state: All Hidden
+            // Change: Start slightly smaller and blurry for "optical focus" effect (Subtle)
+            gsap.set(starsRef.current, { autoAlpha: 0, scale: 0.8, filter: "blur(8px)" });
+            gsap.set(linesRef.current, { opacity: 0, drawSVG: "0%" }); // Requires DrawSVG ideally, but we'll simulate opacity
+            if (scrollHintRef.current) gsap.set(scrollHintRef.current, { autoAlpha: 0, y: 20 });
+
+            // Sequential Reveal: Star -> Line -> Star -> Line
+            starsRef.current.forEach((star, i) => {
+                if (!star) return;
+
+                // 1. Reveal Star (Soft Focus)
+                tl.to(star, {
+                    autoAlpha: 1,
+                    scale: 1,
+                    filter: "blur(0px)",
+                    duration: 1.0, // Slower for elegance
+                    ease: "power1.out", // Very linear/smooth
+                });
+
+                // 2. Reveal Line to NEXT star (if exists)
+                if (i < starsRef.current.length - 1) {
+                    const line = linesRef.current[i];
+                    if (line) {
+                        // Simulating a "draw" effect by fading and rapid scale/clip if possible, 
+                        // simpler approach: fading in quickly
+                        tl.fromTo(line,
+                            { opacity: 0, strokeDasharray: 1000, strokeDashoffset: 1000 },
+                            {
+                                opacity: 1,
+                                strokeDashoffset: 0,
+                                duration: 0.5,
+                                ease: "power1.inOut"
+                            }
+                        );
+                    }
+                }
+            });
+
+            // 3. Scroll Hint (Handled in onComplete above)
+
         }, containerRef);
         return () => ctx.revert();
     }, []);
@@ -196,14 +269,9 @@ export default function Problem() {
         };
     }, [hoveredStar]);
 
-    // --- 4. Show Scroll Hint after 5 seconds ---
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowScrollHint(true);
-        }, 5000);
 
-        return () => clearTimeout(timer);
-    }, []);
+
+    // Removed manual useEffect for scroll hint (moved to GSAP)
 
     return (
         <section
@@ -304,7 +372,7 @@ export default function Problem() {
                             <div className={cn(
                                 "absolute left-1/2 -translate-x-1/2 mt-4 pt-2 w-48 text-center pointer-events-none transition-all duration-300",
                                 "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0",
-                                star.y > 80 ? "bottom-full mb-4 mt-0" : "top-full"
+                                (star.labelPos === "top" || star.y > 80) ? "bottom-full mb-4 mt-0" : "top-full"
                             )}>
                                 <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-xl">
                                     <h3 className="font-clash text-sm font-medium text-white mb-1">{star.label}</h3>
@@ -317,7 +385,7 @@ export default function Problem() {
                         <div className={cn(
                             "absolute left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap pointer-events-none transition-opacity duration-300",
                             "opacity-60 group-hover:opacity-0", // Hide when tooltip appears
-                            star.y > 80 ? "bottom-full mb-8" : "top-full mt-8"
+                            (star.labelPos === "top" || star.y > 80) ? "bottom-full mb-8" : "top-full mt-8"
                         )}>
                             <span className="font-clash text-xs tracking-widest uppercase text-gray-500">{star.label}</span>
                         </div>
@@ -326,10 +394,10 @@ export default function Problem() {
             </div>
 
             {/* Scroll Hint */}
-            <div className={cn(
-                "absolute bottom-6 left-1/2 -translate-x-1/2 z-20 transition-all duration-700",
-                showScrollHint ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
-            )}>
+            <div
+                ref={scrollHintRef}
+                className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 opacity-0 translate-y-4 invisible"
+            >
                 <div className="flex flex-col items-center gap-2">
                     <span className="font-jakarta text-[10px] uppercase tracking-widest text-gray-500">Scrollez</span>
                     <div className="w-4 h-7 border-[1.5px] border-gray-500/30 rounded-full flex items-start justify-center p-1">
