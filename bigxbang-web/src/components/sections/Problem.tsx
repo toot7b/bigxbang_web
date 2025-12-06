@@ -44,6 +44,7 @@ export default function Problem() {
     const bgStarsRef = useRef<HTMLDivElement>(null);
     const [hoveredStar, setHoveredStar] = useState<number | null>(null);
     const hasInteractedRef = useRef(false); // To track first interaction
+    const [showScrollHint, setShowScrollHint] = useState(false);
 
     // --- 1. Background Stars Animation (Organic & Dense) ---
     useEffect(() => {
@@ -195,6 +196,15 @@ export default function Problem() {
         };
     }, [hoveredStar]);
 
+    // --- 4. Show Scroll Hint after 5 seconds ---
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowScrollHint(true);
+        }, 5000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <section
             id="probleme"
@@ -229,7 +239,7 @@ export default function Problem() {
             </div>
 
             {/* Constellation Container */}
-            <div ref={constellationRef} className="relative w-full max-w-6xl aspect-[16/9] md:aspect-[2.5/1] z-10">
+            <div ref={constellationRef} className="relative w-full max-w-6xl aspect-[16/9] md:aspect-[2.5/1] z-10 -mt-12">
 
                 {/* SVG Connections Layer */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
@@ -276,7 +286,13 @@ export default function Problem() {
 
                             {/* Guidance Glow - First Star Only */}
                             {i === 0 && !hasInteractedRef.current && (
-                                <div className="absolute inset-0 -z-10 bg-white blur-lg rounded-full opacity-20 scale-150 animate-pulse pointer-events-none"></div>
+                                <div
+                                    className="absolute inset-0 -z-10 bg-white blur-lg rounded-full scale-150 pointer-events-none"
+                                    style={{
+                                        animation: 'gentle-pulse 3s ease-in-out infinite',
+                                        opacity: 0.08
+                                    }}
+                                ></div>
                             )}
 
                             {/* The Icon */}
@@ -307,6 +323,19 @@ export default function Problem() {
                         </div>
                     </div>
                 ))}
+            </div>
+
+            {/* Scroll Hint */}
+            <div className={cn(
+                "absolute bottom-6 left-1/2 -translate-x-1/2 z-20 transition-all duration-700",
+                showScrollHint ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+            )}>
+                <div className="flex flex-col items-center gap-2">
+                    <span className="font-jakarta text-[10px] uppercase tracking-widest text-gray-500">Scrollez</span>
+                    <div className="w-4 h-7 border-[1.5px] border-gray-500/30 rounded-full flex items-start justify-center p-1">
+                        <div className="w-0.5 h-1.5 bg-gray-500/50 rounded-full animate-bounce"></div>
+                    </div>
+                </div>
             </div>
         </section>
     );
