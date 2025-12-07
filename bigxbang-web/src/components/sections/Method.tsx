@@ -2,6 +2,8 @@
 
 import { Timeline } from "@/components/ui/timeline";
 import { Radar } from "@/components/ui/Radar";
+import { ArchFocus } from "@/components/ui/ArchFocus";
+import { Ripple } from "@/components/ui/Ripple"; // Import new component
 import { useRef } from "react";
 
 export default function Method() {
@@ -10,38 +12,39 @@ export default function Method() {
     const data = [
         {
             title: "Immersion",
-            visual: <Radar />,
             content: (
                 <div>
-                    <p className="font-jakarta text-gray-400 leading-relaxed text-base md:text-lg">
-                        On ne commence pas par coder. On commence par <strong>comprendre</strong>.
-                        Nous plongeons dans votre business pour identifier les goulots d'étranglement,
-                        les tâches répétitives et les opportunités manquées.
+                    <p className="text-neutral-200 text-xs md:text-sm font-normal mb-8">
+                        Nous analysons votre marque, votre marché et vos concurrents pour identifier votre positionnement unique.
                     </p>
                 </div>
             ),
+            visual: <Radar />,
         },
         {
             title: "Architecture",
+            // Add large margin-top to push this section down
+            className: "mt-80",
             content: (
                 <div>
-                    <p className="font-jakarta text-gray-400 leading-relaxed text-base md:text-lg">
-                        On conçoit le système. Choix de la stack, base de données, flux de données.
-                        Rien n'est laissé au hasard. C'est le plan de bataille.
+                    <p className="text-neutral-200 text-xs md:text-sm font-normal mb-8">
+                        Nous structurons votre site pour maximiser la conversion et guider l'utilisateur vers l'action.
                     </p>
                 </div>
             ),
+            visual: <ArchFocus />,
         },
         {
             title: "Exécution",
             content: (
                 <div>
-                    <p className="font-jakarta text-gray-400 leading-relaxed text-base md:text-lg">
-                        Le code est propre, testé, et livré vite.
-                        Chaque ligne a une utilité. Nous construisons votre "machine de guerre" digitale.
+                    <p className="text-neutral-200 text-xs md:text-sm font-normal mb-8">
+                        Le code est propre, testé, et livré vite. Chaque ligne a une utilité.
                     </p>
                 </div>
             ),
+            // Placeholder for Step 3
+            visual: <div className="h-[400px] w-full flex items-center justify-center text-white/20">Step 3 Visual</div>,
         },
     ];
 
@@ -54,6 +57,21 @@ export default function Method() {
 
             {/* Subtle Blue Ambience (Black -> Blue Tint -> Black) */}
             <div className="absolute inset-0 pointer-events-none z-0 bg-gradient-to-b from-[#0a0a0a] via-[#306EE8]/5 to-[#0a0a0a]"></div>
+
+            {/* Premium 'Deep Space' Atmosphere - Radial Focus */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                {/* Main ambient glow - Central/Top, softer and deeper */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(30,58,138,0.12),transparent_70%)]"></div>
+
+                {/* Secondary 'Void' depth - Subtle Slate tint for thickness without color saturation */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(15,23,42,0.3)_40%,rgba(0,0,0,1)_100%)]"></div>
+            </div>
+
+            {/* Interactive Ripple Grid - Masked for transition */}
+            {/* Increased z-index to 10 so it's above gradients but below content (z-20) */}
+            <div className="absolute inset-0 z-10 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
+                <Ripple />
+            </div>
 
             {/* Section Header */}
             <div className="relative z-20 flex flex-col items-center text-center max-w-4xl mx-auto px-4 mb-20">

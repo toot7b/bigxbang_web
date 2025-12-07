@@ -15,6 +15,7 @@ interface TimelineEntry {
     title: string;
     content: React.ReactNode;
     visual?: React.ReactNode; // New optional visual prop
+    className?: string; // Allow custom spacing per item
 }
 
 export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
@@ -106,7 +107,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
     }, []);
 
     return (
-        <div ref={containerRef} className="w-full relative max-w-7xl mx-auto pb-40 pt-40">
+        <div ref={containerRef} className="w-full relative max-w-7xl mx-auto pb-40 pt-40 pointer-events-none">
 
             {/* Central Line Container */}
             <div className="absolute left-[20px] md:left-1/2 top-0 bottom-0 w-[2px] h-full bg-neutral-800 -translate-x-1/2 overflow-hidden">
@@ -120,27 +121,39 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
             {/* Items */}
             <div className="relative">
                 {data.map((item, index) => (
-                    <div key={index} className="timeline-item flex flex-col md:flex-row gap-10 md:gap-0 relative pt-10 md:pt-40">
+                    <div key={index} className={cn("timeline-item flex flex-col md:flex-row gap-10 md:gap-0 relative pt-10 md:pt-40", item.className)}>
+
+                        {/* GLOBAL SECTION GRADIENT (Unified Atmosphere) */}
+                        {/* Positioned absolute relative to the item row, large enough to cover visual + text */}
+                        <div
+                            className="absolute z-0 pointer-events-none mix-blend-screen opacity-60"
+                            style={{
+                                top: "50%",
+                                left: "50%",
+                                width: "140vw", // Explicitly wider than container to cover everything
+                                height: "180%", // Bleed vertically
+                                transform: "translate(-50%, -50%)", // Center on the axis
+                                background: "radial-gradient(circle at 50% 50%, rgba(48, 110, 232, 0.12) 0%, rgba(15, 23, 42, 0.15) 30%, transparent 65%)"
+                            }}
+                        />
 
                         {/* Center Point (Asterisk) */}
                         {/* Halo updated: shadow-[0_0_60px_rgba(48,110,232,0.08)] -> 8% opacity max as requested */}
-                        <div className="timeline-point absolute left-[20px] md:left-1/2 top-10 md:top-40 w-10 h-10 -translate-x-1/2 z-20 flex items-center justify-center bg-[#0a0a0a] border border-white/10 rounded-full shadow-[0_0_60px_rgba(48,110,232,0.08)] transition-all duration-300">
+                        <div className="timeline-point absolute left-[20px] md:left-1/2 top-10 md:top-40 w-10 h-10 -translate-x-1/2 z-20 flex items-center justify-center bg-[#0a0a0a] border border-white/10 rounded-full shadow-[0_0_60px_rgba(48,110,232,0.08)] transition-all duration-300 pointer-events-auto">
                             <div className="w-2 h-2 rounded-full bg-[#306EE8] shadow-[0_0_10px_#306EE8]" />
                         </div>
 
                         {/* Left Side (Visual / Animation) */}
                         <div className="hidden md:flex md:w-1/2 pl-12 md:pl-0 md:pr-32 justify-center items-start">
                             {item.visual && (
-                                <div className="timeline-visual w-full max-w-[400px] -mt-[180px]">
+                                <div className="timeline-visual w-full max-w-[400px] -mt-[180px] pointer-events-auto">
                                     {item.visual}
                                 </div>
                             )}
                         </div>
 
                         {/* Right Side (Title & Content) */}
-                        <div className="md:w-1/2 pl-12 md:pl-24 w-full flex flex-col justify-start relative group">
-                            {/* Subtle Radial Gradient behind Text - 3% opacity to detach copy */}
-                            <div className="absolute inset-0 -left-12 -top-12 -bottom-12 bg-[radial-gradient(closest-side,rgba(255,255,255,0.03)_0%,transparent_100%)] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <div className="md:w-1/2 pl-12 md:pl-24 w-full flex flex-col justify-start relative group pointer-events-auto">
 
                             {/* Permanent subtle gradient (requested: "assombrissement ou éclaircissement de 3%") */}
                             <div className="absolute inset-0 -left-8 -top-8 -bottom-8 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_70%)] pointer-events-none"></div>
