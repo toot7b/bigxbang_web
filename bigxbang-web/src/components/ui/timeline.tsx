@@ -153,15 +153,16 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
                         </div>
 
                         {/* Right Side (Title & Content) */}
-                        <div className="md:w-1/2 pl-12 md:pl-24 w-full flex flex-col justify-start relative group pointer-events-auto">
+                        <div className="md:w-1/2 pl-12 md:pl-24 w-full flex flex-col justify-start relative group">
 
                             {/* Permanent subtle gradient (requested: "assombrissement ou éclaircissement de 3%") */}
+                            {/* This needs to capture events? No, it's background decoration */}
                             <div className="absolute inset-0 -left-8 -top-8 -bottom-8 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_70%)] pointer-events-none"></div>
 
-                            <h3 className="text-2xl md:text-4xl font-clash font-medium text-white mb-6 relative z-10">
+                            <h3 className="text-2xl md:text-4xl font-clash font-medium text-white mb-6 relative z-10 pointer-events-auto">
                                 {item.title}
                             </h3>
-                            <div className="relative z-10">
+                            <div className="relative z-10 pointer-events-auto">
                                 {item.content}
                             </div>
                         </div>

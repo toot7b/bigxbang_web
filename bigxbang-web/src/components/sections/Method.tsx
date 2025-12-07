@@ -4,6 +4,7 @@ import { Timeline } from "@/components/ui/timeline";
 import { Radar } from "@/components/ui/Radar";
 import { ArchFocus } from "@/components/ui/ArchFocus";
 import { Ripple } from "@/components/ui/Ripple"; // Import new component
+import { ExecutionVisual } from "@/components/ui/ExecutionVisual";
 import { useRef } from "react";
 
 export default function Method() {
@@ -36,6 +37,7 @@ export default function Method() {
         },
         {
             title: "Exécution",
+            className: "mt-80",
             content: (
                 <div>
                     <p className="text-neutral-200 text-xs md:text-sm font-normal mb-8">
@@ -44,7 +46,7 @@ export default function Method() {
                 </div>
             ),
             // Placeholder for Step 3
-            visual: <div className="h-[400px] w-full flex items-center justify-center text-white/20">Step 3 Visual</div>,
+            visual: <ExecutionVisual />,
         },
     ];
 
@@ -87,7 +89,7 @@ export default function Method() {
             </div>
 
             {/* Timeline Content */}
-            <div className="relative z-20 w-full">
+            <div className="relative z-20 w-full pointer-events-none">
                 <Timeline data={data} />
             </div>
         </section>

@@ -209,7 +209,11 @@ export function ArchFocus() {
     }, []);
 
     return (
-        <div ref={containerRef} className="h-[30rem] w-full rounded-md flex items-center justify-center relative">
+        <div ref={containerRef} className="h-[30rem] w-full rounded-md flex items-center justify-center relative pointer-events-auto">
+
+            {/* INTERACTION SHIELD: Explicitly blocks mouse events to prevent background Ripple from lighting up */}
+            {/* TIGHT FIT: Large Top (-150px), Tight Bottom (stops 140px above edge - at star limit), Large Sides */}
+            <div className="absolute -top-[150px] bottom-[140px] -left-[100px] -right-[100px] z-50 pointer-events-auto" aria-hidden="true" />
 
             {/* Particles Container */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
