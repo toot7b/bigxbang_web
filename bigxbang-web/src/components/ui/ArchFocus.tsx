@@ -181,12 +181,21 @@ export function ArchFocus() {
                 ease: "power2.out"
             }, 1.2);
 
-            // Phase 4: Morphing particles fade out 
+            {/* Phase 5: Electric Corners Appear (Framing) */ }
+            tl.to(".electric-corner", {
+                opacity: 0.6,
+                scale: 1,
+                duration: 0.6,
+                ease: "power2.out",
+                stagger: 0.2
+            }, 1.6);
+
+            // Phase 6 (Delayed): Morphing particles fade out completely 
             tl.to(particlesRef.current.slice(0, asteriskOutlinePoints.length), {
                 opacity: 0,
                 duration: 0.4,
                 ease: "power1.in"
-            }, 1.5);
+            }, 1.6);
 
         }, containerRef);
 
@@ -214,6 +223,41 @@ export function ArchFocus() {
             {/* INTERACTION SHIELD: Explicitly blocks mouse events to prevent background Ripple from lighting up */}
             {/* TIGHT FIT: Large Top (-150px), Tight Bottom (stops 140px above edge - at star limit), Large Sides */}
             <div className="absolute -top-[150px] bottom-[140px] -left-[100px] -right-[100px] z-50 pointer-events-auto" aria-hidden="true" />
+
+            {/* ELECTRIC FILTER DEFINITION */}
+            <svg className="absolute w-0 h-0 pointer-events-none">
+                <defs>
+                    <filter id="subtle-glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="noise" />
+                        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
+                        <feGaussianBlur stdDeviation="1" />
+                    </filter>
+                </defs>
+            </svg>
+
+            {/* ELECTRIC CORNERS (Framing) */}
+            {/* Top Right */}
+            <div className="electric-corner absolute top-[30%] right-[30%] w-8 h-8 opacity-0 scale-110 pointer-events-none" style={{ transformOrigin: "center" }}>
+                {/* Solid Base */}
+                <div className="absolute top-0 right-0 w-full h-[2px] bg-white/40" />
+                <div className="absolute top-0 right-0 w-[2px] h-full bg-white/40" />
+
+                {/* Electric Component (Glitches) */}
+                <div className="absolute top-0 right-0 w-full h-[4px] bg-[#306EE8] opacity-60 mix-blend-plus-lighter" style={{ filter: "url(#subtle-glow)" }} />
+                <div className="absolute top-0 right-0 w-[4px] h-full bg-[#306EE8] opacity-60 mix-blend-plus-lighter" style={{ filter: "url(#subtle-glow)" }} />
+            </div>
+
+            {/* Bottom Left */}
+            <div className="electric-corner absolute bottom-[30%] left-[30%] w-8 h-8 opacity-0 scale-110 pointer-events-none" style={{ transformOrigin: "center" }}>
+                {/* Solid Base */}
+                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white/40" />
+                <div className="absolute bottom-0 left-0 w-[2px] h-full bg-white/40" />
+
+                {/* Electric Component (Glitches) */}
+                <div className="absolute bottom-0 left-0 w-full h-[4px] bg-[#306EE8] opacity-60 mix-blend-plus-lighter" style={{ filter: "url(#subtle-glow)" }} />
+                <div className="absolute bottom-0 left-0 w-[4px] h-full bg-[#306EE8] opacity-60 mix-blend-plus-lighter" style={{ filter: "url(#subtle-glow)" }} />
+            </div>
+
 
             {/* Particles Container */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

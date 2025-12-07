@@ -140,30 +140,27 @@ export const Radar = () => {
     });
 
     return (
-        <div ref={containerRef} className="relative w-full aspect-square max-w-[400px] flex items-center justify-center p-4">
+        <div ref={containerRef} className="relative w-full aspect-square max-w-[400px] flex items-center justify-center p-4" style={{ transform: 'rotate(-0.6deg)' }}>
 
             {/* HUD Scale Rings - CONTAINER */}
-            {/* HUD Scale Rings - CONTAINER */}
-            {/* Added subtle "blue nuit" interior glow (inset_0_0_120px_rgba(48,110,232,0.05)) as requested for depth */}
-            {/* Fix: Moved blue glow to FIRST position so it sits ON TOP of the black vignette, and increased opacity to 15% */}
-            <div className="absolute inset-0 rounded-full border border-white/10 bg-[#0a0a0a] shadow-[inset_0_0_120px_rgba(48,110,232,0.15),inset_0_0_60px_rgba(0,0,0,0.9),0_0_30px_rgba(48,110,232,0.1)] overflow-hidden flex items-center justify-center z-0">
+            <div className="absolute inset-0 rounded-full border border-white/30 bg-[#050A14]/80 backdrop-blur-md shadow-[inset_0_0_60px_rgba(48,110,232,0.3),0_0_100px_rgba(48,110,232,0.35),0_0_30px_rgba(48,110,232,0.5)] overflow-hidden flex items-center justify-center z-0">
 
-                {/* 1. DEEP BACKGROUND GRADIENT (The "Screen" look) */}
-                <div className="absolute inset-0 bg-radial-gradient from-[#306EE8]/10 via-transparent to-black opacity-80" />
+                {/* 1. DEEP BACKGROUND GRADIENT */}
+                <div className="absolute inset-0 bg-radial-gradient from-[#306EE8]/30 via-transparent to-black opacity-100" />
 
                 {/* 2. POLAR GRID (Texture & Depth) */}
-                {/* Concentric circles */}
-                <div className="absolute w-[85%] h-[85%] border border-white/5 rounded-full" />
-                <div className="absolute w-[65%] h-[65%] border border-white/5 rounded-full" />
-                <div className="absolute w-[45%] h-[45%] border border-white/5 rounded-full" />
-                <div className="absolute w-[25%] h-[25%] border border-white/10 rounded-full bg-[#306EE8]/5" /> {/* Inner Core Highlight */}
+                {/* Concentric circles - Boosted visibility */}
+                <div className="absolute w-[85%] h-[85%] border border-white/20 rounded-full" />
+                <div className="absolute w-[65%] h-[65%] border border-white/20 rounded-full" />
+                <div className="absolute w-[45%] h-[45%] border border-white/20 rounded-full" />
+                <div className="absolute w-[25%] h-[25%] border border-white/40 rounded-full bg-[#306EE8]/20 shadow-[0_0_40px_rgba(48,110,232,0.5)]" /> {/* Core Highlight */}
 
                 {/* Crosshairs (Axis) - Kept but subtle */}
-                <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                <div className="absolute h-full w-[1px] bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+                <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                <div className="absolute h-full w-[1px] bg-gradient-to-b from-transparent via-white/40 to-transparent" />
 
                 {/* 3. HUD TICKS (The "Bezel") */}
-                <div className="absolute inset-2 z-0 opacity-60">
+                <div className="absolute inset-2 z-0 opacity-100">
                     {ticks}
                 </div>
 
@@ -243,7 +240,7 @@ export const Radar = () => {
 
             <style jsx>{`
                 .bg-radial-gradient {
-                    background: radial-gradient(circle, rgba(48, 110, 232, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+                    background: radial-gradient(circle, rgba(48, 110, 232, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
                 }
             `}</style>
         </div>
