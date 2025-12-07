@@ -1,96 +1,200 @@
 "use client";
 
-import { Timeline } from "@/components/ui/timeline";
-import { Radar } from "@/components/ui/Radar";
-import { ArchFocus } from "@/components/ui/ArchFocus";
-import { Ripple } from "@/components/ui/Ripple"; // Import new component
-import { ExecutionVisual } from "@/components/ui/ExecutionVisual";
-import { useRef } from "react";
+import { UnifiedMethodVisual } from "@/components/ui/UnifiedMethodVisual";
+import { Ripple } from "@/components/ui/Ripple";
+
+import { useRef, useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import { TimelineNode } from "@/components/ui/TimelineNode"; // Correct Import
 
 export default function Method() {
     const containerRef = useRef<HTMLDivElement>(null);
+    const [activeStep, setActiveStep] = useState(0);
+    const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-    const data = [
+    const steps = [
         {
             title: "Immersion",
-            content: (
-                <div>
-                    <p className="text-neutral-200 text-xs md:text-sm font-normal mb-8">
-                        Nous analysons votre marque, votre marché et vos concurrents pour identifier votre positionnement unique.
-                    </p>
-                </div>
-            ),
-            visual: <Radar />,
+            description: "Nous analysons votre marque, votre marché et vos concurrents pour identifier votre positionnement unique."
         },
         {
             title: "Architecture",
-            // Add large margin-top to push this section down
-            className: "mt-80",
-            content: (
-                <div>
-                    <p className="text-neutral-200 text-xs md:text-sm font-normal mb-8">
-                        Nous structurons votre site pour maximiser la conversion et guider l'utilisateur vers l'action.
-                    </p>
-                </div>
-            ),
-            visual: <ArchFocus />,
+            description: "Nous structurons votre site pour maximiser la conversion et guider l'utilisateur vers l'action."
         },
         {
             title: "Exécution",
-            className: "mt-80",
-            content: (
-                <div>
-                    <p className="text-neutral-200 text-xs md:text-sm font-normal mb-8">
-                        Le code est propre, testé, et livré vite. Chaque ligne a une utilité.
-                    </p>
-                </div>
-            ),
-            // Placeholder for Step 3
-            visual: <ExecutionVisual />,
-        },
+            description: "Le code est propre, testé, et livré vite. Chaque ligne a une utilité."
+        }
     ];
 
+
+
+    // Track Scroll Progress for the Beam
+    const [scrollProgress, setScrollProgress] = useState(0);
+    // Derived active step based on scroll progress (closest node)
+
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!containerRef.current) return;
+
+            const rect = containerRef.current.getBoundingClientRect();
+            const totalHeight = rect.height;
+            const viewportHeight = window.innerHeight;
+            const viewportCenter = viewportHeight / 2;
+
+            // The Beam follows the CENTER of the viewport
+            const scrollCenter = -rect.top + viewportCenter;
+
+            // Normalize: 0 to 1 over the full container height
+            const progress = Math.max(0, Math.min(1, scrollCenter / totalHeight));
+            setScrollProgress(progress);
+
+            // Calculate which step is active based on actual positions
+            let closestStep = 0;
+            let minDistance = Infinity;
+
+            stepRefs.current.forEach((stepEl, index) => {
+                if (!stepEl) return;
+
+                const stepRect = stepEl.getBoundingClientRect();
+                // Distance from step center to viewport center
+                const stepCenter = stepRect.top + stepRect.height / 2;
+                const distance = Math.abs(stepCenter - viewportCenter);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestStep = index;
+                }
+            });
+
+            setActiveStep(closestStep);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("resize", handleScroll);
+        handleScroll(); // Init
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleScroll);
+        };
+    }, []);
+
     return (
-        // Added -mt-1 to seal any subpixel gap between sections
-        <section id="methode" ref={containerRef} className="relative w-full bg-[#0a0a0a] text-white flex flex-col items-center justify-start pt-32 pb-20 overflow-hidden -mt-1">
 
-            {/* Top Gradient Transition - Miroir exact du bas de la section précédente pour une continuité parfaite */}
-            <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-black via-black/40 to-transparent z-10 pointer-events-none"></div>
+        <section
+            id="methode"
+            ref={containerRef}
+            className="relative w-full bg-[#0a0a0a] text-white -mt-1 min-h-[200vh]"
+        >
 
-            {/* Subtle Blue Ambience (Black -> Blue Tint -> Black) */}
-            <div className="absolute inset-0 pointer-events-none z-0 bg-gradient-to-b from-[#0a0a0a] via-[#306EE8]/5 to-[#0a0a0a]"></div>
+            {/* GLOBAL BACKGROUNDS (Fixed) */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+                {/* LINEAR RHYTHM GRADIENT (Blue at steps, Black in between) */}
+                <div
+                    className="absolute inset-0 z-0 opacity-40"
+                    style={{
+                        background: `linear-gradient(to bottom,
+                            #0a0a0a 0%,
+                            #1e3a8a 16%,
+                            #0a0a0a 33%,
+                            #1e3a8a 50%,
+                            #0a0a0a 67%,
+                            #1e3a8a 83%,
+                            #0a0a0a 100%
+                        )`
+                    }}
+                />
 
-            {/* Premium 'Deep Space' Atmosphere - Radial Focus */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                {/* Main ambient glow - Central/Top, softer and deeper */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(30,58,138,0.12),transparent_70%)]"></div>
-
-                {/* Secondary 'Void' depth - Subtle Slate tint for thickness without color saturation */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(15,23,42,0.3)_40%,rgba(0,0,0,1)_100%)]"></div>
-            </div>
-
-            {/* Interactive Ripple Grid - Masked for transition */}
-            {/* Increased z-index to 10 so it's above gradients but below content (z-20) */}
-            <div className="absolute inset-0 z-10 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
-                <Ripple />
-            </div>
-
-            {/* Section Header */}
-            <div className="relative z-20 flex flex-col items-center text-center max-w-4xl mx-auto px-4 mb-20">
-                <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
-                    <span className="font-jakarta text-xs font-medium text-white/80">La méthode</span>
+                {/* Ripple Grid (Full Height) */}
+                <div className="sticky top-0 h-screen w-full [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] opacity-60">
+                    <Ripple />
                 </div>
-                <h2 className="font-clash text-3xl md:text-5xl font-medium text-white mb-6 leading-tight">
-                    Comment on <span className="text-[#306EE8]">procède</span>
+            </div>
+
+            {/* --- SECTION HEADER (Centered Top) --- */}
+            <div className="relative z-20 text-center pt-20 md:pt-32 px-4 mb-24">
+                <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
+                    <span className="font-jakarta text-xs font-medium text-white/80 uppercase tracking-wider">Notre Méthode</span>
+                </div>
+                <h2 className="font-clash text-4xl md:text-6xl font-medium text-white mb-6 leading-tight">
+                    L'Art de la <span className="text-[#306EE8]">Structure</span>
                 </h2>
                 <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                    Une structure claire pour des résultats prévisibles.
+                    Une approche chirurgicale pour transformer le chaos en clarté.
                 </p>
             </div>
 
-            {/* Timeline Content */}
-            <div className="relative z-20 w-full pointer-events-none">
-                <Timeline data={data} />
+            {/* STICKY LAYOUT GRID */}
+            <div className="relative z-10 flex flex-col md:flex-row w-full max-w-7xl mx-auto">
+
+                {/* LEFT COLUMN: THE UNIFIED VISUAL (STICKY) */}
+                {/* Hidden on mobile, or stacked differently? For now assuming Desktop focus */}
+                <div className="hidden md:flex w-1/2 h-screen sticky top-0 items-center justify-center p-8 -translate-y-32">
+                    <UnifiedMethodVisual parentRef={containerRef} />
+                </div>
+
+                {/* RIGHT COLUMN: TEXT BLOCKS + TIMELINE */}
+                <div className="w-full md:w-1/2 flex flex-col relative ml-6 md:ml-0">
+
+                    {/* --- THE TIMELINE RAIL (Absolute Left) --- */}
+                    <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-white/10 hidden md:block">
+                        {/* THE BEAM (Filling Bar) - Instant update (no transition) to sync with JS events */}
+                        <div
+                            className="absolute top-0 left-0 w-full bg-gradient-to-b from-[#306EE8] to-[#60A5FA] shadow-[0_0_15px_rgba(48,110,232,0.8)]"
+                            style={{ height: `${scrollProgress * 100}%` }}
+                        />
+                    </div>
+
+                    {steps.map((step, index) => (
+                        <div
+                            key={index}
+                            ref={el => { stepRefs.current[index] = el; }}
+                            className={cn(
+                                "flex flex-col justify-center px-8 md:pl-20 relative",
+                                index === 0 ? "h-[50vh]" : "h-[70vh]"
+                            )}
+                        >
+                            {/* NARRATIVE TIMELINE NODE (Anchored to left border) */}
+                            {/* Visible only on Desktop to match the rail */}
+                            <div className="absolute left-0 top-1/2 -translate-x-1/2 hidden md:block">
+                                <TimelineNode
+                                    isActive={activeStep === index}
+                                    level={(index + 1) as 1 | 2 | 3}
+                                />
+                            </div>
+
+                            {/* Step Indicator */}
+                            <div className={cn(
+                                "inline-flex items-center px-3 py-1 mb-6 rounded-full border border-white/10 bg-white/5 w-fit backdrop-blur-sm transition-all duration-500",
+                                activeStep === index ? "border-[#306EE8]/50 bg-[#306EE8]/10" : ""
+                            )}>
+                                <span className={cn(
+                                    "text-xs font-jakarta font-bold mr-2 transition-colors duration-500",
+                                    activeStep === index ? "text-[#306EE8]" : "text-white/50"
+                                )}>0{index + 1}</span>
+                                <span className="text-xs font-jakarta text-white/70 uppercase tracking-wider">{step.title}</span>
+                            </div>
+
+                            {/* Title */}
+                            <h3 className={cn(
+                                "font-clash text-4xl md:text-5xl font-medium mb-6 transition-all duration-500",
+                                activeStep === index ? "text-white filter-none opacity-100 translate-x-0" : "text-white/20 blur-[2px] opacity-50"
+                            )}>
+                                {step.title}
+                            </h3>
+
+                            {/* Description */}
+                            <p className={cn(
+                                "font-jakarta text-lg leading-relaxed max-w-md transition-all duration-500",
+                                activeStep === index ? "text-gray-200 filter-none opacity-100" : "text-gray-800 blur-[1px] opacity-40"
+                            )}>
+                                {step.description}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
             </div>
         </section>
     );
