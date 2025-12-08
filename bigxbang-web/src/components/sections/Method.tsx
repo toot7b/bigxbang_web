@@ -2,10 +2,12 @@
 
 import { UnifiedMethodVisual } from "@/components/ui/UnifiedMethodVisual";
 import { Ripple } from "@/components/ui/Ripple";
+import { TimelineNode } from "@/components/ui/TimelineNode";
+import { TimelineBeam } from "@/components/ui/TimelineBeam";
 
 import { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { TimelineNode } from "@/components/ui/TimelineNode"; // Correct Import
+
 
 export default function Method() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -113,7 +115,7 @@ export default function Method() {
             </div>
 
             {/* --- SECTION HEADER (Centered Top) --- */}
-            <div className="relative z-20 text-center pt-20 md:pt-32 px-4 mb-24">
+            <div className="relative z-20 text-center pt-8 md:pt-20 px-4 mb-8">
                 <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
                     <span className="font-jakarta text-xs font-medium text-white/80 uppercase tracking-wider">Notre Méthode</span>
                 </div>
@@ -130,7 +132,7 @@ export default function Method() {
 
                 {/* LEFT COLUMN: THE UNIFIED VISUAL (STICKY) */}
                 {/* Hidden on mobile, or stacked differently? For now assuming Desktop focus */}
-                <div className="hidden md:flex w-1/2 h-screen sticky top-0 items-center justify-center p-8 -translate-y-32">
+                <div className="hidden md:flex w-1/2 h-screen sticky top-0 items-center justify-center p-8">
                     <UnifiedMethodVisual parentRef={containerRef} />
                 </div>
 
@@ -138,31 +140,39 @@ export default function Method() {
                 <div className="w-full md:w-1/2 flex flex-col relative ml-6 md:ml-0">
 
                     {/* --- THE TIMELINE RAIL (Absolute Left) --- */}
-                    <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-white/10 hidden md:block">
-                        {/* THE BEAM (Filling Bar) - Instant update (no transition) to sync with JS events */}
-                        <div
-                            className="absolute top-0 left-0 w-full bg-gradient-to-b from-[#306EE8] to-[#60A5FA] shadow-[0_0_15px_rgba(48,110,232,0.8)]"
-                            style={{ height: `${scrollProgress * 100}%` }}
-                        />
+                    {/* WIDER CONTAINER to allow Bloom/Glow to spill over. Center of beam is at layout x=0 */}
+                    <div className="absolute left-0 top-0 bottom-0 w-16 -translate-x-1/2 hidden md:block pointer-events-none">
+
+                        {/* THE ULTRA PREMIUM BEAM (WebGL) */}
+                        <TimelineBeam progress={scrollProgress} className="w-full h-full" />
+
+                        {/* --- NODES (Centered on Rail) --- */}
+                        {/* Node 1: Immersion (Approx 16.6%) */}
+                        <div className="absolute left-1/2 top-[16.6%] -translate-x-1/2 -translate-y-1/2 z-10">
+                            <TimelineNode isActive={scrollProgress >= 0.16} level={1} />
+                        </div>
+                        {/* Node 2: Architecture (50%) */}
+                        <div className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 z-10">
+                            <TimelineNode isActive={scrollProgress >= 0.495} level={2} />
+                        </div>
+                        {/* Node 3: Execution (Approx 83.3%) */}
+                        <div className="absolute left-1/2 top-[83.3%] -translate-x-1/2 -translate-y-1/2 z-10">
+                            <TimelineNode isActive={scrollProgress >= 0.83} level={3} />
+                        </div>
                     </div>
+
+
 
                     {steps.map((step, index) => (
                         <div
                             key={index}
                             ref={el => { stepRefs.current[index] = el; }}
                             className={cn(
-                                "flex flex-col justify-center px-8 md:pl-20 relative",
-                                index === 0 ? "h-[50vh]" : "h-[70vh]"
+                                "flex flex-col justify-center px-8 md:pl-20 relative h-screen",
+                                // removed manual margins and variable heights to enforce equidistance
                             )}
                         >
-                            {/* NARRATIVE TIMELINE NODE (Anchored to left border) */}
-                            {/* Visible only on Desktop to match the rail */}
-                            <div className="absolute left-0 top-1/2 -translate-x-1/2 hidden md:block">
-                                <TimelineNode
-                                    isActive={activeStep === index}
-                                    level={(index + 1) as 1 | 2 | 3}
-                                />
-                            </div>
+
 
                             {/* Step Indicator */}
                             <div className={cn(
@@ -195,6 +205,12 @@ export default function Method() {
                     ))}
                 </div>
 
+            </div>
+
+            {/* DEBUG HUD - REMOVE BEFORE PRODUCTION */}
+            <div className="fixed bottom-4 right-4 z-50 bg-black/80 border border-white/20 p-4 rounded-lg font-mono text-xs text-[#306EE8]">
+                <div>SCROLL: {(scrollProgress * 100).toFixed(1)}%</div>
+                <div>STEP: {activeStep + 1}</div>
             </div>
         </section>
     );

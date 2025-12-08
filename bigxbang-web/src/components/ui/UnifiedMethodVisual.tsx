@@ -538,23 +538,29 @@ export const UnifiedMethodVisual = ({ parentRef }: UnifiedMethodVisualProps) => 
                 rotate: 90,
                 duration: 0.10,
                 ease: "power2.in"
-            }, 0.10);
+            }, 0.30);
 
+            // ============================================
+            // 2. SHOCKWAVE (Electric Ring)
+            // ============================================
             // ============================================
             // 2. SHOCKWAVE (Electric Ring)
             // ============================================
             tl.to(shockwaveRef.current, {
                 opacity: 1,
                 duration: 0.02
-            }, 0.19);
+            }, 0.33);
 
             tl.to(shockwaveRef.current, {
                 scale: 22,
                 opacity: 0,
                 duration: 0.25,
                 ease: "power2.out"
-            }, 0.20);
+            }, 0.34);
 
+            // ============================================
+            // 3. REVEAL (Simple Opacity)
+            // ============================================
             // ============================================
             // 3. REVEAL (Simple Opacity)
             // ============================================
@@ -562,7 +568,7 @@ export const UnifiedMethodVisual = ({ parentRef }: UnifiedMethodVisualProps) => 
                 opacity: 1,
                 duration: 0.15,
                 ease: "power1.out"
-            }, 0.22);
+            }, 0.36);
 
             // ============================================
             // 4. FORMATION (Morph into Triangle Constellation)
@@ -578,32 +584,31 @@ export const UnifiedMethodVisual = ({ parentRef }: UnifiedMethodVisualProps) => 
                 duration: 0.15,
                 ease: "power2.inOut",
                 stagger: { amount: 0.02, from: "random" }
-            }, 0.30); // Delayed slightly from 0.28
+            }, 0.38); // Standard pre-center
 
             // Clean
             tl.to(particlesRef.current.slice(morphCount), {
                 opacity: 0,
                 scale: 0.1,
                 duration: 0.05
-            }, 0.36);
+            }, 0.45);
 
-            // Brighten
+            // Brighten (Pre-peak)
             tl.to(particlesRef.current.slice(0, morphCount), {
                 opacity: 1,
                 scale: 1.2,
                 duration: 0.05,
                 ease: "power2.out"
-            }, 0.38);
+            }, 0.48);
 
-            // SUBSTITUTE: Solid Group Appears - pushed to 0.42
-            tl.to(archVisualsGroupRef.current, { opacity: 1, scale: 1, duration: 0.1 }, 0.42);
-            tl.to(particlesRef.current.slice(0, morphCount), { opacity: 0, duration: 0.1 }, 0.42);
+            // SUBSTITUTE: Solid Group Appears - PERFECT MATH TARGET: 50%
+            tl.to(archVisualsGroupRef.current, { opacity: 1, scale: 1, duration: 0.1 }, 0.50);
+            tl.to(particlesRef.current.slice(0, morphCount), { opacity: 0, duration: 0.1 }, 0.50);
 
             // CONNECTING LINES (Electric Reveal)
             const lines = archLinesRef.current?.querySelectorAll('line');
             if (lines) {
-                tl.to(lines, { opacity: 1, duration: 0.15 }, 0.38); // Sync with asterisks
-                tl.to(lines, { opacity: 1, duration: 0.15 }, 0.42); // Sync with asterisks
+                tl.to(lines, { opacity: 1, duration: 0.15 }, 0.50); // Sync exactly with target
             }
 
             // ============================================
@@ -611,9 +616,9 @@ export const UnifiedMethodVisual = ({ parentRef }: UnifiedMethodVisualProps) => 
             // ============================================
 
             // Reverse Particles (Explode back out)
-            // Start dissolving AFTER the user has read Step 2 (approx 0.65)
-            tl.to(archVisualsGroupRef.current, { opacity: 0, scale: 0.8, duration: 0.1 }, 0.65);
-            tl.to(particlesRef.current.slice(0, morphCount), { opacity: 1, duration: 0.1 }, 0.65);
+            // Start dissolving later to hold the shape (approx 0.70)
+            tl.to(archVisualsGroupRef.current, { opacity: 0, scale: 0.8, duration: 0.1 }, 0.70);
+            tl.to(particlesRef.current.slice(0, morphCount), { opacity: 1, duration: 0.1 }, 0.70);
 
             tl.to(particlesRef.current, {
                 x: () => (Math.random() - 0.5) * 600,
@@ -622,15 +627,15 @@ export const UnifiedMethodVisual = ({ parentRef }: UnifiedMethodVisualProps) => 
                 opacity: 0,
                 duration: 0.15,
                 ease: "power2.in"
-            }, 0.68);
+            }, 0.75);
 
-            // Execution Appears (Start at 0.75, fully visible by 0.85)
+            // Execution Appears (Start at 0.85, fully visible by 0.95 - Center of Step 3)
             tl.to(executionWrapperRef.current, {
                 scale: 1,
                 opacity: 1,
                 duration: 0.15,
                 ease: "back.out(1.7)"
-            }, 0.75);
+            }, 0.95);
 
 
 
