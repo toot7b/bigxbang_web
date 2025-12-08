@@ -15,9 +15,11 @@ export const ExecutionVisual = () => {
     const asteriskWrapperRef = useRef<HTMLDivElement>(null);
 
     // Physics Refs
-    const speedRef = useRef(0.1);
-    const rotationRef = useRef(0);
+    const INITIAL_ANGLE = 60; // 3-fold symmetry correction (Vertex Up vs Down)
+    const speedRef = useRef(0);
+    const rotationRef = useRef(INITIAL_ANGLE);
     const isHoveringRef = useRef(false);
+    const hasStartedRef = useRef(false); // Gate for initial rotation
 
     // UI State
     const [isHovering, setIsHovering] = useState(false);
@@ -31,6 +33,20 @@ export const ExecutionVisual = () => {
                     trigger: containerRef.current,
                     start: "top 60%", // Wait until it's more visible (closer to center)
                     toggleActions: "play none none reverse"
+                },
+                onComplete: () => {
+                    // Start rotation ONLY when animation finishes (User: "quand l'icône arrivait en bas")
+                    hasStartedRef.current = true;
+                    speedRef.current = 0.1;
+                },
+                onReverseComplete: () => {
+                    // Stop rotation if we scroll back up
+                    hasStartedRef.current = false;
+                    speedRef.current = 0;
+                    rotationRef.current = INITIAL_ANGLE;
+                    if (asteriskWrapperRef.current) {
+                        asteriskWrapperRef.current.style.transform = `rotate(${INITIAL_ANGLE}deg)`;
+                    }
                 }
             });
 
@@ -110,13 +126,18 @@ export const ExecutionVisual = () => {
                 speedRef.current *= FRICTION;
             }
 
-            // Apply minimal drift so it's never dead
-            if (Math.abs(speedRef.current) < 0.1 && !isHoveringRef.current) {
+            // Apply minimal drift ONLY if started
+            if (hasStartedRef.current && Math.abs(speedRef.current) < 0.1 && !isHoveringRef.current) {
                 speedRef.current = 0.1;
             }
 
-            // Update rotation
-            rotationRef.current += speedRef.current;
+            // Lock to 0 if not started and not hovering
+            if (!hasStartedRef.current && !isHoveringRef.current) {
+                speedRef.current = 0;
+                rotationRef.current = INITIAL_ANGLE;
+            } else {
+                rotationRef.current += speedRef.current;
+            }
 
             // Apply transform
             if (asteriskWrapperRef.current) {
@@ -125,8 +146,11 @@ export const ExecutionVisual = () => {
 
             animationFrameId = requestAnimationFrame(loop);
         };
+
         loop();
-        return () => cancelAnimationFrame(animationFrameId);
+        return () => {
+            cancelAnimationFrame(animationFrameId);
+        };
     }, []);
 
     const handleMouseEnter = () => {
@@ -143,7 +167,7 @@ export const ExecutionVisual = () => {
         <div
             ref={containerRef}
             className="relative w-full aspect-square max-w-[400px] flex items-center justify-center p-4 pointer-events-none"
-            style={{ transform: 'rotate(-0.3deg)' }}
+        // style={{ transform: 'rotate(-0.3deg)' }} // REMOVED: Causes misalignment with Step 2
         >
             {/* 0. SINGULARITY (The Origin Spark) */}
             <div ref={singularityRef} className="absolute w-4 h-4 bg-white rounded-full blur-[2px] z-50 pointer-events-none opacity-0 scale-0" />
@@ -257,7 +281,7 @@ export const ExecutionVisual = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black pointer-events-none" />
 
                 {/* Rotating Wrapper for Asterisk */}
-                <div ref={asteriskWrapperRef} className="z-40 relative flex items-center justify-center">
+                <div ref={asteriskWrapperRef} className="z-40 relative flex items-center justify-center" style={{ transform: `rotate(${INITIAL_ANGLE}deg)` }}>
                     <Asterisk className="w-28 h-28 text-white drop-shadow-[0_0_25px_rgba(48,110,232,1)]" />
                 </div>
             </div>

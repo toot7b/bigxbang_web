@@ -46,10 +46,12 @@ export default function Method() {
             const viewportCenter = viewportHeight / 2;
 
             // The Beam follows the CENTER of the viewport
-            const scrollCenter = -rect.top + viewportCenter;
+            // User Feedback: "Beam is in advance". We need to delay it.
+            // By subtracting an offset, we effectively make the "virtual scroll" lower.
+            const scrollCenter = -rect.top + viewportCenter - (viewportHeight * 0.2); // ~20vh delay
 
             // Normalize: 0 to 1 over the full container height
-            const progress = Math.max(0, Math.min(1, scrollCenter / totalHeight));
+            const progress = Math.max(0, Math.min(1, scrollCenter / (totalHeight - viewportHeight * 0.2)));
             setScrollProgress(progress);
 
             // Calculate which step is active based on actual positions
@@ -148,15 +150,17 @@ export default function Method() {
 
                         {/* --- NODES (Centered on Rail) --- */}
                         {/* Node 1: Immersion (Approx 16.6%) */}
-                        <div className="absolute left-1/2 top-[16.6%] -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div className="absolute left-1/2 top-[16.6%] -translate-x-1/2 -translate-y-1/2 z-20">
                             <TimelineNode isActive={scrollProgress >= 0.16} level={1} />
                         </div>
+
                         {/* Node 2: Architecture (50%) */}
-                        <div className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 z-20">
                             <TimelineNode isActive={scrollProgress >= 0.495} level={2} />
                         </div>
+
                         {/* Node 3: Execution (Approx 83.3%) */}
-                        <div className="absolute left-1/2 top-[83.3%] -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div className="absolute left-1/2 top-[83.3%] -translate-x-1/2 -translate-y-1/2 z-20">
                             <TimelineNode isActive={scrollProgress >= 0.83} level={3} />
                         </div>
                     </div>

@@ -14,6 +14,7 @@ export const TimelineBeam = ({ progress, className }: TimelineBeamProps) => {
     const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
     const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
     const materialRef = useRef<THREE.ShaderMaterial | null>(null);
+    // refs for points removed
     const rafRef = useRef<number | null>(null);
 
     // Initialize Three.js Scene
@@ -193,9 +194,13 @@ export const TimelineBeam = ({ progress, className }: TimelineBeamProps) => {
 
         // 6. Animation Loop
         const animate = (time: number) => {
+            const t = time * 0.001;
+
+            // Update Beam
             if (materialRef.current) {
-                materialRef.current.uniforms.uTime.value = time * 0.001;
+                materialRef.current.uniforms.uTime.value = t;
             }
+
             renderer.render(scene, camera);
             rafRef.current = requestAnimationFrame(animate);
         };
