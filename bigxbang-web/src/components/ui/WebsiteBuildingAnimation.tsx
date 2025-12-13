@@ -10,7 +10,7 @@ export const WebsiteBuildingAnimation = () => {
                         100% { transform: translateY(-50%); }
                     }
                     .scroll-content {
-                        animation: scrollUp 12s linear infinite;
+                        animation: scrollUp 24s linear infinite;
                     }
                 `}
             </style>

@@ -38,10 +38,13 @@ export const ServiceCard = ({
 
     return (
         <div
-            className={cn("relative w-full max-w-6xl flex flex-col md:flex-row items-stretch justify-center p-8 gap-8 md:gap-16 bg-black/50 border border-white/5 rounded-3xl backdrop-blur-sm", className)}
+            className={cn(
+                "relative w-full max-w-6xl flex flex-col md:flex-row items-stretch justify-center p-8 gap-8 md:gap-16 bg-black/50 border border-white/5 rounded-3xl backdrop-blur-sm",
+                className
+            )}
         >
             {/* LEFT: VISUAL CONTAINER (The Stage) */}
-            <div className="relative w-full md:w-1/2 flex items-center justify-center overflow-hidden">
+            <div className="relative w-full md:w-1/2 flex items-center justify-center">
 
                 {/* Corner Markers - Logically Attached to the Visual Stage */}
                 < div className="absolute top-0 left-0 w-6 h-6 border-t-[3px] border-l-[3px] border-white/20 rounded-tl-sm" ></div >
@@ -49,13 +52,15 @@ export const ServiceCard = ({
                 <div className="absolute bottom-0 left-0 w-6 h-6 border-b-[3px] border-l-[3px] border-white/20 rounded-bl-sm"></div>
                 <div className="absolute bottom-0 right-0 w-6 h-6 border-b-[3px] border-r-[3px] border-white/20 rounded-br-sm hidden md:block"></div>
 
-                {/* SCANNER OVERLAY (The Tech Beam) */}
-                <div
-                    ref={scannerRef}
-                    className="absolute left-0 w-full h-[20%] z-20 pointer-events-none opacity-0"
-                    style={{ top: '0%' }} // Initial pos
-                >
-                    <TechScanner color={color} state={scannerState} />
+                {/* SCANNER OVERLAY (The Tech Beam) - Clipped to Frame */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div
+                        ref={scannerRef}
+                        className="absolute left-0 w-full h-[20%] z-20 opacity-0"
+                        style={{ top: '0%' }} // Initial pos
+                    >
+                        <TechScanner color={color} state={scannerState} />
+                    </div>
                 </div>
 
                 {/* VISUAL CONTENT WRAPPER */}
@@ -64,14 +69,13 @@ export const ServiceCard = ({
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/5 to-transparent skew-x-12 opacity-50 pointer-events-none"></div>
 
                     {/* THE ASSETS (Holograms) */}
-                    <div className="w-[300px] h-[250px] md:w-[450px] md:h-[350px] relative flex items-center justify-center">
+                    <div className="w-[320px] h-[250px] md:w-[500px] md:h-[350px] relative flex items-center justify-center">
 
                         {id === 1 ? (
-                            <div className="w-full h-auto relative group hover:scale-[1.02] transition-transform duration-500">
+                            <div className="w-full h-auto relative group">
                                 <Safari
-                                    url="bigxbang.io"
-                                    className="w-full shadow-2xl"
-                                    style={{ boxShadow: '0 32px 64px rgba(9, 15, 35, 0.65)' }}
+                                    url="bigxbang.studio"
+                                    className="relative z-10 w-full transition-[filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] [filter:drop-shadow(0_18px_45px_rgba(9,15,35,0.55))] group-hover:[filter:drop-shadow(0_42px_95px_rgba(0,0,0,0.55))_drop-shadow(0_0_55px_rgba(48,110,232,0.45))_drop-shadow(0_0_90px_rgba(48,110,232,0.20))]"
                                 >
                                     <WebsiteBuildingAnimation />
                                 </Safari>
@@ -79,7 +83,7 @@ export const ServiceCard = ({
                         ) : (
                             <div className="w-full h-full rounded-full border border-white/10 relative flex items-center justify-center">
                                 <div className="absolute inset-0 bg-white/5 rounded-full blur-3xl opacity-20"></div>
-                                <span className="font-mono text-xs text-white/20">ASSET_0{id} // RENDER_TARGET</span>
+                                <span className="font-mono text-xs text-white/20">ASSET_0{id} {"//"} RENDER_TARGET</span>
                             </div>
                         )}
 

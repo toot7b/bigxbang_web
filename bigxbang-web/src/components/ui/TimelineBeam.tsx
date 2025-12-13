@@ -172,6 +172,12 @@ export const TimelineBeam = ({ progress, className }: TimelineBeamProps) => {
                 float startFade = smoothstep(0.0, 0.1, invertedY);
                 finalAlpha *= startFade;
 
+                // 8. GLOBAL FADE OUT AT BOTTOM (Hard Stop)
+                // Stops the beam exactly at the last point (Step 3 @ 0.833)
+                // Very sharp fade (0.833 -> 0.835) to cut it off instantly at the node center
+                float endFade = 1.0 - smoothstep(0.833, 0.835, invertedY);
+                finalAlpha *= endFade;
+
                 gl_FragColor = vec4(finalColor, finalAlpha);
             }
         `;

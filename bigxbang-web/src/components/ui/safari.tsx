@@ -53,7 +53,7 @@ export function Safari({
                     top: `${TOP_PCT}%`,
                     width: `${WIDTH_PCT}%`,
                     height: `${HEIGHT_PCT}%`,
-                    borderRadius: "0 0 11px 11px", // Matches frame clip
+                    borderRadius: "0 0 19px 19px", // Matches frame clip
                     backgroundColor: "#050810", // Deep black background for the screen
                 }}
             >
@@ -83,6 +83,8 @@ export function Safari({
                         {children}
                     </div>
                 )}
+
+
             </div>
 
             <svg
@@ -107,7 +109,7 @@ export function Safari({
                 <g clipPath="url(#path0)">
                     {/* Main Frame Background - Body Area (Transparent to show content) */}
                     <path
-                        d="M0 52H1202V741C1202 747.627 1196.63 753 1190 753H12C5.37258 753 0 747.627 0 741V52Z"
+                        d="M0 52H1202V733C1202 744 1191 753 1182 753H20C9 753 0 744 0 733V52Z"
                         fill="none"
                         stroke="rgba(48, 110, 232, 0.38)"
                         strokeWidth="2"
@@ -117,7 +119,7 @@ export function Safari({
                     <path
                         fillRule="evenodd"
                         clipRule="evenodd"
-                        d="M0 12C0 5.37258 5.37258 0 12 0H1190C1196.63 0 1202 5.37258 1202 12V52H0L0 12Z"
+                        d="M0 20C0 9 9 0 20 0H1182C1193 0 1202 9 1202 20V52H0Z"
                         fill="url(#frameGradient)"
                         fillOpacity="0.8" // Let the gradient shine but maybe overlay? Or just same gradient.
                         stroke="rgba(48, 110, 232, 0.38)"
@@ -137,22 +139,17 @@ export function Safari({
                     {/* Icons & Text - White/Grey */}
                     <g className="mix-blend-normal opacity-70">
                         <text
-                            x="585"
+                            x="619"
                             y="30"
                             fill="white"
-                            fontSize="12"
-                            fontFamily="Arial, sans-serif"
-                            opacity="0.9"
+                            textAnchor="middle"
+                            className="text-[20px] font-medium tracking-wide"
+                            style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}
                         >
                             {url}
                         </text>
-
                         {/* Refresh Icon */}
-                        <path
-                            d="M936.273 24.9766C936.5 24.9766 936.68 24.9062 936.82 24.7578L940.023 21.5312C940.195 21.3594 940.273 21.1719 940.273 20.9531C940.273 20.7422 940.188 20.5391 940.023 20.3828L936.82 17.125C936.68 16.9688 936.5 16.8906 936.273 16.8906C935.852 16.8906 935.516 17.2422 935.516 17.6719C935.516 17.8828 935.594 18.0547 935.727 18.2031L937.594 20.0312C937.227 19.9766 936.852 19.9453 936.477 19.9453C932.609 19.9453 929.516 23.0391 929.516 26.9141C929.516 30.7891 932.633 33.9062 936.5 33.9062C940.375 33.9062 943.484 30.7891 943.484 26.9141C943.484 26.4453 943.156 26.1094 942.688 26.1094C942.234 26.1094 941.93 26.4453 941.93 26.9141C941.93 29.9297 939.516 32.3516 936.5 32.3516C933.492 32.3516 931.07 29.9297 931.07 26.9141C931.07 23.875 933.469 21.4688 936.477 21.4688C936.984 21.4688 937.453 21.5078 937.867 21.5781L935.734 23.6875C935.594 23.8281 935.516 24 935.516 24.2109C935.516 24.6406 935.852 24.9766 936.273 24.9766Z"
-                            fill="white"
-                        />
-
+                        <path transform="translate(85, 0)" d="M846 21C846 21 848 23 848 26C848 29 846 31 846 31M854 26C854 23.2386 851.761 21 849 21C846.239 21 844 23.2386 844 26C844 28.7614 846.239 31 849 31C850.5 31 853 29.5 853 29.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </g>
 
                     {mode === "default" && (
@@ -163,9 +160,8 @@ export function Safari({
                             <path d="M168.42 32.86C168.94 32.86 169.35 32.45 169.35 31.93C169.35 31.68 169.25 31.44 169.07 31.26L163.6 25.93L169.07 20.59C169.25 20.41 169.35 20.17 169.35 19.92C169.35 19.4 168.94 19 168.42 19C168.17 19 167.95 19.09 167.78 19.26L161.7 25.2C161.48 25.4 161.37 25.65 161.37 25.93C161.37 26.2 161.48 26.43 161.69 26.64L167.77 32.59C167.95 32.76 168.17 32.86 168.42 32.86Z" fill="white" transform="scale(-1,1) translate(-330,0)" />
                         </g>
                     )}
-
                 </g>
             </svg>
-        </div>
+        </div >
     )
 }
