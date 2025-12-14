@@ -32,8 +32,8 @@ const SCANNER_FRAGMENT = `
     // Original ARC_WIDTH was 0.004 (for screen space). 
     // We increase it because UV space on tube is small.
     #define ARC_WIDTH 0.15 
-    #define GLOW_FALLOFF 3.0
-    #define BOLT_SPEED 2.0
+    #define GLOW_FALLOFF 4.0
+    #define BOLT_SPEED 4.0
 
     uniform float uTime;
     uniform float uIntensity; 
@@ -66,12 +66,12 @@ const SCANNER_FRAGMENT = `
         float t = uTime * BOLT_SPEED;
         
         // 1. MAIN BOLT
-        float jaggedness = 5.0; 
-        if (uIntensity > 0.5) jaggedness = 10.0; 
+        float jaggedness = 15.0; 
+        if (uIntensity > 0.5) jaggedness = 30.0; 
 
         // Distortion using FBM
         // We scroll noise along X
-        float distortion = fbm(vec2(vUv.x * jaggedness - t * 1.5, t)); 
+        float distortion = fbm(vec2(vUv.x * jaggedness - t * 1.5, t * 1.2)); 
         
         // Map distortion to Y offset (-0.5 to 0.5 coverage)
         float path = (distortion - 0.5) * 0.8; 
@@ -90,10 +90,11 @@ const SCANNER_FRAGMENT = `
         // Scale by intensity
         float interaction = (bolt + glow) * uIntensity;
         
-        // Color: Mix User Color with White Core based on brightness
-        vec3 finalColor = mix(uColor, vec3(1.0), clamp(interaction * 0.3, 0.0, 1.0));
+        // Color: Mix User Color with White Core.
+        // CAP WHITE to 30% max as requested.
+        vec3 finalColor = mix(uColor, vec3(1.0), clamp(interaction * 0.4, 0.0, 0.3));
         
-        // Alpha
+        // Alpha (Visual intensity)
         float alpha = interaction;
         
         // Fade Ends (Soft start/end)
@@ -105,7 +106,35 @@ const SCANNER_FRAGMENT = `
     }
 `;
 
-const Cable = ({ startPos, endPos, index, activeIndex }: { startPos: [number, number, number], endPos: [number, number, number], index: number, activeIndex: number | null }) => {
+// --- ORCHESTRATION TYPES ---
+type ConductorState = 'IGNITION' | 'ORGANIC';
+
+interface CableParams {
+    speed: number;
+    offset: number;
+    base: number;
+}
+
+interface Conductor {
+    state: ConductorState;
+    targets: number[];
+    lastActionTime: number;
+    params: CableParams[];
+}
+
+const Cable = ({
+    startPos,
+    endPos,
+    index,
+    activeIndex,
+    conductor
+}: {
+    startPos: [number, number, number],
+    endPos: [number, number, number],
+    index: number,
+    activeIndex: number | null,
+    conductor: React.MutableRefObject<Conductor>
+}) => {
     const meshRef = useRef<THREE.Mesh>(null);
     const materialRef = useRef<THREE.ShaderMaterial>(null);
 
@@ -113,7 +142,6 @@ const Cable = ({ startPos, endPos, index, activeIndex }: { startPos: [number, nu
     const curve = useMemo(() => {
         const start = new THREE.Vector3(...startPos);
         const end = new THREE.Vector3(...endPos);
-        // "Funnel" Logic
         const rangeX = end.x - start.x;
         const cp1 = new THREE.Vector3(start.x + rangeX * 0.3, start.y, 0);
         const funnelX = start.x + rangeX * 0.7;
@@ -122,11 +150,6 @@ const Cable = ({ startPos, endPos, index, activeIndex }: { startPos: [number, nu
         return new THREE.CatmullRomCurve3([start, cp1, cp2, end]);
     }, [startPos, endPos]);
 
-    // ANIMATION LOOP
-    const [simActive, setSimActive] = useState(false);
-    const lastPulse = useRef(0);
-    const pulseDelay = useRef(Math.random() * 5 + 3);
-
     useFrame((state) => {
         if (!materialRef.current) return;
         const time = state.clock.elapsedTime;
@@ -134,35 +157,27 @@ const Cable = ({ startPos, endPos, index, activeIndex }: { startPos: [number, nu
 
         const isHovered = activeIndex === index;
         const isSourceHovered = activeIndex !== null;
-        let targetIntensity = 0.0; // Invisible by default
 
+        // READ TARGET FROM CONDUCTOR
+        let target = conductor.current.targets[index] || 0;
+
+        // Hover overrides everything
         if (isHovered) {
-            targetIntensity = 2.0; // High Power
-        } else if (!isSourceHovered) {
-            // Idle flicker
-            if (time - lastPulse.current > pulseDelay.current) {
-                lastPulse.current = time;
-                pulseDelay.current = Math.random() * 2 + 2;
-                setSimActive(true);
-                setTimeout(() => setSimActive(false), 300);
-            }
-            if (simActive) targetIntensity = 0.8;
-            else targetIntensity = 0.2; // Low hum
+            target = 2.0; // Boost
+        } else if (isSourceHovered) {
+            // If another is hovered, dim this one
+            target *= 0.3;
         }
 
-        materialRef.current.uniforms.uIntensity.value = THREE.MathUtils.lerp(
-            materialRef.current.uniforms.uIntensity.value,
-            targetIntensity,
-            0.1
-        );
+        // SMOOTH LERP
+        const current = materialRef.current.uniforms.uIntensity.value;
+        // Snappy lerp (0.5) for glitch reaction (nearly instant)
+        materialRef.current.uniforms.uIntensity.value = THREE.MathUtils.lerp(current, target, 0.5);
     });
 
     return (
         <mesh ref={meshRef}>
-            {/* TUBE GEOMETRY */}
-            {/* Radius 0.04 (Thicker canvas for shader to paint on) */}
             <tubeGeometry args={[curve, 64, 0.04, 8, false]} />
-
             <shaderMaterial
                 ref={materialRef}
                 vertexShader={SCANNER_VERTEX}
@@ -174,20 +189,84 @@ const Cable = ({ startPos, endPos, index, activeIndex }: { startPos: [number, nu
                 uniforms={{
                     uTime: { value: 0 },
                     uIntensity: { value: 0 },
-                    uColor: { value: new THREE.Color("#0099FF") }
+                    uColor: { value: new THREE.Color("#00A3FF") }
                 }}
             />
         </mesh>
     );
 };
 
-// --- SCENE CONTENT (Access to Viewport) ---
+// --- SCENE CONTENT ---
 const ElectricCablesContent = ({ inputs, output, activeIndex }: {
     inputs: { x: number, y: number }[],
     output: { x: number, y: number },
     activeIndex: number | null
 }) => {
     const { viewport, size } = useThree();
+
+    // ORCHESTRATOR STATE
+    const conductor = useRef<Conductor>({
+        state: 'IGNITION',
+        targets: inputs.map(() => 0),
+        lastActionTime: 0,
+        params: inputs.map(() => ({
+            speed: 1.0 + Math.random() * 2.0, // Faster chaotic speed
+            offset: Math.random() * 100,
+            base: 0.2 + Math.random() * 0.1   // Very gentle (0.2 - 0.3)
+        }))
+    });
+
+    // CONDUCTOR LOGIC LOOP
+    useFrame((state) => {
+        const now = state.clock.elapsedTime;
+        const C = conductor.current;
+
+        // Safety resize
+        if (C.targets.length !== inputs.length) {
+            C.targets = inputs.map(() => 0);
+            C.params = inputs.map(() => ({ speed: 1.5 + Math.random() * 2, offset: Math.random() * 100, base: 0.25 }));
+        }
+
+        if (C.state === 'IGNITION') {
+            // Ignition: Light up one by one randomly
+            if (now - C.lastActionTime > 0.1) {
+                const unlit = C.targets.map((t, i) => t < 0.1 ? i : -1).filter(i => i !== -1);
+
+                if (unlit.length > 0) {
+                    const pick = unlit[Math.floor(Math.random() * unlit.length)];
+                    C.targets[pick] = 1.0;
+                    C.lastActionTime = now;
+                } else {
+                    // All lit -> Switch to Organic
+                    C.state = 'ORGANIC';
+                }
+            }
+        }
+        else if (C.state === 'ORGANIC') {
+            // Chaotic Interference (Math-based Glitch - AGGRESSIVE)
+            C.targets.forEach((t, i) => {
+                const p = C.params[i];
+
+                // Construct a chaotic signal using interference of 3 sine waves
+                const time = now * p.speed + p.offset;
+                const s1 = Math.sin(time);
+                const s2 = Math.sin(time * 3.14); // Irrational
+                const s3 = Math.sin(time * 7.1);  // High freq
+
+                const signal = s1 + s2 + s3; // Range approx [-3, 3]
+
+                // High Threshold Logic:
+                // LOWERED THRESHOLD: > 0.5 means it's visible more often (approx 40% ON time)
+                if (signal > 0.5) {
+                    // ON: Breathe intensity based on signal strength
+                    C.targets[i] = p.base + (signal - 0.5) * 0.15;
+                } else {
+                    // OFF: Glitch out
+                    C.targets[i] = 0.0;
+                }
+            });
+        }
+    });
 
     // Safety: Render nothing if dimensions are not yet available to avoid divide-by-zero/NaN
     if (size.width === 0 || size.height === 0) return null;
@@ -215,6 +294,7 @@ const ElectricCablesContent = ({ inputs, output, activeIndex }: {
                     startPos={start}
                     endPos={outputPoint}
                     activeIndex={activeIndex}
+                    conductor={conductor}
                 />
             ))}
         </>
