@@ -40,56 +40,54 @@ export function AutomationNetwork({
     const div4Ref = useRef<HTMLDivElement>(null)
     const div5Ref = useRef<HTMLDivElement>(null)
     const div6Ref = useRef<HTMLDivElement>(null)
+    const div7Ref = useRef<HTMLDivElement>(null); // Right Icon
 
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     // NOTE: Div 7 was for user, but we'll focus on the brain (div6) as the target.
     // Actually the demo shows multiple inputs -> div6 (OpenAI) -> div7 (User).
     // I will keep the structure: 5 inputs -> Brain.
-    const [positions, setPositions] = useState<{ inputs: { x: number, y: number }[], output: { x: number, y: number } } | null>(null);
+    const [positions, setPositions] = useState<{ inputs: { x: number, y: number }[], output: { x: number, y: number }, finalOutput: { x: number, y: number } } | null>(null);
 
     useEffect(() => {
         const updatePositions = () => {
-            if (!containerRef.current || !div1Ref.current || !div6Ref.current) return;
+            if (
+                div1Ref.current &&
+                div2Ref.current &&
+                div3Ref.current &&
+                div4Ref.current &&
+                div5Ref.current &&
+                div6Ref.current &&
+                div7Ref.current &&
+                containerRef.current
+            ) {
+                const containerRect = containerRef.current.getBoundingClientRect();
+                const inputRefs = [div1Ref, div2Ref, div3Ref, div4Ref, div5Ref];
+                const inputRects = inputRefs.map((ref) => ref.current!.getBoundingClientRect());
+                const outputRect = div6Ref.current.getBoundingClientRect();
+                const finalOutputRect = div7Ref.current.getBoundingClientRect();
 
-            const containerRect = containerRef.current.getBoundingClientRect();
-            const inputRefs = [div1Ref, div2Ref, div3Ref, div4Ref, div5Ref];
-
-            const inputs = inputRefs.map(ref => {
-                if (!ref.current) return { x: 0, y: 0 };
-                const rect = ref.current.getBoundingClientRect();
-                return {
+                const getRelativeCenter = (rect: DOMRect) => ({
                     x: rect.left - containerRect.left + rect.width / 2,
-                    y: rect.top - containerRect.top + rect.height / 2
-                };
-            });
+                    y: rect.top - containerRect.top + rect.height / 2,
+                });
 
-            const outRect = div6Ref.current.getBoundingClientRect();
-            const output = {
-                x: outRect.left - containerRect.left + outRect.width / 2,
-                y: outRect.top - containerRect.top + outRect.height / 2
-            };
-
-            setPositions({ inputs, output });
+                setPositions({
+                    inputs: inputRects.map(getRelativeCenter),
+                    output: getRelativeCenter(outputRect),
+                    finalOutput: getRelativeCenter(finalOutputRect),
+                });
+            }
         };
 
-        if (!containerRef.current) return;
-
-        const observer = new ResizeObserver(() => {
-            window.requestAnimationFrame(updatePositions);
-        });
-
-        observer.observe(containerRef.current);
-
-        // Also listen to window resize as backup
-        window.addEventListener('resize', updatePositions);
-
-        // Initial update
         updatePositions();
+        window.addEventListener("resize", updatePositions);
+        const resizeObserver = new ResizeObserver(updatePositions);
+        if (containerRef.current) resizeObserver.observe(containerRef.current);
 
         return () => {
-            observer.disconnect();
-            window.removeEventListener('resize', updatePositions);
+            window.removeEventListener("resize", updatePositions);
+            resizeObserver.disconnect();
         };
     }, []);
 
@@ -105,7 +103,7 @@ export function AutomationNetwork({
             )}
             ref={containerRef}
         >
-            <div className="flex size-full max-w-lg flex-row items-stretch justify-between gap-10 pointer-events-none">
+            <div className="flex size-full max-w-4xl flex-row items-stretch justify-between gap-10 pointer-events-none">
                 <div className="flex flex-col justify-center gap-2 pointer-events-auto">
                     <Circle ref={div1Ref} onMouseEnter={() => setHoveredIndex(0)} onMouseLeave={() => setHoveredIndex(null)}>
                         <Icons.googleDrive />
@@ -128,6 +126,12 @@ export function AutomationNetwork({
                         <Icons.openai />
                     </Circle>
                 </div>
+                {/* Right Icon - Final Output */}
+                <div className="flex flex-col justify-center pointer-events-auto">
+                    <Circle ref={div7Ref} className="size-20 border-white/10 bg-white/5">
+                        <Icons.user className="text-white" />
+                    </Circle>
+                </div>
             </div>
 
             {/* THE 3D CABLES LAYER - MOVED TO BOTTOM (Overlay Order) */}
@@ -137,12 +141,13 @@ export function AutomationNetwork({
                         activeIndex={hoveredIndex}
                         inputs={positions.inputs}
                         output={positions.output}
+                        finalOutput={positions.finalOutput}
                     />
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
 
 const Icons = {
     notion: () => (

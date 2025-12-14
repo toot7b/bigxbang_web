@@ -197,9 +197,10 @@ const Cable = ({
 };
 
 // --- SCENE CONTENT ---
-const ElectricCablesContent = ({ inputs, output, activeIndex }: {
+const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
     inputs: { x: number, y: number }[],
     output: { x: number, y: number },
+    finalOutput?: { x: number, y: number },
     activeIndex: number | null
 }) => {
     const { viewport, size } = useThree();
@@ -272,39 +273,51 @@ const ElectricCablesContent = ({ inputs, output, activeIndex }: {
     if (size.width === 0 || size.height === 0) return null;
 
     // Map screen pixel (top-left) to Three.js world unit (center)
-    const mapPos = (pos: { x: number, y: number }) => {
+    // Map screen pixel (top-left) to Three.js world unit (center)
+    const toWorld = (pos: { x: number, y: number }) => {
+        // Ensure size is valid to avoid NaN
+        if (size.width === 0 || size.height === 0) return [0, 0, 0] as [number, number, number];
+
         // X: 0 -> -W/2, W -> +W/2
         const x = (pos.x / size.width) * viewport.width - (viewport.width / 2);
         // Y: 0 -> +H/2, H -> -H/2 (Inverted coords for DOM->3D)
         const y = -((pos.y / size.height) * viewport.height - (viewport.height / 2));
         return [x, y, 0] as [number, number, number];
     };
-
-    const inputPoints = useMemo(() => inputs.map(mapPos), [inputs, viewport, size]);
-    const outputPoint = useMemo(() => mapPos(output), [output, viewport, size]);
-
     return (
         <>
             <ambientLight intensity={0.5} />
 
-            {inputPoints.map((start, i) => (
+            {inputs.map((pos, i) => (
                 <Cable
                     key={i}
                     index={i}
-                    startPos={start}
-                    endPos={outputPoint}
+                    startPos={toWorld(pos) as [number, number, number]}
+                    endPos={toWorld(output) as [number, number, number]}
                     activeIndex={activeIndex}
                     conductor={conductor}
                 />
             ))}
+
+            {/* FINAL OUTPUT CABLE: Center -> Right */}
+            {finalOutput && (
+                <Cable
+                    key="final"
+                    index={inputs.length} // Last index in conductor
+                    startPos={toWorld(output) as [number, number, number]}
+                    endPos={toWorld(finalOutput) as [number, number, number]}
+                    activeIndex={null} // Independent
+                    conductor={conductor}
+                />
+            )}
         </>
     );
 };
 
-export const ElectricCables = ({ activeIndex, inputs, output }: { activeIndex: number | null, inputs: { x: number, y: number }[], output: { x: number, y: number } }) => {
+export const ElectricCables = ({ activeIndex, inputs, output, finalOutput }: { activeIndex: number | null, inputs: { x: number, y: number }[], output: { x: number, y: number }, finalOutput?: { x: number, y: number } }) => {
     return (
         <Canvas className="absolute inset-0 z-0 pointer-events-none" camera={{ position: [0, 0, 10], fov: 45 }}>
-            <ElectricCablesContent inputs={inputs} output={output} activeIndex={activeIndex} />
+            <ElectricCablesContent inputs={inputs} output={output} activeIndex={activeIndex} finalOutput={finalOutput} />
         </Canvas>
     );
 };
