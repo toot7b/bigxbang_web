@@ -1,8 +1,10 @@
+
 import React from "react";
 import { cn } from "@/lib/utils";
 import { TechScanner, ScannerState } from "./TechScanner";
 import { Safari } from "@/components/ui/safari";
 import { WebsiteBuildingAnimation } from "@/components/ui/WebsiteBuildingAnimation";
+import { AutomationNetwork } from "@/components/ui/AutomationNetwork";
 
 
 export interface ServiceCardProps {
@@ -69,7 +71,7 @@ export const ServiceCard = ({
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/5 to-transparent skew-x-12 opacity-50 pointer-events-none"></div>
 
                     {/* THE ASSETS (Holograms) */}
-                    <div className="w-[320px] h-[250px] md:w-[500px] md:h-[350px] relative flex items-center justify-center">
+                    <div className="w-full h-full relative flex items-center justify-center">
 
                         {id === 1 ? (
                             <div className="w-full h-auto relative group">
@@ -79,6 +81,10 @@ export const ServiceCard = ({
                                 >
                                     <WebsiteBuildingAnimation />
                                 </Safari>
+                            </div>
+                        ) : id === 2 ? (
+                            <div className="w-full h-full relative group">
+                                <AutomationNetwork />
                             </div>
                         ) : (
                             <div className="w-full h-full rounded-full border border-white/10 relative flex items-center justify-center">
@@ -134,9 +140,9 @@ export const ServiceCard = ({
                                     <div
                                         className="h-full rounded-full"
                                         style={{
-                                            width: `${stat.value}%`,
+                                            width: `${stat.value}% `,
                                             backgroundColor: color, // Keep bar color
-                                            boxShadow: `0 0 10px ${color}40`
+                                            boxShadow: `0 0 10px ${color} 40`
                                         }}
                                     ></div>
                                 </div>
