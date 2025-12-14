@@ -32,7 +32,7 @@ export const TimelineNode = ({ isActive, level, className }: TimelineNodeProps) 
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        let animationFrameId: number;
+        let animationFrameId: number = 0;
         let time = 0;
         let isRunning = false;
 

@@ -14,7 +14,7 @@ if (typeof window !== "undefined") {
 }
 
 interface UnifiedMethodVisualProps {
-    parentRef: React.RefObject<HTMLDivElement>;
+    parentRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export const UnifiedMethodVisual = ({ parentRef }: UnifiedMethodVisualProps) => {

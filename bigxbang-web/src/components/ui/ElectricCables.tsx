@@ -107,19 +107,14 @@ const SCANNER_FRAGMENT = `
 `;
 
 // --- ORCHESTRATION TYPES ---
-type ConductorState = 'IGNITION' | 'ORGANIC';
-
-interface CableParams {
-    speed: number;
-    offset: number;
-    base: number;
-}
+// ORCHESTRATION TYPES
+type ConductorState = 'ACCUMULATION' | 'DISCHARGE';
 
 interface Conductor {
     state: ConductorState;
     targets: number[];
     lastActionTime: number;
-    params: CableParams[];
+    params: any[];
 }
 
 const Cable = ({
@@ -146,10 +141,6 @@ const Cable = ({
     const dist = new THREE.Vector3(...startPos).distanceTo(new THREE.Vector3(...endPos));
     const isValid = dist > 1.0;
 
-    useEffect(() => {
-        // console.log(`Cable ${index}: Start: ${startPos}, End: ${endPos}`);
-    }, []);
-
     // GEOMETRY (Curve)
     const curve = useMemo(() => {
         if (!isValid) return null;
@@ -158,7 +149,6 @@ const Cable = ({
 
         // Apply Horizontal Offsets (Connect to 3 o'clock / 9 o'clock)
         if (startOffset > 0 || endOffset > 0) {
-            // Simply shift X to hit the ring edge
             start.x += startOffset;
             end.x -= endOffset;
         }
@@ -178,21 +168,11 @@ const Cable = ({
 
         const isHovered = activeIndex === index;
         const isSourceHovered = activeIndex !== null;
-
-        // READ TARGET FROM CONDUCTOR
         let target = conductor.current.targets[index] || 0;
+        if (isHovered) target = 2.0;
+        else if (isSourceHovered) target *= 0.3;
 
-        // Hover overrides everything
-        if (isHovered) {
-            target = 2.0; // Boost
-        } else if (isSourceHovered) {
-            // If another is hovered, dim this one
-            target *= 0.3;
-        }
-
-        // SMOOTH LERP
         const current = materialRef.current.uniforms.uIntensity.value;
-        // Snappy lerp (0.5) for glitch reaction (nearly instant)
         materialRef.current.uniforms.uIntensity.value = THREE.MathUtils.lerp(current, target, 0.5);
     });
 
@@ -220,6 +200,202 @@ const Cable = ({
 };
 
 // --- SCENE CONTENT ---
+
+// --- ENERGY NODE VISUAL (RING CHARGE & PROPAGATING SHOCK) ---
+// Center: Arcs meet -> Flare.
+// Right: Propagating Shockwave from Left to Right.
+const EnergyNode = ({
+    pos,
+    type,
+    conductor
+}: {
+    pos: [number, number, number],
+    type: 'CENTER' | 'RIGHT',
+    conductor: React.MutableRefObject<Conductor>
+}) => {
+    const meshRef = useRef<THREE.Mesh>(null);
+    const materialRef = useRef<THREE.ShaderMaterial>(null);
+
+    const NODE_VERTEX = `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `;
+
+    const NODE_FRAGMENT = `
+        uniform float uTime;
+        uniform float uProgress;    // 0 -> 1 
+        uniform float uIntensity;
+        uniform float uType;        // 0 = CENTER, 1 = RIGHT
+        uniform vec3 uColor;
+        varying vec2 vUv;
+
+        #define PI 3.14159265359
+
+        float hash(float n) { return fract(sin(n) * 43758.5453123); }
+        float noise(vec2 x) {
+            vec2 p = floor(x);
+            vec2 f = fract(x);
+            f = f * f * (3.0 - 2.0 * f);
+            float n = p.x + p.y * 57.0;
+            return mix(mix(hash(n + 0.0), hash(n + 1.0), f.x),
+                       mix(hash(n + 57.0), hash(n + 58.0), f.x), f.y);
+        }
+        float fbm(vec2 p) {
+            float f = 0.0;
+            f += 0.5000 * noise(p); p *= 2.02;
+            f += 0.2500 * noise(p); p *= 2.03;
+            f += 0.1250 * noise(p);
+            return f;
+        }
+
+        void main() {
+            vec2 center = vec2(0.5);
+            vec2 toCenter = vUv - center;
+            float dist = length(toCenter);
+            float angle = atan(toCenter.y, toCenter.x); // -PI..PI
+            
+            // --- RING BASE ---
+            float electricDistort = noise(vec2(angle * 4.0, uTime * 5.0)) * 0.02;
+            float ringRadius = 0.46 + electricDistort;
+            float ringDist = abs(dist - ringRadius);
+            float ring = 0.005 / max(ringDist, 0.001); 
+            
+            float alpha = 0.0;
+            vec3 finalColor = uColor;
+
+            if (uType < 0.5) { 
+                // --- CENTER: CHARGING ARCS ---
+                float p = 1.0 - (abs(angle) / PI); 
+                
+                if (p < uProgress) {
+                    float isTip = smoothstep(0.0, 0.1, p - (uProgress - 0.1));
+                    alpha = ring;
+                    finalColor += vec3(isTip * 3.0); 
+                    
+                    // Sparks trail
+                    float sparks = fbm(vUv * 10.0 - vec2(uTime * 2.0, 0.0));
+                    alpha += sparks * 0.2 * step(0.4, dist) * step(dist, 0.5);
+                }
+
+                // IMPACT AT CROSSING (Angle 0)
+                if (uProgress > 0.95) {
+                    float impactDist = distance(vUv, vec2(0.5 + 0.46, 0.5)); // 3 o'clock
+                    float shockwave = 1.0 - smoothstep(0.0, 0.15, impactDist);
+                    float flash = sin(uTime * 30.0) * 0.5 + 0.5;
+                    finalColor += vec3(1.0) * shockwave * flash * 3.0; // Lens Flare Intensity
+                    alpha += shockwave * flash;
+                }
+                
+            } else {
+                // --- RIGHT: PROPAGATING SHOCKWAVE ---
+                // No global ring by default, only the wave
+                alpha = ring * 0.3; // Dim base ring
+
+                // Wave Origin: Left Edge (Angle PI)
+                // We simulate a wave travelling from Left (0.0) to Right (1.0) in UV space
+                
+                float waveDist = distance(vUv, vec2(0.05, 0.5)); // Start at left edge
+                float wavePos = uProgress * 2.5; // Expands to cover circle
+                
+                // The Wave (Thin bright ring)
+                float wave = 1.0 - smoothstep(0.0, 0.1, abs(waveDist - wavePos));
+                
+                // Front of the wave is sharp
+                wave *= step(waveDist, wavePos); 
+                
+                // Intensity fade over distance
+                float waveIntensity = (1.0 - uProgress) * 4.0; 
+
+                alpha += wave * waveIntensity;
+                finalColor += vec3(1.0) * wave * waveIntensity; // White Hot Wave
+            }
+
+            // Global Mask
+            alpha *= smoothstep(0.5, 0.48, dist); 
+
+            gl_FragColor = vec4(finalColor, alpha);
+        }
+    `;
+
+    useFrame((state) => {
+        if (!materialRef.current) return;
+        const C = conductor.current;
+        const time = state.clock.elapsedTime;
+        materialRef.current.uniforms.uTime.value = time;
+
+        const CYCLE_DURATION = 4.0;
+        const BURST_DURATION = 0.5;
+        const CHARGE_DURATION = CYCLE_DURATION - BURST_DURATION;
+        const cycleTime = time % CYCLE_DURATION;
+
+        let targetProgress = 0;
+        let targetIntensity = 0.0;
+
+        const isCenter = type === 'CENTER';
+        materialRef.current.uniforms.uType.value = isCenter ? 0.0 : 1.0;
+
+        if (C.state === 'ACCUMULATION') {
+            const progress = cycleTime / CHARGE_DURATION;
+            if (isCenter) {
+                targetProgress = Math.pow(progress, 1.5);
+                targetIntensity = 1.0;
+            } else {
+                // Right: Off
+                targetProgress = 0.0;
+                targetIntensity = 0.0;
+            }
+        } else {
+            // DISCHARGE
+            const burstProgress = (cycleTime - CHARGE_DURATION) / BURST_DURATION;
+            if (isCenter) {
+                targetProgress = 1.0;
+                targetIntensity = 1.0 - burstProgress * 2.0;
+            } else {
+                // Right: PROPAGATING SHOCK
+                // Pass the burst progress directly to drive the wave
+                targetProgress = burstProgress;
+                targetIntensity = 1.0; // Handled in shader
+            }
+        }
+
+        const m = materialRef.current;
+        if (isCenter && C.state === 'ACCUMULATION') {
+            m.uniforms.uProgress.value = targetProgress;
+        } else if (!isCenter) {
+            // For Right, we want instant update for the wave, no smoothing lag
+            m.uniforms.uProgress.value = targetProgress;
+        } else {
+            m.uniforms.uProgress.value = THREE.MathUtils.lerp(m.uniforms.uProgress.value, targetProgress, 0.1);
+        }
+
+        m.uniforms.uIntensity.value = THREE.MathUtils.lerp(m.uniforms.uIntensity.value, targetIntensity, 0.1);
+    });
+
+    return (
+        <mesh ref={meshRef} position={pos}>
+            <planeGeometry args={[2.1, 2.1]} />
+            <shaderMaterial
+                ref={materialRef}
+                vertexShader={NODE_VERTEX}
+                fragmentShader={NODE_FRAGMENT}
+                transparent={true}
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                uniforms={{
+                    uTime: { value: 0 },
+                    uProgress: { value: 0 },
+                    uIntensity: { value: 0 },
+                    uType: { value: 0 },
+                    uColor: { value: new THREE.Color("#00A3FF") }
+                }}
+            />
+        </mesh>
+    );
+};
+
 const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
     inputs: { x: number, y: number }[],
     output: { x: number, y: number },
@@ -230,64 +406,64 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
 
     // ORCHESTRATOR STATE
     const conductor = useRef<Conductor>({
-        state: 'IGNITION',
-        targets: inputs.map(() => 0),
+        state: 'ACCUMULATION',
+        targets: inputs.map(() => 0).concat([0]), // +1 for final output
         lastActionTime: 0,
-        params: inputs.map(() => ({
-            speed: 1.0 + Math.random() * 2.0, // Faster chaotic speed
-            offset: Math.random() * 100,
-            base: 0.2 + Math.random() * 0.1   // Very gentle (0.2 - 0.3)
-        }))
+        params: []
     });
 
-    // CONDUCTOR LOGIC LOOP
+    // CONDUCTOR LOGIC LOOP (STATE MACHINE)
     useFrame((state) => {
-        const now = state.clock.elapsedTime;
+        const time = state.clock.elapsedTime;
+        const CYCLE_DURATION = 4.0;
+        const BURST_DURATION = 0.5; // Last 0.5s is burst
+        const CHARGE_DURATION = CYCLE_DURATION - BURST_DURATION;
+
+        const cycleTime = time % CYCLE_DURATION;
         const C = conductor.current;
+        const finalIndex = inputs.length;
 
         // Safety resize
-        if (C.targets.length !== inputs.length) {
-            C.targets = inputs.map(() => 0);
-            C.params = inputs.map(() => ({ speed: 1.5 + Math.random() * 2, offset: Math.random() * 100, base: 0.25 }));
+        if (C.targets.length !== finalIndex + 1) {
+            C.targets = inputs.map(() => 0).concat([0]);
         }
 
-        if (C.state === 'IGNITION') {
-            // Ignition: Light up one by one randomly
-            if (now - C.lastActionTime > 0.1) {
-                const unlit = C.targets.map((t, i) => t < 0.1 ? i : -1).filter(i => i !== -1);
+        // PHASE 1: ACCUMULATION (Inputs Charge, Output Wait)
+        if (cycleTime < CHARGE_DURATION) {
+            C.state = 'ACCUMULATION';
 
-                if (unlit.length > 0) {
-                    const pick = unlit[Math.floor(Math.random() * unlit.length)];
-                    C.targets[pick] = 1.0;
-                    C.lastActionTime = now;
-                } else {
-                    // All lit -> Switch to Organic
-                    C.state = 'ORGANIC';
-                }
+            // Progress 0 -> 1
+            const progress = cycleTime / CHARGE_DURATION;
+            // Exponential ramp for "charging" feel (starts slow, gets energetic)
+            const baseIntensity = Math.pow(progress, 3);
+
+            // Left Cables: Ramp UP with noise
+            for (let i = 0; i < finalIndex; i++) {
+                // Unique jitter per cable so they aren't robotic
+                const jitter = Math.random() * 0.3 * progress;
+                C.targets[i] = baseIntensity + jitter;
             }
+
+            // Right Cable: OFF
+            C.targets[finalIndex] = 0.0;
         }
-        else if (C.state === 'ORGANIC') {
-            // Chaotic Interference (Math-based Glitch - AGGRESSIVE)
-            C.targets.forEach((t, i) => {
-                const p = C.params[i];
+        // PHASE 2: DISCHARGE (Inputs Cut, Output Fires)
+        else {
+            C.state = 'DISCHARGE';
 
-                // Construct a chaotic signal using interference of 3 sine waves
-                const time = now * p.speed + p.offset;
-                const s1 = Math.sin(time);
-                const s2 = Math.sin(time * 3.14); // Irrational
-                const s3 = Math.sin(time * 7.1);  // High freq
+            // Left Cables: CUT
+            for (let i = 0; i < finalIndex; i++) {
+                C.targets[i] = 0.0;
+            }
 
-                const signal = s1 + s2 + s3; // Range approx [-3, 3]
+            // Right Cable: BURST
+            const burstTime = cycleTime - CHARGE_DURATION;
+            const burstProgress = burstTime / BURST_DURATION;
 
-                // LOWERED THRESHOLD: > 0.5 means it's visible more often (approx 40% ON time)
-                if (signal > 0.5) {
-                    // ON: Breathe intensity based on signal strength
-                    C.targets[i] = p.base + (signal - 0.5) * 0.15;
-                } else {
-                    // OFF: Glitch out
-                    C.targets[i] = 0.0;
-                }
-            });
+            // Spike to 3.0 instantly, then rapid decay
+            // Using pow for sharp fallback
+            const dischargeIntensity = Math.pow(1.0 - burstProgress, 2) * 4.0;
+            C.targets[finalIndex] = dischargeIntensity;
         }
     });
 
@@ -343,6 +519,13 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
                     endOffset={toUnits(36)}
                 />
             )}
+
+            {/* VISUALS: Energy Nodes */}
+            <EnergyNode pos={toWorld(output) as [number, number, number]} type="CENTER" conductor={conductor} />
+            {finalOutput && (
+                <EnergyNode pos={toWorld(finalOutput) as [number, number, number]} type="RIGHT" conductor={conductor} />
+            )}
+
         </group>
     );
 };

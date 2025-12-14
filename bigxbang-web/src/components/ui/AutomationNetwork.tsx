@@ -103,7 +103,19 @@ export function AutomationNetwork({
             )}
             ref={containerRef}
         >
-            <div className="grid grid-cols-3 items-center w-full max-w-4xl gap-10 pointer-events-none">
+            {/* THE 3D CABLES LAYER - MOVED TO TOP (Background Order) */}
+            {positions && (
+                <div className="absolute inset-0 pointer-events-none">
+                    <ElectricCables
+                        activeIndex={hoveredIndex}
+                        inputs={positions.inputs}
+                        output={positions.output}
+                        finalOutput={positions.finalOutput}
+                    />
+                </div>
+            )}
+
+            <div className="relative z-10 grid grid-cols-3 items-center w-full max-w-4xl gap-10 pointer-events-none">
                 {/* Left Icon - Inputs */}
                 <div className="flex flex-col justify-center gap-2 pointer-events-auto justify-self-start">
                     <Circle ref={div1Ref} onMouseEnter={() => setHoveredIndex(0)} onMouseLeave={() => setHoveredIndex(null)}>
@@ -138,17 +150,7 @@ export function AutomationNetwork({
                 </div>
             </div>
 
-            {/* THE 3D CABLES LAYER - MOVED TO BOTTOM (Overlay Order) */}
-            {positions && (
-                <div className="absolute inset-0 z-10 pointer-events-none">
-                    <ElectricCables
-                        activeIndex={hoveredIndex}
-                        inputs={positions.inputs}
-                        output={positions.output}
-                        finalOutput={positions.finalOutput}
-                    />
-                </div>
-            )}
+
         </div>
     );
 };
@@ -500,7 +502,7 @@ const Icons = {
             />
         </svg>
     ),
-    user: () => (
+    user: ({ className }: { className?: string }) => (
         <svg
             width="24"
             height="24"
@@ -509,7 +511,7 @@ const Icons = {
             stroke="#000000"
             strokeWidth="2"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-full p-2 stroke-white"
+            className={cn("w-full h-full p-2 stroke-white", className)}
         >
             <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
