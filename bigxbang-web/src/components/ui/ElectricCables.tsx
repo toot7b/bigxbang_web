@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo, useState } from "react";
+import React, { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { PerspectiveCamera, Line } from "@react-three/drei";
@@ -127,28 +127,49 @@ const Cable = ({
     endPos,
     index,
     activeIndex,
-    conductor
+    conductor,
+    startOffset = 0,
+    endOffset = 0
 }: {
     startPos: [number, number, number],
     endPos: [number, number, number],
     index: number,
     activeIndex: number | null,
-    conductor: React.MutableRefObject<Conductor>
+    conductor: React.MutableRefObject<Conductor>,
+    startOffset?: number,
+    endOffset?: number
 }) => {
     const meshRef = useRef<THREE.Mesh>(null);
     const materialRef = useRef<THREE.ShaderMaterial>(null);
 
+    // SAFETY: If start/end are too close, don't render
+    const dist = new THREE.Vector3(...startPos).distanceTo(new THREE.Vector3(...endPos));
+    const isValid = dist > 1.0;
+
+    useEffect(() => {
+        // console.log(`Cable ${index}: Start: ${startPos}, End: ${endPos}`);
+    }, []);
+
     // GEOMETRY (Curve)
     const curve = useMemo(() => {
+        if (!isValid) return null;
         const start = new THREE.Vector3(...startPos);
         const end = new THREE.Vector3(...endPos);
+
+        // Apply Horizontal Offsets (Connect to 3 o'clock / 9 o'clock)
+        if (startOffset > 0 || endOffset > 0) {
+            // Simply shift X to hit the ring edge
+            start.x += startOffset;
+            end.x -= endOffset;
+        }
+
         const rangeX = end.x - start.x;
         const cp1 = new THREE.Vector3(start.x + rangeX * 0.3, start.y, 0);
         const funnelX = start.x + rangeX * 0.7;
         const funnelY = end.y + (start.y - end.y) * 0.1;
         const cp2 = new THREE.Vector3(funnelX, funnelY, 0);
         return new THREE.CatmullRomCurve3([start, cp1, cp2, end]);
-    }, [startPos, endPos]);
+    }, [startPos, endPos, isValid, startOffset, endOffset]);
 
     useFrame((state) => {
         if (!materialRef.current) return;
@@ -174,6 +195,8 @@ const Cable = ({
         // Snappy lerp (0.5) for glitch reaction (nearly instant)
         materialRef.current.uniforms.uIntensity.value = THREE.MathUtils.lerp(current, target, 0.5);
     });
+
+    if (!isValid || !curve) return null;
 
     return (
         <mesh ref={meshRef}>
@@ -256,7 +279,6 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
 
                 const signal = s1 + s2 + s3; // Range approx [-3, 3]
 
-                // High Threshold Logic:
                 // LOWERED THRESHOLD: > 0.5 means it's visible more often (approx 40% ON time)
                 if (signal > 0.5) {
                     // ON: Breathe intensity based on signal strength
@@ -273,7 +295,6 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
     if (size.width === 0 || size.height === 0) return null;
 
     // Map screen pixel (top-left) to Three.js world unit (center)
-    // Map screen pixel (top-left) to Three.js world unit (center)
     const toWorld = (pos: { x: number, y: number }) => {
         // Ensure size is valid to avoid NaN
         if (size.width === 0 || size.height === 0) return [0, 0, 0] as [number, number, number];
@@ -284,8 +305,12 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
         const y = -((pos.y / size.height) * viewport.height - (viewport.height / 2));
         return [x, y, 0] as [number, number, number];
     };
+
+    // Helper to convert pixels to world units
+    const toUnits = (pixels: number) => (pixels / size.width) * viewport.width;
+
     return (
-        <>
+        <group>
             <ambientLight intensity={0.5} />
 
             {inputs.map((pos, i) => (
@@ -296,6 +321,10 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
                     endPos={toWorld(output) as [number, number, number]}
                     activeIndex={activeIndex}
                     conductor={conductor}
+                    // Inputs: size-16 (64px) -> Radius 32. Use 28 for overlap.
+                    // Center: size-20 (80px) -> Radius 40. Use 36 for overlap.
+                    startOffset={toUnits(28)}
+                    endOffset={toUnits(36)}
                 />
             ))}
 
@@ -308,9 +337,13 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
                     endPos={toWorld(finalOutput) as [number, number, number]}
                     activeIndex={null} // Independent
                     conductor={conductor}
+                    // Center: size-20 (80px) -> Radius 40. Use 36 for overlap.
+                    // Right: size-20 (80px) -> Radius 40. Use 36 for overlap.
+                    startOffset={toUnits(36)}
+                    endOffset={toUnits(36)}
                 />
             )}
-        </>
+        </group>
     );
 };
 

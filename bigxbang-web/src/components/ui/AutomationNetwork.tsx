@@ -103,8 +103,9 @@ export function AutomationNetwork({
             )}
             ref={containerRef}
         >
-            <div className="flex size-full max-w-4xl flex-row items-stretch justify-between gap-10 pointer-events-none">
-                <div className="flex flex-col justify-center gap-2 pointer-events-auto">
+            <div className="grid grid-cols-3 items-center w-full max-w-4xl gap-10 pointer-events-none">
+                {/* Left Icon - Inputs */}
+                <div className="flex flex-col justify-center gap-2 pointer-events-auto justify-self-start">
                     <Circle ref={div1Ref} onMouseEnter={() => setHoveredIndex(0)} onMouseLeave={() => setHoveredIndex(null)}>
                         <Icons.googleDrive />
                     </Circle>
@@ -121,13 +122,16 @@ export function AutomationNetwork({
                         <Icons.notion />
                     </Circle>
                 </div>
-                <div className="flex flex-col justify-center pointer-events-auto">
+
+                {/* Center Icon - OpenAI */}
+                <div className="flex flex-col justify-center pointer-events-auto justify-self-center">
                     <Circle ref={div6Ref} className="size-20 border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_50px_rgba(48,110,232,0.4)]">
                         <Icons.openai />
                     </Circle>
                 </div>
+
                 {/* Right Icon - Final Output */}
-                <div className="flex flex-col justify-center pointer-events-auto">
+                <div className="flex flex-col justify-center pointer-events-auto justify-self-end">
                     <Circle ref={div7Ref} className="size-20 border-white/10 bg-white/5">
                         <Icons.user className="text-white" />
                     </Circle>
