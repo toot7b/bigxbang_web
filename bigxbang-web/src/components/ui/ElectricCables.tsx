@@ -19,11 +19,28 @@ const SCANNER_VERTEX = `
     varying vec2 vUv;
     varying vec3 vPos;
     uniform float uTime;
-    
+    uniform float uInstability; // Need this here for vertex displacement
+
     void main() {
         vUv = uv;
         vPos = position;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        
+        vec3 pos = position;
+        
+        // VERTEX DISPLACEMENT (Physical Wobble)
+        if (uInstability > 0.0) {
+            // Large snake-like movement
+            float shake = sin(uv.x * 20.0 + uTime * 30.0) * 0.05 * uInstability;
+            // High freq jitter
+            float jitter = sin(uv.x * 100.0 + uTime * 100.0) * 0.02 * uInstability;
+            
+            // Displace along Normal (expanding/contracting) or just Y/Z?
+            // Since it's a tube, simple Y/Z offset works best to look like "whipping"
+            pos.y += shake + jitter;
+            pos.z += shake; 
+        }
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
     }
 `;
 
@@ -37,6 +54,7 @@ const SCANNER_FRAGMENT = `
 
     uniform float uTime;
     uniform float uIntensity; 
+    uniform float uInstability; // 0.0 -> 1.0 (Chaotic Shake)
     uniform vec3 uColor;
     varying vec2 vUv;
 
@@ -69,12 +87,28 @@ const SCANNER_FRAGMENT = `
         float jaggedness = 15.0; 
         if (uIntensity > 0.5) jaggedness = 30.0; 
 
-        // Distortion using FBM
-        // We scroll noise along X
-        float distortion = fbm(vec2(vUv.x * jaggedness - t * 1.5, t * 1.2)); 
+        // Apply Instability:
+        // FIX: High frequency (80.0) looked like bad texture.
+        // We want VIBRATION (Low freq, high speed).
+        // Keep jaggedness low (10-20), but make it move crazy fast.
         
-        // Map distortion to Y offset (-0.5 to 0.5 coverage)
-        float path = (distortion - 0.5) * 0.8; 
+        // Speed: 
+        float speed = 1.2;
+        if (uInstability > 0.5) speed = 20.0; // Violent shaking speed
+        
+        float tNoise = t * speed;
+
+        // Amplitude:
+        // Normal: 0.8 width. Unstable: 2.5 width (filling the tube)
+        float amp = 0.8 + (uInstability * 2.0);
+        
+        float distortion = fbm(vec2(vUv.x * jaggedness - tNoise, tNoise * 0.5)); 
+        float path = (distortion - 0.5) * amp; 
+
+        // Add a second layer of "Large Wave" (Sine) for physical wobble if unstable
+        if (uInstability > 0.0) {
+            path += sin(vUv.x * 10.0 + uTime * 50.0) * 0.1 * uInstability;
+        } 
         
         // Distance from center line (modified by path)
         float dist = abs(vUv.y - 0.5 - path);
@@ -175,6 +209,11 @@ const Cable = ({
 
         const current = materialRef.current.uniforms.uIntensity.value;
         materialRef.current.uniforms.uIntensity.value = THREE.MathUtils.lerp(current, target, 0.5);
+
+        // Instability: 1.0 if hovered, 0.0 otherwise
+        const targetInstability = isHovered ? 1.0 : 0.0;
+        const currentInstability = materialRef.current.uniforms.uInstability.value;
+        materialRef.current.uniforms.uInstability.value = THREE.MathUtils.lerp(currentInstability, targetInstability, 0.1);
     });
 
     if (!isValid || !curve) return null;
@@ -193,6 +232,7 @@ const Cable = ({
                 uniforms={{
                     uTime: { value: 0 },
                     uIntensity: { value: 0 },
+                    uInstability: { value: 0 },
                     uColor: { value: new THREE.Color("#00A3FF") }
                 }}
             />
@@ -208,11 +248,13 @@ const Cable = ({
 const EnergyNode = ({
     pos,
     type,
-    conductor
+    conductor,
+    activeIndex // Need this to know if we should shake
 }: {
     pos: [number, number, number],
     type: 'CENTER' | 'RIGHT',
-    conductor: React.MutableRefObject<Conductor>
+    conductor: React.MutableRefObject<Conductor>,
+    activeIndex: number | null
 }) => {
     const meshRef = useRef<THREE.Mesh>(null);
     const materialRef = useRef<THREE.ShaderMaterial>(null);
@@ -229,6 +271,7 @@ const EnergyNode = ({
         uniform float uTime;
         uniform float uProgress;    // 0 -> 1 
         uniform float uIntensity;
+        uniform float uInstability; // NEW
         uniform float uType;        // 0 = CENTER, 1 = RIGHT
         uniform vec3 uColor;
         varying vec2 vUv;
@@ -259,10 +302,25 @@ const EnergyNode = ({
             float angle = atan(toCenter.y, toCenter.x); // -PI..PI
             
             // --- RING BASE ---
-            float electricDistort = noise(vec2(angle * 4.0, uTime * 5.0)) * 0.02;
-            float ringRadius = 0.46 + electricDistort;
+            // INSTABILITY:
+            // Old was too high freq (invisible blur).
+            // New is "Wobbly Tire" effect.
+            
+            float shakeSpeed = mix(5.0, 30.0, uInstability);
+            float shakeAmp = mix(0.02, 0.15, uInstability); // Large oval distortion
+            
+            // Simple sine/noise mix for wobble
+            float wobble = sin(angle * 3.0 + uTime * shakeSpeed) * shakeAmp;
+            
+            // Add slight noise for grit
+            float grit = noise(vec2(angle * 10.0, uTime * 10.0)) * 0.05 * uInstability;
+
+            float ringRadius = 0.46 + wobble + grit;
             float ringDist = abs(dist - ringRadius);
-            float ring = 0.005 / max(ringDist, 0.001); 
+            
+            // Thickness boost
+            float thickness = 0.005 + (uInstability * 0.02); 
+            float ring = thickness / max(ringDist, 0.01); 
             
             float alpha = 0.0;
             vec3 finalColor = uColor;
@@ -373,6 +431,13 @@ const EnergyNode = ({
         }
 
         m.uniforms.uIntensity.value = THREE.MathUtils.lerp(m.uniforms.uIntensity.value, targetIntensity, 0.1);
+
+        // Center Instability: High if ANY cable is hovered (activeIndex !== null)
+        const isHovered = activeIndex !== null;
+        let targetInstability = 0.0;
+        if (isCenter && isHovered) targetInstability = 1.0;
+
+        m.uniforms.uInstability.value = THREE.MathUtils.lerp(m.uniforms.uInstability.value, targetInstability, 0.1);
     });
 
     return (
@@ -389,6 +454,7 @@ const EnergyNode = ({
                     uTime: { value: 0 },
                     uProgress: { value: 0 },
                     uIntensity: { value: 0 },
+                    uInstability: { value: 0 },
                     uType: { value: 0 },
                     uColor: { value: new THREE.Color("#00A3FF") }
                 }}
@@ -633,9 +699,9 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
             )}
 
             {/* VISUALS: Energy Nodes */}
-            <EnergyNode pos={toWorld(output) as [number, number, number]} type="CENTER" conductor={conductor} />
+            <EnergyNode pos={toWorld(output) as [number, number, number]} type="CENTER" conductor={conductor} activeIndex={activeIndex} />
             {finalOutput && (
-                <EnergyNode pos={toWorld(finalOutput) as [number, number, number]} type="RIGHT" conductor={conductor} />
+                <EnergyNode pos={toWorld(finalOutput) as [number, number, number]} type="RIGHT" conductor={conductor} activeIndex={activeIndex} />
             )}
 
             {/* SHOCKWAVE LAYER: Separate component for clean expansion */}
