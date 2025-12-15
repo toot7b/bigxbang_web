@@ -114,6 +114,7 @@ interface Conductor {
     state: ConductorState;
     targets: number[];
     lastActionTime: number;
+    // simulatedTime removed - using standard clock
     params: any[];
 }
 
@@ -365,10 +366,10 @@ const EnergyNode = ({
         if (isCenter && C.state === 'ACCUMULATION') {
             m.uniforms.uProgress.value = targetProgress;
         } else if (!isCenter) {
-            // For Right, we want instant update for the wave, no smoothing lag
+            // For Right node, we just keep it simple logic now, shockwave is handled separately
             m.uniforms.uProgress.value = targetProgress;
         } else {
-            m.uniforms.uProgress.value = THREE.MathUtils.lerp(m.uniforms.uProgress.value, targetProgress, 0.1);
+            m.uniforms.uProgress.value = targetProgress;
         }
 
         m.uniforms.uIntensity.value = THREE.MathUtils.lerp(m.uniforms.uIntensity.value, targetIntensity, 0.1);
@@ -396,6 +397,114 @@ const EnergyNode = ({
     );
 };
 
+const SHOCKWAVE_FRAGMENT = `
+    uniform float uTime;
+    uniform float uLife; // 0 (start) -> 1 (end)
+    uniform vec3 uColor;
+    varying vec2 vUv;
+
+    #define PI 3.14159265359
+
+    float hash(float n) { return fract(sin(n) * 43758.5453123); }
+    float noise(vec2 x) {
+        vec2 p = floor(x);
+        vec2 f = fract(x);
+        f = f * f * (3.0 - 2.0 * f);
+        float n = p.x + p.y * 57.0;
+        return mix(mix(hash(n + 0.0), hash(n + 1.0), f.x),
+                   mix(hash(n + 57.0), hash(n + 58.0), f.x), f.y);
+    }
+
+    void main() {
+        vec2 center = vec2(0.5);
+        float dist = distance(vUv, center);
+        float angle = atan(vUv.y - 0.5, vUv.x - 0.5);
+
+        float radius = uLife * 0.5; 
+        float ringWidth = 0.05 * (1.0 - uLife); 
+        float ring = 1.0 - smoothstep(0.0, ringWidth, abs(dist - radius));
+        
+        float distort = noise(vec2(angle * 4.0, uTime * 3.0)) * 0.1 * (1.0 - uLife);
+        ring *= 1.0 + distort;
+        
+        ring *= smoothstep(0.05, 0.08, dist);
+        
+        float opacity = (1.0 - uLife); 
+        opacity = pow(opacity, 1.5); 
+        
+        vec3 color = vec3(1.0); 
+        color = mix(color, uColor, 0.5);
+
+        gl_FragColor = vec4(color, ring * opacity * 2.0); 
+    }
+`;
+
+const ShockwaveLayer = ({
+    pos,
+    conductor,
+    active
+}: {
+    pos: [number, number, number],
+    conductor: React.MutableRefObject<Conductor>,
+    active: boolean
+}) => {
+    const materialRef = useRef<THREE.ShaderMaterial>(null);
+    const waveLife = useRef(-1);
+    const lastFiredTime = useRef(-1); // Start at -1 to allow firing on cycle 0
+
+    useFrame((state, delta) => {
+        if (!materialRef.current) return;
+        // Time sync
+        const time = state.clock.elapsedTime;
+        materialRef.current.uniforms.uTime.value = time;
+
+        // PURE TIMING LOGIC (Avoids Race Condition with Conductor State)
+        const CYCLE_DURATION = 4.0;
+        const PRE_TRIGGER_OFFSET = 0.0; // Reverted to 0.0 (User said 0.1 was too early)
+        const TARGET_TIME = 3.5; // Official Discharge Start (4.0 - 0.5)
+
+        const cycleTime = time % CYCLE_DURATION;
+        const isTriggerWindow = cycleTime > (TARGET_TIME - PRE_TRIGGER_OFFSET);
+
+        // We use the time floored by cycle duration as ID
+        const cycleId = Math.floor(time / CYCLE_DURATION);
+
+        // Trigger if: Active AND Inside Trigger Window AND Not fired yet for this cycle
+        if (active && isTriggerWindow && waveLife.current === -1 && lastFiredTime.current !== cycleId) {
+            // START IMMEDIATE:
+            waveLife.current = 0.1;
+            lastFiredTime.current = cycleId;
+        }
+
+        if (waveLife.current >= 0) {
+            waveLife.current += delta * 3.0; // Reverted to standard speed (3.0) as requested
+            if (waveLife.current >= 1.0) waveLife.current = -1;
+        }
+
+        const uLife = waveLife.current < 0 ? 1.0 : waveLife.current;
+        materialRef.current.uniforms.uLife.value = uLife;
+    });
+
+    return (
+        <mesh position={pos}>
+            <planeGeometry args={[10.0, 10.0]} />
+            <shaderMaterial
+                ref={materialRef}
+                vertexShader={SCANNER_VERTEX}
+                fragmentShader={SHOCKWAVE_FRAGMENT}
+                transparent={true}
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                uniforms={{
+                    uTime: { value: 0 },
+                    uLife: { value: 1.0 },
+                    uColor: { value: new THREE.Color("#00A3FF") }
+                }}
+            />
+        </mesh>
+    );
+};
+
 const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
     inputs: { x: number, y: number }[],
     output: { x: number, y: number },
@@ -414,13 +523,16 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
 
     // CONDUCTOR LOGIC LOOP (STATE MACHINE)
     useFrame((state) => {
+        const C = conductor.current;
+
+        // Standard Time (No Overclock Speed)
         const time = state.clock.elapsedTime;
+
         const CYCLE_DURATION = 4.0;
         const BURST_DURATION = 0.5; // Last 0.5s is burst
         const CHARGE_DURATION = CYCLE_DURATION - BURST_DURATION;
 
         const cycleTime = time % CYCLE_DURATION;
-        const C = conductor.current;
         const finalIndex = inputs.length;
 
         // Safety resize
@@ -524,6 +636,15 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
             <EnergyNode pos={toWorld(output) as [number, number, number]} type="CENTER" conductor={conductor} />
             {finalOutput && (
                 <EnergyNode pos={toWorld(finalOutput) as [number, number, number]} type="RIGHT" conductor={conductor} />
+            )}
+
+            {/* SHOCKWAVE LAYER: Separate component for clean expansion */}
+            {finalOutput && (
+                <ShockwaveLayer
+                    pos={toWorld(finalOutput) as [number, number, number]}
+                    conductor={conductor}
+                    active={activeIndex !== null} // Only active if Hovering (Overclock)
+                />
             )}
 
         </group>
