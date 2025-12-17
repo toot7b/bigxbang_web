@@ -109,3 +109,19 @@ body {
 .animate-spotlight {
   animation: spotlight 2s ease .75s 1 forwards;
 }
+
+@keyframes guide-glow-v2 {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(48, 110, 232, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 40px 10px rgba(48, 110, 232, 0.7);
+  }
+}
+
+.animate-guide-glow-v2 {
+  animation: guide-glow-v2 4s ease-in-out infinite;
+}

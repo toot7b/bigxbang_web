@@ -25,7 +25,7 @@ const Circle = forwardRef<
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             className={cn(
-                "border-white/10 z-10 flex size-12 items-center justify-center rounded-full border-2 bg-black/40 p-3 shadow-[0_0_20px_-12px_rgba(255,255,255,0.8)] backdrop-blur-md transition-transform duration-300 hover:scale-110 cursor-pointer", // Adapted styles for dark mode
+                "border-white/20 z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white/5 p-3 shadow-[0_0_15px_rgba(255,255,255,0.15)] backdrop-blur-md transition-transform duration-300 hover:scale-110 cursor-pointer", // Adapted styles for dark mode
                 className
             )}
         >
@@ -51,6 +51,7 @@ export function AutomationNetwork({
     const div7Ref = useRef<HTMLDivElement>(null); // Right Icon
 
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const [guideStep, setGuideStep] = useState<number>(0); // 0 = first icon, 1 = second, etc. 5 = done.
 
     // NOTE: Div 7 was for user, but we'll focus on the brain (div6) as the target.
     // Actually the demo shows multiple inputs -> div6 (OpenAI) -> div7 (User).
@@ -132,35 +133,118 @@ export function AutomationNetwork({
 
             <div className="relative z-10 grid grid-cols-3 items-center w-full max-w-4xl gap-10 pointer-events-none">
                 {/* Left Icon - Inputs */}
-                <div className="flex flex-col justify-center gap-2 pointer-events-auto justify-self-start">
-                    <Circle ref={div1Ref} onMouseEnter={() => setHoveredIndex(0)} onMouseLeave={() => setHoveredIndex(null)}>
+                <div className="flex flex-col justify-center gap-10 pointer-events-auto justify-self-start">
+                    <Circle
+                        ref={div1Ref}
+                        className={cn(guideStep === 0 && "animate-guide-glow-v2")}
+                        onMouseEnter={() => {
+                            setHoveredIndex(0);
+                            if (guideStep === 0) setGuideStep(1);
+                        }}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                    >
                         <IconAsset2 />
+                        <div className={cn("absolute top-full mt-2 left-1/2 -translate-x-1/2 transition-opacity duration-300 pointer-events-none", hoveredIndex === 0 ? "opacity-100" : "opacity-0")}>
+                            <span className="text-white/60 text-[10px] font-mono tracking-[0.2em] uppercase text-center whitespace-nowrap block">Cloud</span>
+                        </div>
                     </Circle>
-                    <Circle ref={div2Ref} onMouseEnter={() => setHoveredIndex(1)} onMouseLeave={() => setHoveredIndex(null)}>
+                    <Circle
+                        ref={div2Ref}
+                        className={cn(guideStep === 1 && "animate-guide-glow-v2")}
+                        onMouseEnter={() => {
+                            setHoveredIndex(1);
+                            if (guideStep === 1) setGuideStep(2);
+                        }}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                    >
                         <IconAsset3 />
+                        <div className={cn("absolute top-full mt-2 left-1/2 -translate-x-1/2 transition-opacity duration-300 pointer-events-none", hoveredIndex === 1 ? "opacity-100" : "opacity-0")}>
+                            <span className="text-white/60 text-[10px] font-mono tracking-[0.2em] uppercase text-center whitespace-nowrap block">Data</span>
+                        </div>
                     </Circle>
-                    <Circle ref={div3Ref} onMouseEnter={() => setHoveredIndex(2)} onMouseLeave={() => setHoveredIndex(null)}>
+                    <Circle
+                        ref={div3Ref}
+                        className={cn(guideStep === 2 && "animate-guide-glow-v2")}
+                        onMouseEnter={() => {
+                            setHoveredIndex(2);
+                            if (guideStep === 2) setGuideStep(3);
+                        }}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                    >
                         <IconAsset5 />
+                        <div className={cn("absolute top-full mt-2 left-1/2 -translate-x-1/2 transition-opacity duration-300 pointer-events-none", hoveredIndex === 2 ? "opacity-100" : "opacity-0")}>
+                            <span className="text-white/60 text-[10px] font-mono tracking-[0.2em] uppercase text-center whitespace-nowrap block">Messages</span>
+                        </div>
                     </Circle>
-                    <Circle ref={div4Ref} onMouseEnter={() => setHoveredIndex(3)} onMouseLeave={() => setHoveredIndex(null)}>
+                    <Circle
+                        ref={div4Ref}
+                        className={cn(guideStep === 3 && "animate-guide-glow-v2")}
+                        onMouseEnter={() => {
+                            setHoveredIndex(3);
+                            if (guideStep === 3) setGuideStep(4);
+                        }}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                    >
                         <IconAsset6 />
+                        <div className={cn("absolute top-full mt-2 left-1/2 -translate-x-1/2 transition-opacity duration-300 pointer-events-none", hoveredIndex === 3 ? "opacity-100" : "opacity-0")}>
+                            <span className="text-white/60 text-[10px] font-mono tracking-[0.2em] uppercase text-center whitespace-nowrap block">Contacts</span>
+                        </div>
                     </Circle>
-                    <Circle ref={div5Ref} onMouseEnter={() => setHoveredIndex(4)} onMouseLeave={() => setHoveredIndex(null)}>
+                    <Circle
+                        ref={div5Ref}
+                        className={cn(guideStep === 4 && "animate-guide-glow-v2")}
+                        onMouseEnter={() => {
+                            setHoveredIndex(4);
+                            if (guideStep === 4) setGuideStep(5);
+                        }}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                    >
                         <IconAsset4 />
+                        <div className={cn("absolute top-full mt-2 left-1/2 -translate-x-1/2 transition-opacity duration-300 pointer-events-none", hoveredIndex === 4 ? "opacity-100" : "opacity-0")}>
+                            <span className="text-white/60 text-[10px] font-mono tracking-[0.2em] uppercase text-center whitespace-nowrap block">Projets</span>
+                        </div>
                     </Circle>
                 </div>
 
                 {/* Center Icon - OpenAI */}
                 <div className="flex flex-col justify-center pointer-events-auto justify-self-center">
-                    <Circle ref={div6Ref} className="size-20 border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_50px_rgba(48,110,232,0.4)]">
+                    <Circle
+                        ref={div6Ref}
+                        className={cn(
+                            "size-20 border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_50px_rgba(48,110,232,0.4)]",
+                            guideStep === 5 && "animate-guide-glow-v2"
+                        )}
+                        onMouseEnter={() => {
+                            setHoveredIndex(5);
+                            if (guideStep === 5) setGuideStep(6);
+                        }}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                    >
                         <Logo className="w-full h-full p-2 text-white fill-white" />
+                        <div className={cn("absolute top-full mt-4 left-1/2 -translate-x-1/2 transition-opacity duration-300 pointer-events-none", hoveredIndex === 5 ? "opacity-100" : "opacity-0")}>
+                            <span className="text-white/60 text-[10px] font-mono tracking-[0.2em] uppercase text-center whitespace-nowrap block">Notre Solution</span>
+                        </div>
                     </Circle>
                 </div>
 
                 {/* Right Icon - Final Output */}
                 <div className="flex flex-col justify-center pointer-events-auto justify-self-end">
-                    <Circle ref={div7Ref} className="size-20 border-white/10 bg-white/5">
+                    <Circle
+                        ref={div7Ref}
+                        className={cn(
+                            "size-20 border-white/20 bg-white/5 shadow-[0_0_15px_rgba(255,255,255,0.15)]",
+                            guideStep === 6 && "animate-guide-glow-v2"
+                        )}
+                        onMouseEnter={() => {
+                            setHoveredIndex(6);
+                            if (guideStep === 6) setGuideStep(7);
+                        }}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                    >
                         <Icons.user className="text-white" />
+                        <div className={cn("absolute top-full mt-4 left-1/2 -translate-x-1/2 transition-opacity duration-300 pointer-events-none", hoveredIndex === 6 ? "opacity-100" : "opacity-0")}>
+                            <span className="text-white/60 text-[10px] font-mono tracking-[0.2em] uppercase text-center whitespace-nowrap block">Votre Système</span>
+                        </div>
                     </Circle>
                 </div>
             </div>

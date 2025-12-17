@@ -249,12 +249,14 @@ const EnergyNode = ({
     pos,
     type,
     conductor,
-    activeIndex // Need this to know if we should shake
+    activeIndex, // Need this to know if we should shake
+    size // NEW: Dynamic Size
 }: {
     pos: [number, number, number],
     type: 'CENTER' | 'RIGHT',
     conductor: React.MutableRefObject<Conductor>,
-    activeIndex: number | null
+    activeIndex: number | null,
+    size: number
 }) => {
     const meshRef = useRef<THREE.Mesh>(null);
     const materialRef = useRef<THREE.ShaderMaterial>(null);
@@ -442,7 +444,7 @@ const EnergyNode = ({
 
     return (
         <mesh ref={meshRef} position={pos}>
-            <planeGeometry args={[2.1, 2.1]} />
+            <planeGeometry args={[size, size]} />
             <shaderMaterial
                 ref={materialRef}
                 vertexShader={NODE_VERTEX}
@@ -663,6 +665,14 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
     // Helper to convert pixels to world units
     const toUnits = (pixels: number) => (pixels / size.width) * viewport.width;
 
+    // DYNAMIC SIZING: Use fixed Pixel Targets
+    // Icon Size = 80px (size-20)
+    // Ring Logic: Shader draws at radius 0.46 (92% of size).
+    // Target: We want Ring Diameter ≈ 81px (just outside 80px).
+    // Calc: 81 / 0.92 ≈ 88px Geometry Size.
+    // toUnits(88) = World Size for tight fit.
+    const energyNodeSize = toUnits(88);
+
     return (
         <group>
             <ambientLight intensity={0.5} />
@@ -675,9 +685,9 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
                     endPos={toWorld(output) as [number, number, number]}
                     activeIndex={activeIndex}
                     conductor={conductor}
-                    // Inputs: size-16 (64px) -> Radius 32. Use 28 for overlap.
+                    // Inputs: size-12 (48px) -> Radius 24. Use 20 for overlap.
                     // Center: size-20 (80px) -> Radius 40. Use 36 for overlap.
-                    startOffset={toUnits(28)}
+                    startOffset={toUnits(20)}
                     endOffset={toUnits(36)}
                 />
             ))}
@@ -699,9 +709,9 @@ const ElectricCablesContent = ({ inputs, output, finalOutput, activeIndex }: {
             )}
 
             {/* VISUALS: Energy Nodes */}
-            <EnergyNode pos={toWorld(output) as [number, number, number]} type="CENTER" conductor={conductor} activeIndex={activeIndex} />
+            <EnergyNode pos={toWorld(output) as [number, number, number]} type="CENTER" conductor={conductor} activeIndex={activeIndex} size={energyNodeSize} />
             {finalOutput && (
-                <EnergyNode pos={toWorld(finalOutput) as [number, number, number]} type="RIGHT" conductor={conductor} activeIndex={activeIndex} />
+                <EnergyNode pos={toWorld(finalOutput) as [number, number, number]} type="RIGHT" conductor={conductor} activeIndex={activeIndex} size={energyNodeSize} />
             )}
 
             {/* SHOCKWAVE LAYER: Separate component for clean expansion */}
