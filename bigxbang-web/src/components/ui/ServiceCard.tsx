@@ -5,6 +5,7 @@ import { TechScanner, ScannerState } from "./TechScanner";
 import { Safari } from "@/components/ui/safari";
 import { WebsiteBuildingAnimation } from "@/components/ui/WebsiteBuildingAnimation";
 import { AutomationNetwork } from "@/components/ui/AutomationNetwork";
+import { DNAHelix } from "@/components/ui/DNAHelix";
 
 
 export interface ServiceCardProps {
@@ -49,7 +50,7 @@ export const ServiceCard = ({
             <div className="relative w-full md:w-1/2 flex items-center justify-center">
 
                 {/* Corner Markers - Logically Attached to the Visual Stage */}
-                < div className="absolute top-0 left-0 w-6 h-6 border-t-[3px] border-l-[3px] border-white/20 rounded-tl-sm" ></div >
+                <div className="absolute top-0 left-0 w-6 h-6 border-t-[3px] border-l-[3px] border-white/20 rounded-tl-sm" ></div>
                 <div className="absolute top-0 right-0 w-6 h-6 border-t-[3px] border-r-[3px] border-white/20 rounded-tr-sm hidden md:block"></div>
                 <div className="absolute bottom-0 left-0 w-6 h-6 border-b-[3px] border-l-[3px] border-white/20 rounded-bl-sm"></div>
                 <div className="absolute bottom-0 right-0 w-6 h-6 border-b-[3px] border-r-[3px] border-white/20 rounded-br-sm hidden md:block"></div>
@@ -85,6 +86,10 @@ export const ServiceCard = ({
                         ) : id === 2 ? (
                             <div className="w-full h-full relative group">
                                 <AutomationNetwork />
+                            </div>
+                        ) : id === 3 ? (
+                            <div className="w-full h-full relative group">
+                                <DNAHelix />
                             </div>
                         ) : (
                             <div className="w-full h-full rounded-full border border-white/10 relative flex items-center justify-center">
