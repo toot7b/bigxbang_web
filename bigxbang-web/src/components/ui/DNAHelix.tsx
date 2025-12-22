@@ -352,9 +352,11 @@ const ProceduralDNA = ({ onHoverChange, rotationRef, isInteracting }: { onHoverC
     const accumulatedRot = useRef(0); // Track true rotation separately from visual jitter
 
     // DNA Geometry
-    const { strandA, strandB, rungs } = useMemo(() => {
-        const pA = [], pB = [], lines = [];
+    const { strandA, strandB } = useMemo(() => {
+        const pA: THREE.Vector3[] = [];
+        const pB: THREE.Vector3[] = [];
         const total = 80;
+
         for (let i = 0; i <= total; i++) {
             const t = (i / total) * Math.PI * 2 * TURNS;
             const y = (i / total) * HEIGHT - (HEIGHT / 2);
@@ -366,8 +368,7 @@ const ProceduralDNA = ({ onHoverChange, rotationRef, isInteracting }: { onHoverC
 
         return {
             strandA: new THREE.CatmullRomCurve3(pA),
-            strandB: new THREE.CatmullRomCurve3(pB),
-            rungs: lines
+            strandB: new THREE.CatmullRomCurve3(pB)
         };
     }, []);
 
@@ -563,9 +564,9 @@ const NODE_FRAGMENT = `
         float shakeAmp = mix(0.02, 0.15, uInstability); // Large oval distortion
         
         float wobble = sin(angle * 3.0 + uTime * shakeSpeed) * shakeAmp;
-        float grit = noise(vec2(angle * 10.0, uTime * 10.0)) * 0.05 * uInstability;
+        // REMOVED: grit (noise dots) based on feedback
 
-        float ringRadius = 0.46 + wobble + grit;
+        float ringRadius = 0.46 + wobble;
         float ringDist = abs(dist - ringRadius);
         
         float thickness = 0.005 + (uInstability * 0.02); 
@@ -582,12 +583,8 @@ const NODE_FRAGMENT = `
 
         // Charging Arc Effect
         if (p < uProgress) {
-            float isTip = smoothstep(0.0, 0.1, p - (uProgress - 0.1));
-            finalColor += vec3(isTip * 3.0); 
-            
-            // Sparks trail
-            float sparks = fbm(vUv * 10.0 - vec2(uTime * 2.0, 0.0));
-            alpha += sparks * 0.2 * step(0.4, dist) * step(dist, 0.5);
+            // REMOVED: isTip (white dot)
+            // Just the arc color
         }
 
         // Global Mask
@@ -618,10 +615,8 @@ const ElectricRing = ({ position, isActive }: { position: [number, number, numbe
             const time = state.clock.elapsedTime;
             materialRef.current.uniforms.uTime.value = time;
 
-            // Animation Loop: Pulse the charging progress
-            // Cycle: 4 seconds
-            const progress = (Math.sin(time * 2.0) * 0.5 + 0.5);
-            materialRef.current.uniforms.uProgress.value = 0.5 + (progress * 0.5); // Always partially charged
+            // NO OSCILLATION: Full static ring
+            materialRef.current.uniforms.uProgress.value = 1.0;
 
             // Instability / Intensity
             const targetInstability = isActive ? 1.0 : 0.0;
