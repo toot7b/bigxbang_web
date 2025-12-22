@@ -157,11 +157,6 @@ const UnstableCable = ({ start, dnaRadius, dnaHeight, rotationRef }: { start: TH
     const meshRef = useRef<THREE.Mesh>(null);
     const matRef = useRef<THREE.ShaderMaterial>(null);
 
-    // Raycaster for perfect snapping
-    const { scene } = useThree();
-    const raycaster = useMemo(() => new THREE.Raycaster(), []);
-    const direction = useMemo(() => new THREE.Vector3(), []);
-
     // Helper: Parametric -> 3D
     const getAnchorWorldPos = (y: number, offset: number, rotation: number) => {
         const normalizedY = (y + dnaHeight / 2) / dnaHeight;
@@ -179,95 +174,71 @@ const UnstableCable = ({ start, dnaRadius, dnaHeight, rotationRef }: { start: TH
 
         if (matRef.current) matRef.current.uniforms.uTime.value = time;
 
-        // 1. UPDATE ANCHOR (Strategy: Find closest 3D point on strands)
-        const step = Math.floor(time * 2.0);
-        if ((matRef.current && matRef.current.userData.lastStep !== step) || !anchorRef.current.initialized) {
-            if (matRef.current) matRef.current.userData.lastStep = step;
+        const TURNS_RAD = 2.0 * Math.PI * 2.0;
 
-            const TURNS_RAD = 2.0 * Math.PI * 2.0;
+        // Use math to find rough best spot
+        const solveForAnchorY = (offset: number) => {
+            let bestY = 0;
+            let minDist3D = 999999;
 
-            // Use math to find rough best spot
-            const solveForAnchorY = (offset: number) => {
-                let bestY = 9999;
-                let minDist3D = 9999;
+            // FIX DRIFT: Center search around current rotation
+            // We want (startAngle - currentRot - offset + k*2PI) ≈ 0
+            // So k*2PI ≈ (currentRot + offset - startAngle)
+            // k ≈ (currentRot + offset - startAngle) / 2PI
+            const estimatedK = Math.round((currentRot + offset - startAngle) / (Math.PI * 2));
 
-                for (let k = -5; k <= 5; k++) {
-                    const numerator = startAngle - currentRot - offset + (k * Math.PI * 2);
-                    const normY01 = numerator / TURNS_RAD;
-                    const worldY = normY01 * dnaHeight - (dnaHeight / 2);
+            // Wide search range: -2 to +4 turns covers the whole cylinder plus buffer
+            for (let k = estimatedK - 2; k <= estimatedK + 4; k++) {
+                const numerator = startAngle - currentRot - offset + (k * Math.PI * 2);
+                const normY01 = numerator / TURNS_RAD;
+                const rawWorldY = normY01 * dnaHeight - (dnaHeight / 2);
 
-                    if (worldY >= -dnaHeight / 2 && worldY <= dnaHeight / 2) {
-                        const pos = getAnchorWorldPos(worldY, offset, currentRot);
-                        const d = pos.distanceTo(start);
-                        if (d < minDist3D) {
-                            minDist3D = d;
-                            bestY = worldY;
-                        }
-                    }
+                // CLAMP LOGIC:
+                // If a strand solution is at Y=12.0 (above DNA), we clamp it to Y=5.0 (Top).
+                // The cable will attach to the very tip of the strand until it rotates back into view.
+                const clampedY = Math.max(-dnaHeight / 2, Math.min(dnaHeight / 2, rawWorldY));
+
+                const pos = getAnchorWorldPos(clampedY, offset, currentRot);
+                const d = pos.distanceTo(start);
+
+                if (d < minDist3D) {
+                    minDist3D = d;
+                    bestY = clampedY;
                 }
-                return { y: bestY, dist: minDist3D };
-            };
-
-            const solA = solveForAnchorY(0);
-            const solB = solveForAnchorY(Math.PI);
-
-            let chosenY = 0;
-            let chosenOffset = 0;
-
-            if (solA.dist < 100 && solB.dist < 100) {
-                if (solA.dist < solB.dist) {
-                    chosenY = solA.y; chosenOffset = 0;
-                } else {
-                    chosenY = solB.y; chosenOffset = Math.PI;
-                }
-            } else if (solA.dist < 100) {
-                chosenY = solA.y; chosenOffset = 0;
-            } else {
-                chosenY = solB.y; chosenOffset = Math.PI;
             }
+            return { y: bestY, dist: minDist3D };
+        };
 
-            // Add a small random jitter to the Y anchor
-            const jitter = (Math.random() - 0.5) * 1.0;
-            chosenY = Math.max(-dnaHeight / 2, Math.min(dnaHeight / 2, chosenY + jitter));
+        const solA = solveForAnchorY(0);
+        const solB = solveForAnchorY(Math.PI);
 
-            anchorRef.current = { y: chosenY, offset: chosenOffset, initialized: true };
+        let chosenY = 0;
+        let chosenOffset = 0;
+
+        if (solA.dist < solB.dist) {
+            chosenY = solA.y; chosenOffset = 0;
+        } else {
+            chosenY = solB.y; chosenOffset = Math.PI;
         }
 
+        anchorRef.current = { y: chosenY, offset: chosenOffset, initialized: true };
+
         // 2. GENERATE GEOMETRY (Every Frame)
-        if (meshRef.current && anchorRef.current.initialized) {
-            // A. Calculate Math Target
-            const mathTarget = getAnchorWorldPos(anchorRef.current.y, anchorRef.current.offset, currentRot);
+        if (meshRef.current) {
+            // A. Calculate Math Target (Pure Math, No Raycast)
+            // This is robust because getAnchorWorldPos generates a point ON the parametric cylinder.
+            const finalTarget = getAnchorWorldPos(anchorRef.current.y, anchorRef.current.offset, currentRot);
 
-            // B. Raycast Correction (The "Real" Surface)
-            // Fire ray from Start towards MathTarget
-            direction.subVectors(mathTarget, start).normalize();
-            raycaster.set(start, direction);
-
-            // We want to hit the DNA structure.
-            let finalTarget = mathTarget;
-
-            // Note: Raycasting assumes objects are in Scene. They are.
-            // But we need to traverse to find our 'dna-structure'
-            // Optimization: Find it once? Scene graph traversal every frame is fast enough for small scene.
-            const dnaGroup = scene.getObjectByName("dna-structure");
-            if (dnaGroup) {
-                const intersects = raycaster.intersectObjects(dnaGroup.children, false); // DNA meshes are children
-                if (intersects.length > 0) {
-                    // Pick the closest intersection that makes sense
-                    // Usually the first one.
-                    finalTarget.copy(intersects[0].point);
-                }
-            }
-
-            // Build Curve
+            // B. Build Curve
             const mid = start.clone().lerp(finalTarget, 0.5);
+            // Add noise to mid point for electric look
             const noiseX = Math.sin(time * 10.0 + start.y) * 0.5;
             const noiseY = Math.cos(time * 15.0 + start.x) * 0.5;
             mid.add(new THREE.Vector3(noiseX, noiseY, 0));
 
             const curve = new THREE.CatmullRomCurve3([start, mid, finalTarget]);
 
-            // Update Geometry
+            // C. Update Geometry
             if (meshRef.current.geometry) meshRef.current.geometry.dispose();
             meshRef.current.geometry = new THREE.TubeGeometry(curve, 20, 0.03, 8, false);
         }
@@ -612,10 +583,11 @@ const NODE_FRAGMENT = `
 `;
 
 // 3D ELECTRIC RING COMPONENT (Accurate Sizing)
-const ElectricRing = ({ position, isActive }: { position: [number, number, number], isActive: boolean }) => {
+const ElectricRing = ({ position, isActive, isFirst = false, revealed = false }: { position: [number, number, number], isActive: boolean, isFirst?: boolean, revealed?: boolean }) => {
     const materialRef = useRef<THREE.ShaderMaterial>(null);
     const meshRef = useRef<THREE.Mesh>(null);
-    const scaleRef = useRef(1.0);
+    // ALWAYS start at 0.0 to allow for "Grow" animation on mount
+    const scaleRef = useRef(0.0);
     const { viewport, size } = useThree();
 
     // Calculate dynamic size in 3D units to match Pixel visuals
@@ -634,6 +606,8 @@ const ElectricRing = ({ position, isActive }: { position: [number, number, numbe
 
             // Instability / Intensity
             const targetInstability = isActive ? 1.0 : 0.0;
+            // Base intensity 0.8 / 1.5 (Active). Plus "Flash" on appear?
+            // Since we mount fresh, we can just start scale at 0.
             const targetIntensity = isActive ? 1.5 : 0.8;
 
             materialRef.current.uniforms.uInstability.value = THREE.MathUtils.lerp(
@@ -641,6 +615,8 @@ const ElectricRing = ({ position, isActive }: { position: [number, number, numbe
                 targetInstability,
                 0.1
             );
+
+            // INTENSITY LERP
             materialRef.current.uniforms.uIntensity.value = THREE.MathUtils.lerp(
                 materialRef.current.uniforms.uIntensity.value,
                 targetIntensity,
@@ -648,12 +624,25 @@ const ElectricRing = ({ position, isActive }: { position: [number, number, numbe
             );
         }
 
-        // Lerp Scale (Animate to match HTML hover scale)
-        // Match scale-110 (1.1) to keep the ring "glued" to the content
-        const targetScale = isActive ? 1.1 : 1.0;
-        scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, targetScale, 0.1);
+        // VISIBILITY LOGIC:
+        // If !revealed -> Target Scale is 0.0.
+        // If revealed -> Target Scale is 1.0 (or 1.1 if Active).
+        let targetScale = 0.0;
+        if (revealed) {
+            targetScale = isActive ? 1.1 : 1.0;
+        }
+
+        // LERP SPEED:
+        // isFirst -> Slow smooth entry (0.02)
+        // Others -> Fast Pop (0.15)
+        const lerpSpeed = isFirst ? 0.02 : 0.15;
+
+        scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, targetScale, lerpSpeed);
         if (meshRef.current) {
             meshRef.current.scale.setScalar(scaleRef.current);
+            // HARD HIDE if !revealed to prevent any single-frame artifacts at scale 0?
+            // Actually scale 0 is invisible. But let's be safe.
+            meshRef.current.visible = revealed || scaleRef.current > 0.01;
         }
     });
 
@@ -683,21 +672,143 @@ const ElectricRing = ({ position, isActive }: { position: [number, number, numbe
     );
 };
 
+// --- REUSED FROM AUTOMATION NETWORK (ElectricCables.tsx) ---
+const SHOCKWAVE_FRAGMENT = `
+    uniform float uTime;
+    uniform float uLife; // 0 (start) -> 1 (end)
+    uniform vec3 uColor;
+    varying vec2 vUv;
+
+    #define PI 3.14159265359
+
+    float hash(float n) { return fract(sin(n) * 43758.5453123); }
+    float noise(vec2 x) {
+        vec2 p = floor(x);
+        vec2 f = fract(x);
+        f = f * f * (3.0 - 2.0 * f);
+        float n = p.x + p.y * 57.0;
+        return mix(mix(hash(n + 0.0), hash(n + 1.0), f.x),
+                   mix(hash(n + 57.0), hash(n + 58.0), f.x), f.y);
+    }
+
+    void main() {
+        vec2 center = vec2(0.5);
+        float dist = distance(vUv, center);
+        float angle = atan(vUv.y - 0.5, vUv.x - 0.5);
+
+        float radius = uLife * 0.5; 
+        float ringWidth = 0.05 * (1.0 - uLife); 
+        float ring = 1.0 - smoothstep(0.0, ringWidth, abs(dist - radius));
+        
+        float distort = noise(vec2(angle * 4.0, uTime * 3.0)) * 0.1 * (1.0 - uLife);
+        ring *= 1.0 + distort;
+        
+        ring *= smoothstep(0.05, 0.08, dist);
+        
+        float opacity = (1.0 - uLife); 
+        opacity = pow(opacity, 1.5); 
+        
+        vec3 color = vec3(1.0); 
+        color = mix(color, uColor, 0.5);
+
+        gl_FragColor = vec4(color, ring * opacity * 2.0); 
+    }
+`;
+
+const ReusedShockwave = ({ position, isFirst }: { position: [number, number, number], isFirst: boolean }) => {
+    const materialRef = useRef<THREE.ShaderMaterial>(null);
+    const meshRef = useRef<THREE.Mesh>(null);
+    const { camera } = useThree();
+    const [dead, setDead] = useState(false);
+
+    // AutomationNetwork uses "waveLife" from -1 to 1.
+    // Here we just fire 0 -> 1 on mount.
+    const waveLife = useRef(0.0);
+
+    useFrame((state, delta) => {
+        if (dead || !materialRef.current) return;
+
+        // BILLBOARD
+        if (meshRef.current) {
+            meshRef.current.quaternion.copy(camera.quaternion);
+        }
+
+        const time = state.clock.elapsedTime;
+        materialRef.current.uniforms.uTime.value = time;
+
+        // ANIMATION
+        // Slower speed for elegance (was 3.0 in Automation)
+        // User asked for "light" on appear? Or just "wait"
+        // Let's use 1.5 speed.
+        waveLife.current += delta * 1.5;
+
+        if (waveLife.current >= 1.0) {
+            setDead(true);
+        }
+
+        const uLife = waveLife.current;
+        materialRef.current.uniforms.uLife.value = uLife;
+    });
+
+    if (dead) return null;
+
+    // SKIP FIRST: User said "la première doit pas apparaitre comme ça"
+    // "juste pour elle" -> lighter or nothing. Let's make it very subtle or invisible.
+    if (isFirst) return null;
+
+    return (
+        <mesh ref={meshRef} position={position}>
+            <planeGeometry args={[4.0, 4.0]} />
+            <shaderMaterial
+                ref={materialRef}
+                vertexShader={NODE_VERTEX}
+                fragmentShader={SHOCKWAVE_FRAGMENT}
+                transparent={true}
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                uniforms={{
+                    uTime: { value: 0 },
+                    uLife: { value: 0.0 },
+                    uColor: { value: new THREE.Color("#60a5fa") }
+                }}
+            />
+        </mesh>
+    );
+};
+
+
+
 // 3D HTML Marker Component
-const SchemaMarker = ({ node, activeId, setActiveId, guideStep, setGuideStep }: {
+const SchemaMarker = ({ node, activeId, setActiveId, guideStep, setGuideStep, revealed = false }: {
     node: typeof SCHEMA_DEFS[0],
     activeId: number | null,
     setActiveId: (id: number | null) => void,
     guideStep: number,
-    setGuideStep: React.Dispatch<React.SetStateAction<number>>
+    setGuideStep: React.Dispatch<React.SetStateAction<number>>,
+    revealed?: boolean
 }) => {
     const isRight = node.side === "right";
+    const isFirst = node.id === 0;
 
     return (
         <Html position={[node.position[0], node.position[1], 0]} center className="pointer-events-auto">
             {/* Direct wrapper without offset */}
+            {/* 
+                ROBUST PRELOAD STATE:
+                - Always in DOM (No 'invisible').
+                - Base State: opacity-0 scale-50.
+                - Revealed State: opacity-100 scale-100.
+                - Transition: Handles the tween. 100% smooth, no pop.
+            */}
             <div
-                className={`flex flex-col items-center justify-center cursor-pointer group`}
+                className={`flex flex-col items-center justify-center cursor-pointer group transition-all ease-out
+                    ${revealed
+                        ? (isFirst
+                            ? 'opacity-100 scale-100 duration-[2000ms]' // Slow entry for first
+                            : 'opacity-100 scale-100 duration-500')     // Fast for others
+                        : 'opacity-0 scale-50 pointer-events-none'        // Preload State
+                    }
+                `}
                 onMouseEnter={() => {
                     setActiveId(node.id);
                     // Advance guide if this is the target step
@@ -737,11 +848,24 @@ const SchemaMarker = ({ node, activeId, setActiveId, guideStep, setGuideStep }: 
         </Html>
     );
 };
-export function DNAHelix() {
+export function DNAHelix({ isActive = false }: { isActive?: boolean }) {
     const [activeId, setActiveId] = useState<number | null>(null);
-    const [guideStep, setGuideStep] = useState<number>(0);
+    const [guideStep, setGuideStep] = useState<number>(-1); // Start hidden (Wait for Scroll)
     const [isDnaRevealed, setIsDnaRevealed] = useState(false);
     const rotationRef = useRef(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // TRIGGER LOGIC: 
+    // Wait for parent to say "isActive" (User scrolled to this card).
+    // When active, we trigger the first step (0).
+    useEffect(() => {
+        if (isActive && guideStep === -1) {
+            // Slight micro-delay to ensure CSS opacity transition has started? 
+            // Not needed with the "Final Smooth Reveal" transition we built.
+            // Just Fire.
+            setGuideStep(0);
+        }
+    }, [isActive, guideStep]);
 
     // Reveal on first interaction (activeId === 0)
     useEffect(() => {
@@ -751,47 +875,60 @@ export function DNAHelix() {
     }, [activeId, isDnaRevealed]);
 
     return (
-        <div className="w-full h-[400px] relative dna-container bg-black/0">
+        <div ref={containerRef} className="w-full h-[400px] relative dna-container bg-black/0">
             <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
                 <ambientLight intensity={1.0} />
                 <spotLight position={[10, 10, 10]} intensity={2} color="white" />
                 <pointLight position={[-10, 0, -5]} intensity={1} color="#306EE8" />
-                <Center>
-                    <ProceduralDNA
-                        onHoverChange={setActiveId}
-                        rotationRef={rotationRef}
-                        isInteracting={activeId !== null}
-                        opacity={isDnaRevealed ? 1.0 : 0.0}
-                    />
+                {/* REMOVED: Center component. ProceduralDNA is mathematically centered at (0,0,0). Use pure coordinates. */}
+                <ProceduralDNA
+                    onHoverChange={setActiveId}
+                    rotationRef={rotationRef}
+                    isInteracting={activeId !== null}
+                    opacity={isDnaRevealed ? 1.0 : 0.0}
+                />
 
-                    {activeId !== null && (
-                        <UnstableCable
-                            start={new THREE.Vector3(...SCHEMA_DEFS[activeId].position)}
-                            dnaRadius={1.2}
-                            dnaHeight={10}
-                            rotationRef={rotationRef}
-                        />
-                    )}
-                </Center>
+                {activeId !== null && (
+                    <UnstableCable
+                        start={new THREE.Vector3(...SCHEMA_DEFS[activeId].position)}
+                        dnaRadius={1.2}
+                        dnaHeight={10}
+                        rotationRef={rotationRef}
+                    />
+                )}
 
                 {/* Combined Rendering: WebGL Ring + HTML Marker at exact same 3D position */}
-                {SCHEMA_DEFS.map((node) => (
-                    <group key={node.id}>
-                        {/* 1. WebGL Electric Ring (Behind) */}
-                        <ElectricRing
-                            position={[node.position[0], node.position[1], 0]}
-                            isActive={activeId === node.id}
-                        />
-                        {/* 2. HTML Marker (Overlay aligned in 3D) */}
-                        <SchemaMarker
-                            node={node}
-                            activeId={activeId}
-                            setActiveId={setActiveId}
-                            guideStep={guideStep}
-                            setGuideStep={setGuideStep}
-                        />
-                    </group>
-                ))}
+                {SCHEMA_DEFS.map((node) => {
+                    // "REAL PRELOAD": Render EVERYTHING, but manage visibility via props.
+                    // This ensures shaders and DOM are ready before the "Reveal" trigger.
+                    const isRevealed = guideStep >= node.id && guideStep !== -1;
+
+                    return (
+                        <group key={node.id}>
+                            {/* 1. WebGL Electric Ring (Mounted but Scale 0 if not revealed) */}
+                            <ElectricRing
+                                position={[node.position[0], node.position[1], 0]}
+                                isActive={activeId === node.id}
+                                isFirst={node.id === 0}
+                                revealed={isRevealed}
+                            />
+                            {/* NEW: Reused Shockwave (Still One-Shot, so we only mount when revealed to fire effect) */}
+                            {isRevealed && (
+                                <ReusedShockwave position={[node.position[0], node.position[1], 0]} isFirst={node.id === 0} />
+                            )}
+
+                            {/* 2. HTML Marker (Mounted but Opacity 0 if not revealed) */}
+                            <SchemaMarker
+                                node={node}
+                                activeId={activeId}
+                                setActiveId={setActiveId}
+                                guideStep={guideStep}
+                                setGuideStep={setGuideStep}
+                                revealed={isRevealed}
+                            />
+                        </group>
+                    );
+                })}
 
                 <Environment preset="city" />
             </Canvas>

@@ -71,10 +71,12 @@ export const ServiceCard = ({
                     {/* Holographic Base / Grid */}
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/5 to-transparent skew-x-12 opacity-50 pointer-events-none"></div>
 
-                    {/* THE ASSETS (Holograms) */}
+                    {/* THE ASSETS (Holograms) - PRELOADED STACK */}
+                    {/* We mount ALL of them to ensure WebGL/Assets are ready. We toggle visibility via CSS. */}
                     <div className="w-full h-full relative flex items-center justify-center">
 
-                        {id === 1 ? (
+                        {/* 1. FRONT END (Safari) */}
+                        <div className={`w-full transition-opacity duration-500 ease-in-out ${id === 1 ? 'relative z-10 opacity-100' : 'absolute inset-0 z-0 opacity-0 pointer-events-none'}`}>
                             <div className="w-full h-auto relative group">
                                 <Safari
                                     url="bigxbang.studio"
@@ -83,20 +85,18 @@ export const ServiceCard = ({
                                     <WebsiteBuildingAnimation />
                                 </Safari>
                             </div>
-                        ) : id === 2 ? (
-                            <div className="w-full h-full relative group">
-                                <AutomationNetwork />
-                            </div>
-                        ) : id === 3 ? (
-                            <div className="w-full h-full relative group">
-                                <DNAHelix />
-                            </div>
-                        ) : (
-                            <div className="w-full h-full rounded-full border border-white/10 relative flex items-center justify-center">
-                                <div className="absolute inset-0 bg-white/5 rounded-full blur-3xl opacity-20"></div>
-                                <span className="font-mono text-xs text-white/20">ASSET_0{id} {"//"} RENDER_TARGET</span>
-                            </div>
-                        )}
+                        </div>
+
+                        {/* 2. AUTOMATION (Network) */}
+                        <div className={`w-full h-full transition-opacity duration-500 ease-in-out ${id === 2 ? 'relative z-10 opacity-100' : 'absolute inset-0 z-0 opacity-0 pointer-events-none'}`}>
+                            <AutomationNetwork />
+                        </div>
+
+                        {/* 3. CORE (DNA Helix) */}
+                        <div className={`w-full h-full transition-opacity duration-500 ease-in-out ${id === 3 ? 'relative z-10 opacity-100' : 'absolute inset-0 z-0 opacity-0 pointer-events-none'}`}>
+                            {/* Pass isActive prop so it triggers its reveal animation ONLY when visible */}
+                            <DNAHelix isActive={id === 3} />
+                        </div>
 
                     </div>
                 </div>
