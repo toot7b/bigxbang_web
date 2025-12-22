@@ -3,6 +3,8 @@
 @theme {
   --color-background: 0 0% 100%;
   --color-foreground: 0 0% 3.9%;
+  --color-primary: #306EE8;
+  /* Blue Royal - Use this everywhere */
   --font-clash: var(--font-clash);
   --font-jakarta: var(--font-jakarta);
 }
