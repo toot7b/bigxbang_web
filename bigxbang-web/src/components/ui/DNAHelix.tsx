@@ -867,6 +867,10 @@ export function DNAHelix({ isActive = false }: { isActive?: boolean }) {
         }
     }, [isActive, guideStep]);
 
+    // PRECOMPUTE VECTORS (Performance Fix)
+    // Avoids creating new Vector3() inside render loop/JSX
+    const schemaVectors = useMemo(() => SCHEMA_DEFS.map(d => new THREE.Vector3(...d.position)), []);
+
     // Reveal on first interaction (activeId === 0)
     useEffect(() => {
         if (activeId === 0 && !isDnaRevealed) {
@@ -888,9 +892,10 @@ export function DNAHelix({ isActive = false }: { isActive?: boolean }) {
                     opacity={isDnaRevealed ? 1.0 : 0.0}
                 />
 
+                {/* Memoized Vectors allow us to avoid "new Vector3" every frame */}
                 {activeId !== null && (
                     <UnstableCable
-                        start={new THREE.Vector3(...SCHEMA_DEFS[activeId].position)}
+                        start={schemaVectors[activeId]}
                         dnaRadius={1.2}
                         dnaHeight={10}
                         rotationRef={rotationRef}
