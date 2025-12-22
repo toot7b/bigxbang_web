@@ -74,6 +74,7 @@ const DNA_GLOW_FRAGMENT = `
     uniform float uTime;
     uniform float uInstability; 
     uniform vec3 uColor;
+    uniform float uOpacity;
 
     void main() {
         // Fresnel-like intensity (edges are brighter)
@@ -103,6 +104,9 @@ const DNA_GLOW_FRAGMENT = `
         // Soft edges
         // float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.0); // Simple view-align
         // Let's stick to flat additive for now, it's safer for performance than calculating viewDir
+        
+        // Apply Global Opacity (Reveal Fade)
+        alpha *= uOpacity;
         
         gl_FragColor = vec4(color, alpha);
     }
@@ -346,7 +350,7 @@ const TURNS = 2.0;
 
 
 
-const ProceduralDNA = ({ onHoverChange, rotationRef, isInteracting }: { onHoverChange: (id: number | null) => void, rotationRef: React.MutableRefObject<number>, isInteracting: boolean }) => {
+const ProceduralDNA = ({ onHoverChange, rotationRef, isInteracting, opacity = 1.0 }: { onHoverChange: (id: number | null) => void, rotationRef: React.MutableRefObject<number>, isInteracting: boolean, opacity?: number }) => {
     const groupRef = useRef<THREE.Group>(null);
     const rotationSpeed = useRef(0.2);
     const accumulatedRot = useRef(0); // Track true rotation separately from visual jitter
@@ -395,7 +399,8 @@ const ProceduralDNA = ({ onHoverChange, rotationRef, isInteracting }: { onHoverC
             uniforms: {
                 uTime: { value: 0 },
                 uInstability: { value: 0 },
-                uColor: { value: new THREE.Color(BLUE_ELECTRIC) }
+                uColor: { value: new THREE.Color(BLUE_ELECTRIC) },
+                uOpacity: { value: 0 }
             }
         });
         glowMatRef.current = material; // Assign to ref here
@@ -450,6 +455,15 @@ const ProceduralDNA = ({ onHoverChange, rotationRef, isInteracting }: { onHoverC
         // UPDATE GLOW UNIFORMS
         glowMaterial.uniforms.uTime.value = time;
         glowMaterial.uniforms.uInstability.value = isInteracting ? 1.0 : 0.0;
+
+        // Opacity Logic
+        const currentOp = glowMaterial.uniforms.uOpacity.value;
+        const nextOp = THREE.MathUtils.lerp(currentOp, opacity, 0.05);
+        glowMaterial.uniforms.uOpacity.value = nextOp;
+
+        if (groupRef.current) {
+            groupRef.current.visible = nextOp > 0.01;
+        }
     });
 
     const strandMaterial = useMemo(() => new THREE.MeshPhysicalMaterial({
@@ -726,7 +740,15 @@ const SchemaMarker = ({ node, activeId, setActiveId, guideStep, setGuideStep }: 
 export function DNAHelix() {
     const [activeId, setActiveId] = useState<number | null>(null);
     const [guideStep, setGuideStep] = useState<number>(0);
+    const [isDnaRevealed, setIsDnaRevealed] = useState(false);
     const rotationRef = useRef(0);
+
+    // Reveal on first interaction (activeId === 0)
+    useEffect(() => {
+        if (activeId === 0 && !isDnaRevealed) {
+            setIsDnaRevealed(true);
+        }
+    }, [activeId, isDnaRevealed]);
 
     return (
         <div className="w-full h-[400px] relative dna-container bg-black/0">
@@ -739,6 +761,7 @@ export function DNAHelix() {
                         onHoverChange={setActiveId}
                         rotationRef={rotationRef}
                         isInteracting={activeId !== null}
+                        opacity={isDnaRevealed ? 1.0 : 0.0}
                     />
 
                     {activeId !== null && (
