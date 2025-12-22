@@ -635,7 +635,8 @@ const ElectricRing = ({ position, isActive }: { position: [number, number, numbe
         }
 
         // Lerp Scale (Animate to match HTML hover scale)
-        const targetScale = isActive ? 1.2 : 1.0;
+        // Match scale-110 (1.1) to keep the ring "glued" to the content
+        const targetScale = isActive ? 1.1 : 1.0;
         scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, targetScale, 0.1);
         if (meshRef.current) {
             meshRef.current.scale.setScalar(scaleRef.current);
@@ -669,10 +670,12 @@ const ElectricRing = ({ position, isActive }: { position: [number, number, numbe
 };
 
 // 3D HTML Marker Component
-const SchemaMarker = ({ node, activeId, setActiveId }: {
+const SchemaMarker = ({ node, activeId, setActiveId, guideStep, setGuideStep }: {
     node: typeof SCHEMA_DEFS[0],
     activeId: number | null,
-    setActiveId: (id: number | null) => void
+    setActiveId: (id: number | null) => void,
+    guideStep: number,
+    setGuideStep: React.Dispatch<React.SetStateAction<number>>
 }) => {
     const isRight = node.side === "right";
 
@@ -681,7 +684,13 @@ const SchemaMarker = ({ node, activeId, setActiveId }: {
             {/* Direct wrapper without offset */}
             <div
                 className={`flex flex-col items-center justify-center cursor-pointer group`}
-                onMouseEnter={() => setActiveId(node.id)}
+                onMouseEnter={() => {
+                    setActiveId(node.id);
+                    // Advance guide if this is the target step
+                    if (guideStep === node.id) {
+                        setGuideStep(prev => prev + 1);
+                    }
+                }}
                 onMouseLeave={() => setActiveId(null)}
             >
                 {/* Circle container */}
@@ -691,6 +700,7 @@ const SchemaMarker = ({ node, activeId, setActiveId }: {
                     shadow-[0_0_15px_rgba(48,110,232,0.3)] 
                     transition-all duration-300
                     ${activeId === node.id ? 'scale-110 border-[#306EE8] shadow-[0_0_25px_rgba(48,110,232,0.6)]' : 'hover:scale-105 hover:border-blue-400'}
+                    ${/* Guide Glow Animation - BLUE now */ guideStep === node.id ? 'animate-guide-glow-v2 border-[#306EE8] shadow-[0_0_30px_rgba(48,110,232,0.8)]' : ''}
                 `}>
                     <Asterisk className={`w-6 h-6 text-white`} />
                 </div>
@@ -713,13 +723,9 @@ const SchemaMarker = ({ node, activeId, setActiveId }: {
         </Html>
     );
 };
-
-
-
-
-
 export function DNAHelix() {
     const [activeId, setActiveId] = useState<number | null>(null);
+    const [guideStep, setGuideStep] = useState<number>(0);
     const rotationRef = useRef(0);
 
     return (
@@ -758,6 +764,8 @@ export function DNAHelix() {
                             node={node}
                             activeId={activeId}
                             setActiveId={setActiveId}
+                            guideStep={guideStep}
+                            setGuideStep={setGuideStep}
                         />
                     </group>
                 ))}
