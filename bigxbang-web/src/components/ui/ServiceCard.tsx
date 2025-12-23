@@ -2,8 +2,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { TechScanner, ScannerState } from "./TechScanner";
-import { Safari } from "@/components/ui/safari";
-import { WebsiteBuildingAnimation } from "@/components/ui/WebsiteBuildingAnimation";
+import { MagneticWebsite } from "@/components/ui/MagneticWebsite";
 import { AutomationNetwork } from "@/components/ui/AutomationNetwork";
 import { DNAHelix } from "@/components/ui/DNAHelix";
 
@@ -75,16 +74,9 @@ export const ServiceCard = ({
                     {/* We mount ALL of them to ensure WebGL/Assets are ready. We toggle visibility via CSS. */}
                     <div className="w-full h-full relative flex items-center justify-center">
 
-                        {/* 1. FRONT END (Safari) */}
-                        <div className={`w-full transition-opacity duration-500 ease-in-out ${id === 1 ? 'relative z-10 opacity-100' : 'absolute inset-0 z-0 opacity-0 pointer-events-none'}`}>
-                            <div className="w-full h-auto relative group">
-                                <Safari
-                                    url="bigxbang.studio"
-                                    className="relative z-10 w-full transition-[filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] [filter:drop-shadow(0_18px_45px_rgba(9,15,35,0.55))] group-hover:[filter:drop-shadow(0_42px_95px_rgba(0,0,0,0.55))_drop-shadow(0_0_55px_rgba(48,110,232,0.45))_drop-shadow(0_0_90px_rgba(48,110,232,0.20))]"
-                                >
-                                    <WebsiteBuildingAnimation />
-                                </Safari>
-                            </div>
+                        {/* 1. FRONT END (Magnetic Website) */}
+                        <div className={`w-full h-full transition-opacity duration-500 ease-in-out ${id === 1 ? 'relative z-10 opacity-100' : 'absolute inset-0 z-0 opacity-0 pointer-events-none'}`}>
+                            <MagneticWebsite isActive={id === 1} />
                         </div>
 
                         {/* 2. AUTOMATION (Network) */}
