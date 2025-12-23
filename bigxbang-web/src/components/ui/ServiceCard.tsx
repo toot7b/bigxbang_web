@@ -24,6 +24,10 @@ export interface ServiceCardProps {
     scannerState?: ScannerState;
 }
 
+// --- HERO ASSEMBLY PREVIEW: THE FINAL LAYOUT (CONDENSED) ---
+// --- HERO ASSEMBLY PREVIEW: THE FINAL LAYOUT (CONDENSED & PRECISE) ---
+
+
 export const ServiceCard = ({
     id,
     title,

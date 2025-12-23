@@ -107,6 +107,78 @@ const ImpactShockwave = ({ position, onComplete }: { position: [number, number, 
 };
 
 
+// --- 3D UI COMPONENTS (Hero Assembly) ---
+const HeroNavbar = () => (
+    <div className="w-[300px] h-8 bg-black/60 border border-white/10 rounded-full flex items-center justify-between px-4 backdrop-blur-md">
+        <div className="flex gap-2">
+            <div className="w-2 h-2 bg-[#306EE8] rounded-full"></div>
+            <div className="w-12 h-1.5 bg-white/20 rounded-full"></div>
+        </div>
+        <div className="flex gap-4">
+            <div className="w-8 h-1.5 bg-white/10 rounded-full"></div>
+            <div className="w-8 h-1.5 bg-white/10 rounded-full"></div>
+            <div className="w-16 h-5 bg-[#306EE8]/20 border border-[#306EE8]/50 rounded-full flex items-center justify-center">
+                <div className="w-8 h-1 bg-[#306EE8] rounded-full"></div>
+            </div>
+        </div>
+    </div>
+);
+
+const HeroText = () => (
+    <div className="flex flex-col gap-2 origin-center scale-60">
+        <div className="flex flex-col gap-1">
+            <div className="w-40 h-5 bg-white/90 rounded-sm"></div>
+            <div className="w-24 h-5 bg-white/50 rounded-sm"></div>
+        </div>
+        <div className="w-32 h-2 bg-white/20 rounded-sm"></div>
+        <div className="flex gap-2 mt-1">
+            <div className="w-20 h-6 bg-[#306EE8] rounded-md"></div>
+            <div className="w-20 h-6 border border-white/20 rounded-md"></div>
+        </div>
+    </div>
+);
+
+const HeroCard = () => (
+    <div className="w-40 h-28 bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-xl backdrop-blur-md p-2 flex flex-col gap-2 origin-center scale-60">
+        <div className="w-full h-16 bg-white/5 rounded-lg border border-white/5 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#306EE8]/20 to-transparent"></div>
+        </div>
+        <div className="w-full h-1.5 bg-white/20 rounded-full"></div>
+        <div className="w-2/3 h-1.5 bg-white/10 rounded-full"></div>
+    </div>
+);
+
+const HeroFooter = () => (
+    <div className="flex items-center justify-center gap-6 opacity-30">
+        <div className="w-16 h-3 bg-white/20 rounded-md"></div>
+        <div className="w-16 h-3 bg-white/20 rounded-md"></div>
+        <div className="w-16 h-3 bg-white/20 rounded-md"></div>
+    </div>
+);
+
+const HeroAssembly3D = () => {
+    // 3D Positions for the assembled state
+    // Top/Bottom at +/- 1.8 units 
+    // Left/Right at +/- 2.2 units
+    return (
+        <group>
+            <Html position={[0, 1.8, 0]} center>
+                <HeroNavbar />
+            </Html>
+            <Html position={[-2.2, 0, 0]} center>
+                <HeroText />
+            </Html>
+            <Html position={[2.2, 0, 0]} center>
+                <HeroCard />
+            </Html>
+            <Html position={[0, -1.8, 0]} center>
+                <HeroFooter />
+            </Html>
+        </group>
+    );
+};
+
+
 // --- NODE COMPONENT ---
 const WebsiteNode = ({
     position,
@@ -188,7 +260,7 @@ const WebsiteNode = ({
 const MagneticScene = () => {
     const CENTER_POS = [0, 0, 0] as [number, number, number];
     const ORDERED_CORNERS = [
-        [-4.5, 2.5, 0],  // TL
+        [-4.5, 2.5, 0],  // TL (Restored Original)
         [4.5, 2.5, 0],   // TR
         [4.5, -2.5, 0],  // BR
         [-4.5, -2.5, 0]  // BL
@@ -309,6 +381,9 @@ const MagneticScene = () => {
                 onHover={() => setCenterHovered(true)}
                 isUnlocked={true}
             />
+
+            {/* 3. HERO ASSEMBLY (3D UI) - For Preview/Final State */}
+            <HeroAssembly3D />
 
             {ORDERED_CORNERS.map((pos, i) => (
                 <WebsiteNode
