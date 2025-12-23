@@ -18,7 +18,8 @@ const NODE_FRAGMENT = `
     uniform float uTime;
     uniform float uProgress;    // 0 -> 1 
     uniform float uIntensity;
-    uniform float uInstability; 
+    uniform float uInstability;
+    uniform float uWobbleScale; // NEW: Scale the overall distortion
     uniform vec3 uColor;
     varying vec2 vUv;
 
@@ -49,7 +50,7 @@ const NODE_FRAGMENT = `
         
         // --- RING BASE ---
         float shakeSpeed = mix(5.0, 30.0, uInstability);
-        float shakeAmp = mix(0.02, 0.15, uInstability); 
+        float shakeAmp = mix(0.02, 0.15, uInstability) * uWobbleScale; 
         
         float wobble = sin(angle * 3.0 + uTime * shakeSpeed) * shakeAmp;
         float grit = noise(vec2(angle * 10.0, uTime * 10.0)) * 0.05 * uInstability;
@@ -91,10 +92,14 @@ export const AutomationEnergyRing = ({
     isActive = false,
     revealed = true,
     scaleOverride = 1.0,
+    color = "#306EE8",
+    wobbleScale = 1.0
 }: {
     isActive?: boolean,
     revealed?: boolean,
     scaleOverride?: number,
+    color?: string,
+    wobbleScale?: number
 }) => {
     const materialRef = useRef<THREE.ShaderMaterial>(null);
     const meshRef = useRef<THREE.Mesh>(null);
@@ -168,7 +173,8 @@ export const AutomationEnergyRing = ({
                     uProgress: { value: 0 },
                     uIntensity: { value: 1.0 },
                     uInstability: { value: 0 },
-                    uColor: { value: new THREE.Color("#306EE8") }
+                    uWobbleScale: { value: wobbleScale },
+                    uColor: { value: new THREE.Color(color) }
                 }}
             />
         </mesh>

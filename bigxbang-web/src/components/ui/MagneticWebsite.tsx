@@ -1,90 +1,190 @@
-import React, { useRef, useMemo, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+"use client";
+
+import React, { useState } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
 import { Environment, Html } from '@react-three/drei';
-import * as THREE from 'three';
 import Asterisk from './Asterisk';
+import { ElectricLine } from './ElectricLine';
 import { AutomationEnergyRing } from './AutomationEnergyRing';
+import { cn } from '@/lib/utils';
+import * as THREE from 'three';
 
-// --- CONFIGURATION ---
-const BLUE_ELECTRIC = "#306EE8";
-
-// --- SUB-COMPONENT: REUSABLE NODE ---
+// --- NODE COMPONENT ---
 const WebsiteNode = ({
     position,
-    size = "small",
-    parentActive = false
+    type = 'CORNER',
+    isUnlocked = false,
+    isGhost = false,
+    onHover,
 }: {
     position: [number, number, number],
-    size?: "large" | "small",
-    parentActive?: boolean
+    type?: 'CENTER' | 'CORNER',
+    isUnlocked?: boolean,
+    isGhost?: boolean,
+    onHover?: () => void,
 }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const isActive = isHovered || parentActive;
+    const isCenter = type === 'CENTER';
 
-    // Size Configurations
-    const isLarge = size === "large";
-    const containerClass = isLarge ? "size-20" : "size-12";
-    const iconClass = isLarge ? "w-10 h-10" : "w-6 h-6";
-    // Scale Override: 1.0 for Large (Center), 0.6 for Small (Corners) to match visual ratio
-    const ringScale = isLarge ? 1.0 : 0.6;
+    // HTML Size
+    const containerClass = isCenter ? "size-20" : "size-14";
+    const iconClass = isCenter ? "w-10 h-10" : "w-6 h-6";
 
-    // Styles
-    const baseBorder = "border-[#306EE8] bg-[#306EE8]/10";
-    const activeStyle = isActive
-        ? `scale-110 shadow-[0_0_${isLarge ? '80px' : '40px'}_rgba(48,110,232,0.8)] bg-[#306EE8]/20`
-        : `hover:scale-105 shadow-[0_0_${isLarge ? '50px' : '25px'}_rgba(48,110,232,0.4)]`;
+    // 3D Scale - AutomationEnergyRing is ~80px base
+    // Center -> 0.9 scale (Tuck in)
+    // Corner -> 0.65 scale (Tuck in)
+    const scaleOverride = isCenter ? 0.9 : 0.65;
+
+    // Reform deformation: Small nodes deform too much with standard math.
+    // We dampen the wobble for corners.
+    const wobbleScale = isCenter ? 1.0 : 0.5;
+
+    // Visibility: Ghost nodes must be FULLY visible
+    const isVisible = isCenter || isUnlocked || isGhost;
+    const opacityClass = isVisible ? "opacity-100" : "opacity-0 pointer-events-none";
+
+    // STYLE PARITY WITH AUTOMATION NETWORK (Center Icon)
+    // "border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_50px_rgba(48,110,232,0.4)]"
+    const automationStyle = "border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_50px_rgba(48,110,232,0.4)]";
+    const automationActiveStyle = "scale-110 shadow-[0_0_60px_rgba(48,110,232,0.6)]";
+
+    // We apply this base style to BOTH Center and Corners now as requested ("same contour")
+    const borderClass = (isCenter || isUnlocked)
+        ? `border-2 backdrop-blur-md ${automationStyle}`
+        : "border-white/10 bg-white/5"; // Locked style (dim)
 
     return (
         <group position={position}>
-            {/* 1. Energy Ring (WebGL) */}
-            <AutomationEnergyRing isActive={isActive} revealed={true} scaleOverride={ringScale} />
+            {/* ELECTRIC RING ASSET - Color matched to DNAHelix Electric Blue (#60a5fa) */}
+            <AutomationEnergyRing
+                isActive={isHovered}
+                revealed={isVisible}
+                scaleOverride={scaleOverride}
+                color="#60a5fa"
+                wobbleScale={wobbleScale}
+            />
 
-            {/* 2. HTML Node */}
+            {/* HTML ICON */}
             <Html center style={{ pointerEvents: 'none' }}>
                 <div
-                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseEnter={() => { setIsHovered(true); if (onHover) onHover(); }}
                     onMouseLeave={() => setIsHovered(false)}
-                    className={`
-                        relative ${containerClass} flex items-center justify-center rounded-full pointer-events-auto cursor-pointer
-                        border-2 ${baseBorder} backdrop-blur-md
-                        transition-all duration-300
-                        ${activeStyle}
-                    `}
+                    className={cn(
+                        `relative flex items-center justify-center rounded-full pointer-events-auto cursor-pointer
+                        transition-all duration-500`,
+                        containerClass,
+                        opacityClass,
+                        borderClass,
+                        // Active Hover Override
+                        isHovered && automationActiveStyle
+                    )}
                 >
-                    <Asterisk className={`${iconClass} text-white`} />
+                    <Asterisk className={cn(iconClass, "text-white transition-all duration-300")} />
                 </div>
             </Html>
         </group>
     );
 };
 
-export const MagneticWebsite = ({ isActive = true }: { isActive?: boolean }) => {
-    // Corner Positions (forming a rectangle)
-    // Canvas View height at Z=0 (cam Z=10) is ~8.28 units.
-    // +/- 2.5 is safe for height.
-    // Width is variable. +/- 4.0 is usually safe for desktop.
-    const CORNERS = [
-        [-4.5, 2.5, 0], // Top Left
-        [4.5, 2.5, 0],  // Top Right
-        [-4.5, -2.5, 0], // Bottom Left
-        [4.5, -2.5, 0]   // Bottom Right
+// --- SCENE ---
+const MagneticScene = () => {
+    const CENTER_POS = [0, 0, 0] as [number, number, number];
+    const ORDERED_CORNERS = [
+        [-4.5, 2.5, 0],  // TL
+        [4.5, 2.5, 0],   // TR
+        [4.5, -2.5, 0],  // BR
+        [-4.5, -2.5, 0]  // BL
     ] as [number, number, number][];
 
+    const [unlockedNodes, setUnlockedNodes] = useState<boolean[]>([false, false, false, false]);
+    const [centerHovered, setCenterHovered] = useState(false);
+    const [blastTriggers, setBlastTriggers] = useState<boolean[]>([false, false, false, false]);
+
+    const handleCornerHover = (index: number) => {
+        if (unlockedNodes[index]) return;
+
+        // BLAST
+        setBlastTriggers(prev => {
+            const next = [...prev];
+            next[index] = true;
+            return next;
+        });
+        setTimeout(() => setBlastTriggers(prev => {
+            const next = [...prev];
+            next[index] = false;
+            return next;
+        }), 500);
+
+        // UNLOCK
+        setTimeout(() => {
+            setUnlockedNodes(prev => {
+                const n = [...prev];
+                n[index] = true;
+                return n;
+            });
+        }, 200);
+    };
+
+    return (
+        <group>
+            {/* 1. BLAST BEAMS (#306EE8) */}
+            {ORDERED_CORNERS.map((pos, i) => (
+                <ElectricLine
+                    key={`blast-${i}`}
+                    start={CENTER_POS}
+                    end={pos}
+                    mode="blast"
+                    trigger={blastTriggers[i]}
+                    color="#00A3FF"
+                />
+            ))}
+
+            {/* 2. STABLE LINKS (#306EE8) */}
+            {ORDERED_CORNERS.map((pos, i) => {
+                const nextIndex = (i + 1) % 4;
+                const isConnected = unlockedNodes[i] && unlockedNodes[nextIndex];
+                if (!isConnected) return null;
+
+                return (
+                    <ElectricLine
+                        key={`link-${i}`}
+                        start={pos}
+                        end={ORDERED_CORNERS[nextIndex]}
+                        mode="stable"
+                        color="#00A3FF"
+                    />
+                );
+            })}
+
+            {/* 3. NODES */}
+            <WebsiteNode
+                position={CENTER_POS}
+                type="CENTER"
+                onHover={() => setCenterHovered(true)}
+                isUnlocked={true}
+            />
+
+            {ORDERED_CORNERS.map((pos, i) => (
+                <WebsiteNode
+                    key={i}
+                    position={pos}
+                    type="CORNER"
+                    isUnlocked={unlockedNodes[i]}
+                    isGhost={centerHovered}
+                    onHover={() => handleCornerHover(i)}
+                />
+            ))}
+        </group>
+    );
+};
+
+export const MagneticWebsite = ({ isActive = true }: { isActive?: boolean }) => {
     return (
         <div className="w-full h-[400px] relative">
             <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
                 <ambientLight intensity={0.5} />
                 <Environment preset="city" />
-
-                <group>
-                    {/* CENTER NODE (Large, responds to local hover only) */}
-                    <WebsiteNode position={[0, 0, 0]} size="large" />
-
-                    {/* CORNER NODES (Small, local hover only) */}
-                    {CORNERS.map((pos, i) => (
-                        <WebsiteNode key={i} position={pos} size="small" />
-                    ))}
-                </group>
+                <MagneticScene />
             </Canvas>
         </div>
     );
