@@ -109,12 +109,12 @@ const ImpactShockwave = ({ position, onComplete }: { position: [number, number, 
 
 // --- 3D UI COMPONENTS (Hero Assembly) ---
 const HeroNavbar = () => (
-    <div className="w-[300px] h-8 bg-black/60 border border-white/10 rounded-full flex items-center justify-between px-4 backdrop-blur-md">
-        <div className="flex gap-2">
+    <div className="w-[380px] h-8 bg-black/60 border border-white/10 rounded-full flex items-center justify-between px-4 backdrop-blur-md">
+        <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-[#306EE8] rounded-full"></div>
             <div className="w-12 h-1.5 bg-white/20 rounded-full"></div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
             <div className="w-8 h-1.5 bg-white/10 rounded-full"></div>
             <div className="w-8 h-1.5 bg-white/10 rounded-full"></div>
             <div className="w-16 h-5 bg-[#306EE8]/20 border border-[#306EE8]/50 rounded-full flex items-center justify-center">
@@ -159,16 +159,16 @@ const HeroFooter = () => (
 const HeroAssembly3D = () => {
     // 3D Positions for the assembled state
     // Top/Bottom at +/- 1.8 units 
-    // Left/Right at +/- 2.2 units
+    // Left/Right at +/- 2.6 units (increased spacing for wider navbar)
     return (
         <group>
             <Html position={[0, 1.8, 0]} center>
                 <HeroNavbar />
             </Html>
-            <Html position={[-2.2, 0, 0]} center>
+            <Html position={[-2.6, 0, 0]} center>
                 <HeroText />
             </Html>
-            <Html position={[2.2, 0, 0]} center>
+            <Html position={[2.6, 0, 0]} center>
                 <HeroCard />
             </Html>
             <Html position={[0, -1.8, 0]} center>
@@ -184,13 +184,17 @@ const WebsiteNode = ({
     position,
     type = 'CORNER',
     isUnlocked = false,
-    isGhost = false,
+    revealed = false,
+    isFirst = false,
+    isActiveTarget = false,
     onHover,
 }: {
     position: [number, number, number],
     type?: 'CENTER' | 'CORNER',
     isUnlocked?: boolean,
-    isGhost?: boolean,
+    revealed?: boolean,
+    isFirst?: boolean,
+    isActiveTarget?: boolean,
     onHover?: () => void,
 }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -209,9 +213,18 @@ const WebsiteNode = ({
     // We dampen the wobble for corners.
     const wobbleScale = isCenter ? 1.0 : 0.5;
 
-    // Visibility: Ghost nodes must be FULLY visible
-    const isVisible = isCenter || isUnlocked || isGhost;
+    // Visibility logic
+    const isVisible = type === 'CENTER' || revealed;
     const opacityClass = isVisible ? "opacity-100" : "opacity-0 pointer-events-none";
+
+    // Scale Logic:
+    // If not revealed: Scale 0. 
+    // If revealed: Scale 1. (Animated)
+    // We handle scale in CSS for the DIV, and scaleOverride used for the RING component.
+
+    // NOTE: WebsiteNode receives position but AutomationEnergyRing handles internal logic.
+    // We need to ensure the RING is also hidden if not revealed.
+
 
     // STYLE PARITY WITH AUTOMATION NETWORK (Center Icon)
     // "border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_50px_rgba(48,110,232,0.4)]"
@@ -246,7 +259,9 @@ const WebsiteNode = ({
                         opacityClass,
                         borderClass,
                         // Active Hover Override
-                        isHovered && automationActiveStyle
+                        isHovered && automationActiveStyle,
+                        // GUIDE PULSE (Exact DNAHelix Style)
+                        isActiveTarget && !isHovered && "animate-guide-glow-v2 border-[#306EE8] shadow-[0_0_30px_rgba(48,110,232,0.8)]"
                     )}
                 >
                     <Asterisk className={cn(iconClass, "text-white transition-all duration-300")} />
@@ -257,31 +272,25 @@ const WebsiteNode = ({
 };
 
 // --- SCENE ---
-const MagneticScene = () => {
+const MagneticScene = ({ guideStep, setGuideStep }: {
+    guideStep: number,
+    setGuideStep: React.Dispatch<React.SetStateAction<number>>
+}) => {
     const CENTER_POS = [0, 0, 0] as [number, number, number];
-    const ORDERED_CORNERS = [
-        [-4.5, 2.5, 0],  // TL (Restored Original)
-        [4.5, 2.5, 0],   // TR
-        [4.5, -2.5, 0],  // BR
-        [-4.5, -2.5, 0]  // BL
-    ] as [number, number, number][];
+    const CORNER_DEFS = [
+        { id: 0, position: [-4.5, 2.5, 0] as [number, number, number] },  // TL
+        { id: 1, position: [4.5, 2.5, 0] as [number, number, number] },   // TR
+        { id: 2, position: [4.5, -2.5, 0] as [number, number, number] },  // BR
+        { id: 3, position: [-4.5, -2.5, 0] as [number, number, number] }   // BL
+    ];
 
-    const [unlockedNodes, setUnlockedNodes] = useState<boolean[]>([false, false, false, false]);
-    const [centerHovered, setCenterHovered] = useState(false);
     const [blastTriggers, setBlastTriggers] = useState<boolean[]>([false, false, false, false]);
 
     // HELPERS FOR BEAM CONNECTION POINTS
     const { viewport, size } = useThree();
-    // Replicate AutomationEnergyRing logic: 80px base size * scale
-    // Radius is roughly half of that. Visual ring radius is 0.46 * Size.
-    // Logic: toUnits(80) * scale * 0.46
     const hasDimensions = size.width > 0;
     const toUnits = (pixels: number) => hasDimensions ? (pixels / size.width) * viewport.width : 0;
-
-    // Radii in World Units
-    // Center: Scale 0.9 -> 80 * 0.9 = 72px base -> Ring Radius ~33px visually
     const centerRadius = toUnits(80 * 0.9 * 0.46);
-    // Corner: Scale 0.65 -> 80 * 0.65 = 52px base -> Ring Radius ~24px visually
     const cornerRadius = toUnits(80 * 0.65 * 0.46);
 
     const getPerimeterPoint = (from: [number, number, number], to: [number, number, number], radius: number) => {
@@ -291,50 +300,64 @@ const MagneticScene = () => {
         return vFrom.add(dir.multiplyScalar(radius)).toArray() as [number, number, number];
     };
 
+    const handleCenterHover = () => {
+        if (guideStep === -1) {
+            // JUMP START: Reveal Node 0 AND Node 1 immediately.
+            // Triggers blast on Node 0 to visualize the "Strike".
+            setBlastTriggers(b => {
+                const nb = [...b];
+                nb[0] = true;
+                return nb;
+            });
+            setTimeout(() => setBlastTriggers(b => {
+                const nb = [...b];
+                nb[0] = false;
+                return nb;
+            }), 500);
+
+            // Skip to Step 1 (Node 1 is now the Target)
+            setGuideStep(1);
+        }
+    };
 
     const handleCornerHover = (index: number) => {
-        if (unlockedNodes[index]) return;
-
-        // BLAST
-        setBlastTriggers(prev => {
-            const next = [...prev];
-            next[index] = true;
-            return next;
-        });
-        setTimeout(() => setBlastTriggers(prev => {
-            const next = [...prev];
-            next[index] = false;
-            return next;
-        }), 500);
-
-        // UNLOCK
-        setTimeout(() => {
-            setUnlockedNodes(prev => {
-                const n = [...prev];
-                n[index] = true;
-                return n;
+        // Logic: Hovering the pulsing target blasts IT and reveals the next.
+        if (index === guideStep) {
+            // Blast the CURRENT target
+            setBlastTriggers(prev => {
+                const next = [...prev];
+                next[index] = true;
+                return next;
             });
-        }, 200);
+
+            // Reset Blast
+            setTimeout(() => setBlastTriggers(prev => {
+                const next = [...prev];
+                next[index] = false;
+                return next;
+            }), 500);
+
+            // Unlock next step
+            setGuideStep(prev => prev + 1);
+        }
     };
 
     return (
         <group>
             {/* 1. BLAST BEAMS (#306EE8) */}
-            {/* 1. BLAST BEAMS (#306EE8) */}
-            {ORDERED_CORNERS.map((pos, i) => {
-                // Blast: From Center Edge -> Corner Edge
-                // Actually blast usually comes from "inside" or edge?
-                // Let's go Edge to Edge for clean look.
-                const start = getPerimeterPoint(CENTER_POS, pos, centerRadius);
-                const end = getPerimeterPoint(pos, CENTER_POS, cornerRadius);
+            {CORNER_DEFS.map((corner) => {
+                // Blast logic: When corner X triggers, blast goes to IT from Center?
+                // Yes, blast from center to the new node.
+                const start = getPerimeterPoint(CENTER_POS, corner.position, centerRadius);
+                const end = getPerimeterPoint(corner.position, CENTER_POS, cornerRadius);
 
                 return (
                     <ElectricLine
-                        key={`blast-${i}`}
+                        key={`blast-${corner.id}`}
                         start={start}
                         end={end}
                         mode="blast"
-                        trigger={blastTriggers[i]}
+                        trigger={blastTriggers[corner.id]}
                         color="#00A3FF"
                     />
                 );
@@ -345,27 +368,28 @@ const MagneticScene = () => {
                 isActive && (
                     <ImpactShockwave
                         key={`shock-${i}`}
-                        position={ORDERED_CORNERS[i]} // Impact on the CORNER
-                        onComplete={() => {
-                            // No-op, managed by parent state timeout
-                        }}
+                        position={CORNER_DEFS[i].position}
+                        onComplete={() => { }}
                     />
                 )
             ))}
 
             {/* 2. STABLE LINKS (#306EE8) */}
-            {ORDERED_CORNERS.map((pos, i) => {
-                const nextIndex = (i + 1) % 4;
-                const isConnected = unlockedNodes[i] && unlockedNodes[nextIndex];
+            {CORNER_DEFS.map((corner) => {
+                const nextIndex = (corner.id + 1) % 4;
+                const nextCorner = CORNER_DEFS[nextIndex];
+
+                // Link exists if we have completed this step
+                // Sequence: 0->1 at Step 1, 1->2 at Step 2, ..., 3->0 at Step 4.
+                const isConnected = guideStep >= corner.id + 1;
                 if (!isConnected) return null;
 
-                // Link: Corner Edge -> Corner Edge
-                const start = getPerimeterPoint(pos, ORDERED_CORNERS[nextIndex], cornerRadius);
-                const end = getPerimeterPoint(ORDERED_CORNERS[nextIndex], pos, cornerRadius);
+                const start = getPerimeterPoint(corner.position, nextCorner.position, cornerRadius);
+                const end = getPerimeterPoint(nextCorner.position, corner.position, cornerRadius);
 
                 return (
                     <ElectricLine
-                        key={`link-${i}`}
+                        key={`link-${corner.id}`}
                         start={start}
                         end={end}
                         mode="stable"
@@ -374,38 +398,51 @@ const MagneticScene = () => {
                 );
             })}
 
-            {/* 3. NODES */}
+            {/* 3. CENTER NODE */}
             <WebsiteNode
                 position={CENTER_POS}
                 type="CENTER"
-                onHover={() => setCenterHovered(true)}
+                // Center is always unlocked/revealed
                 isUnlocked={true}
+                revealed={true}
+                isActiveTarget={guideStep === -1} // Blink at start
+                onHover={handleCenterHover}
             />
 
-            {/* 3. HERO ASSEMBLY (3D UI) - For Preview/Final State */}
+            {/* 3. HERO ASSEMBLY (3D UI) */}
             <HeroAssembly3D />
 
-            {ORDERED_CORNERS.map((pos, i) => (
+            {/* 4. CORNER NODES */}
+            {CORNER_DEFS.map((corner, i) => (
                 <WebsiteNode
                     key={i}
-                    position={pos}
+                    position={corner.position}
                     type="CORNER"
-                    isUnlocked={unlockedNodes[i]}
-                    isGhost={centerHovered}
+                    isUnlocked={guideStep >= i}
+                    revealed={guideStep >= i}
+                    isFirst={i === 0}
+                    isActiveTarget={guideStep === i}
                     onHover={() => handleCornerHover(i)}
                 />
             ))}
-        </group>
+        </group >
     );
 };
 
-export const MagneticWebsite = ({ isActive = true }: { isActive?: boolean }) => {
+export const MagneticWebsite = ({ isActive = false }: { isActive?: boolean }) => {
+    // -1 = Hidden/Start. 0 = Center active, 1st node reveals. 1 = 1st Node hovered, 2nd reveals...
+    const [guideStep, setGuideStep] = useState(-1);
+
+    useEffect(() => {
+        // Removed auto-start to allow Center to blink first.
+    }, [isActive]);
+
     return (
         <div className="w-full h-[400px] relative">
             <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
                 <ambientLight intensity={0.5} />
                 <Environment preset="city" />
-                <MagneticScene />
+                <MagneticScene guideStep={guideStep} setGuideStep={setGuideStep} />
             </Canvas>
         </div>
     );
