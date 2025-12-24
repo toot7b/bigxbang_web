@@ -93,17 +93,19 @@ const SCANNER_FRAGMENT = `
 export const ElectricLine = ({
     start,
     end,
-    mode = 'stable', // 'stable' | 'blast'
+    mode = 'stable',
     trigger = false,
     color = "#00A3FF",
-    tension = 0
+    tension = 0,
+    cornerPoint
 }: {
     start: [number, number, number],
     end: [number, number, number],
     mode?: 'stable' | 'blast',
     trigger?: boolean,
     color?: string,
-    tension?: number
+    tension?: number,
+    cornerPoint?: [number, number, number]
 }) => {
     const materialRef = useRef<THREE.ShaderMaterial>(null);
     const blastLife = useRef(0.0);
@@ -117,13 +119,19 @@ export const ElectricLine = ({
         const s = new THREE.Vector3(...start);
         const e = new THREE.Vector3(...end);
 
+        // Bezier curve for rounded corners
+        if (cornerPoint) {
+            const c = new THREE.Vector3(...cornerPoint);
+            return new THREE.QuadraticBezierCurve3(s, c, e);
+        }
+
         if (mode === 'blast') {
             return new THREE.LineCurve3(s, e);
         }
         // Stable mode: Slight curve for organic feel
         const mid = s.clone().lerp(e, 0.5);
         return new THREE.CatmullRomCurve3([s, mid, e]);
-    }, [start, end, isValid, mode]);
+    }, [start, end, isValid, mode, cornerPoint]);
 
     useFrame((state, delta) => {
         if (!materialRef.current) return;

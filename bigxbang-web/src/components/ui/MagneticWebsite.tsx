@@ -67,27 +67,28 @@ const ImpactShockwave = ({ position, onComplete }: { position: [number, number, 
 };
 
 // --- HERO ASSEMBLY COMPONENTS ---
+// --- HERO ASSEMBLY COMPONENTS ---
 const HeroNavbar = () => (
-    <div className="w-[380px] h-8 bg-black/60 border border-white/10 rounded-full flex items-center justify-between px-4 backdrop-blur-md">
-        <div className="flex items-center gap-2"><div className="w-2 h-2 bg-[#306EE8] rounded-full" /><div className="w-12 h-1.5 bg-white/20 rounded-full" /></div>
-        <div className="flex items-center gap-4"><div className="w-8 h-1.5 bg-white/10 rounded-full" /><div className="w-8 h-1.5 bg-white/10 rounded-full" /><div className="w-16 h-5 bg-[#306EE8]/20 border border-[#306EE8]/50 rounded-full flex items-center justify-center"><div className="w-8 h-1 bg-[#306EE8] rounded-full" /></div></div>
+    <div className="w-[360px] h-9 bg-black/60 border border-white/10 rounded-full flex items-center justify-between px-5 backdrop-blur-md">
+        <div className="flex items-center gap-3"><div className="w-2.5 h-2.5 bg-[#306EE8] rounded-full" /><div className="w-14 h-2 bg-white/20 rounded-full" /></div>
+        <div className="flex items-center gap-5"><div className="w-9 h-2 bg-white/10 rounded-full" /><div className="w-9 h-2 bg-white/10 rounded-full" /><div className="w-18 h-6 bg-[#306EE8]/20 border border-[#306EE8]/50 rounded-full flex items-center justify-center"><div className="w-9 h-1 bg-[#306EE8] rounded-full" /></div></div>
     </div>
 );
 const HeroText = () => (
-    <div className="flex flex-col gap-2 origin-center scale-60"><div className="flex flex-col gap-1"><div className="w-40 h-5 bg-white/90 rounded-sm" /><div className="w-24 h-5 bg-white/50 rounded-sm" /></div><div className="w-32 h-2 bg-white/20 rounded-sm" /><div className="flex gap-2 mt-1"><div className="w-20 h-6 bg-[#306EE8] rounded-md" /><div className="w-20 h-6 border border-white/20 rounded-md" /></div></div>
+    <div className="flex flex-col gap-2.5 origin-center scale-65"><div className="flex flex-col gap-1"><div className="w-44 h-5.5 bg-white/90 rounded-sm" /><div className="w-26 h-5.5 bg-white/50 rounded-sm" /></div><div className="w-36 h-2 bg-white/20 rounded-sm" /><div className="flex gap-2.5 mt-1"><div className="w-22 h-7 bg-[#306EE8] rounded-md" /><div className="w-22 h-7 border border-white/20 rounded-md" /></div></div>
 );
 const HeroCard = () => (
-    <div className="w-40 h-28 bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-xl backdrop-blur-md p-2 flex flex-col gap-2 origin-center scale-60"><div className="w-full h-16 bg-white/5 rounded-lg border border-white/5 relative overflow-hidden"><div className="absolute inset-0 bg-gradient-to-tr from-[#306EE8]/20 to-transparent" /></div><div className="w-full h-1.5 bg-white/20 rounded-full" /><div className="w-2/3 h-1.5 bg-white/10 rounded-full" /></div>
+    <div className="w-44 h-30 bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-xl backdrop-blur-md p-2.5 flex flex-col gap-2.5 origin-center scale-65"><div className="w-full h-18 bg-white/5 rounded-lg border border-white/5 relative overflow-hidden"><div className="absolute inset-0 bg-gradient-to-tr from-[#306EE8]/20 to-transparent" /></div><div className="w-full h-2 bg-white/20 rounded-full" /><div className="w-2/3 h-2 bg-white/10 rounded-full" /></div>
 );
 const HeroFooter = () => (
-    <div className="flex items-center justify-center gap-6 opacity-30"><div className="w-16 h-3 bg-white/20 rounded-md" /><div className="w-16 h-3 bg-white/20 rounded-md" /><div className="w-16 h-3 bg-white/20 rounded-md" /></div>
+    <div className="flex items-center justify-center gap-10 opacity-30"><div className="w-20 h-3 bg-white/20 rounded-md" /><div className="w-20 h-3 bg-white/20 rounded-md" /><div className="w-20 h-3 bg-white/20 rounded-md" /></div>
 );
 const HeroAssembly3D = () => (
     <group>
-        <Html position={[0, 1.8, 0]} center><HeroNavbar /></Html>
-        <Html position={[-2.6, 0, 0]} center><HeroText /></Html>
-        <Html position={[2.6, 0, 0]} center><HeroCard /></Html>
-        <Html position={[0, -1.8, 0]} center><HeroFooter /></Html>
+        <Html position={[0, 2.3, 0]} center><HeroNavbar /></Html>
+        <Html position={[-2.8, 0, 0]} center><HeroText /></Html>
+        <Html position={[2.8, 0, 0]} center><HeroCard /></Html>
+        <Html position={[0, -2.3, 0]} center><HeroFooter /></Html>
     </group>
 );
 
@@ -159,8 +160,8 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
 
     // Initial Positions (Static Reference)
     const initCorners = useMemo(() => [
-        new THREE.Vector3(-4.5, 2.5, 0), new THREE.Vector3(4.5, 2.5, 0),
-        new THREE.Vector3(4.5, -2.5, 0), new THREE.Vector3(-4.5, -2.5, 0)
+        new THREE.Vector3(-4.6, 3.0, 0), new THREE.Vector3(4.6, 3.0, 0),
+        new THREE.Vector3(4.6, -3.0, 0), new THREE.Vector3(-4.6, -3.0, 0)
     ], []);
 
     // REFS FOR DIRECT ANIMATION
@@ -180,8 +181,8 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
     // The blast is a "shot". It doesn't necessarily need to stick to the moving node perfectly if it's an "impulse".
 
     const corners = useRef([
-        new THREE.Vector3(-4.5, 2.5, 0), new THREE.Vector3(4.5, 2.5, 0),
-        new THREE.Vector3(4.5, -2.5, 0), new THREE.Vector3(-4.5, -2.5, 0)
+        new THREE.Vector3(-4.6, 3.0, 0), new THREE.Vector3(4.6, 3.0, 0),
+        new THREE.Vector3(4.6, -3.0, 0), new THREE.Vector3(-4.6, -3.0, 0)
     ]);
 
     // HELPERS
@@ -271,14 +272,50 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
                 const nextI = (i + 1) % 4;
                 if (guideStep < i + 1 && !isFinale) return null;
 
-                // Frame collapses visually? 
-                // Using standard ElectricLine, it won't update position every frame unless we re-render.
-                // But the user just wants the "Blast" trigger logic to lead the implosion.
-                // We'll leave the frame static for a split second or let it fade.
-                const start = getPerimeterPoint(initCorners[i], initCorners[nextI], cornerRadius).toArray();
-                const end = getPerimeterPoint(initCorners[nextI], initCorners[i], cornerRadius).toArray();
+                const c1 = initCorners[i];
+                const c2 = initCorners[nextI];
+                const R = 0.8; // Corner radius
 
-                return <ElectricLine key={`frame-${i}`} start={start} end={end} mode="stable" color="#00A3FF" />;
+                // Calculate line endpoints
+                let lineStart = getPerimeterPoint(initCorners[i], initCorners[nextI], cornerRadius);
+                let lineEnd = getPerimeterPoint(initCorners[nextI], initCorners[i], cornerRadius);
+
+                // During finale: shorten lines to make room for corners
+                if (isFinale) {
+                    const dir = c2.clone().sub(c1).normalize();
+                    lineStart = c1.clone().add(dir.clone().multiplyScalar(R));
+                    lineEnd = c2.clone().sub(dir.clone().multiplyScalar(R));
+                }
+
+                return <ElectricLine key={`frame-${i}`} start={lineStart.toArray()} end={lineEnd.toArray()} mode="stable" color="#00A3FF" />;
+            })}
+
+            {/* 2.5 CORNER CURVES - FINALE ONLY */}
+            {isFinale && initCorners.map((cornerPos, i) => {
+                const prevI = (i - 1 + 4) % 4;
+                const nextI = (i + 1) % 4;
+                const R = 0.8;
+
+                // Incoming line direction (from prev corner)
+                const prevCorner = initCorners[prevI];
+                const vecIn = cornerPos.clone().sub(prevCorner).normalize();
+                const curveStart = cornerPos.clone().sub(vecIn.multiplyScalar(R));
+
+                // Outgoing line direction (to next corner)
+                const nextCorner = initCorners[nextI];
+                const vecOut = nextCorner.clone().sub(cornerPos).normalize();
+                const curveEnd = cornerPos.clone().add(vecOut.multiplyScalar(R));
+
+                return (
+                    <ElectricLine
+                        key={`corner-curve-${i}`}
+                        start={curveStart.toArray()}
+                        end={curveEnd.toArray()}
+                        cornerPoint={cornerPos.toArray()}
+                        mode="stable"
+                        color="#00A3FF"
+                    />
+                );
             })}
 
             {/* 3. CENTER NODE */}
