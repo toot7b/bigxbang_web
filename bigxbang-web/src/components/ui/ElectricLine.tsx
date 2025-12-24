@@ -95,13 +95,15 @@ export const ElectricLine = ({
     end,
     mode = 'stable', // 'stable' | 'blast'
     trigger = false,
-    color = "#00A3FF"
+    color = "#00A3FF",
+    tension = 0
 }: {
     start: [number, number, number],
     end: [number, number, number],
     mode?: 'stable' | 'blast',
     trigger?: boolean,
-    color?: string
+    color?: string,
+    tension?: number
 }) => {
     const materialRef = useRef<THREE.ShaderMaterial>(null);
     const blastLife = useRef(0.0);
@@ -140,20 +142,20 @@ export const ElectricLine = ({
             lastTrigger.current = trigger;
 
             if (blastLife.current > 0.0) {
-                // Blast decay logic matching ElectricCables
                 blastLife.current -= delta * 2.0;
                 if (blastLife.current < 0.0) blastLife.current = 0.0;
             }
 
             const life = blastLife.current;
-            // High intensity burst that fades
             targetIntensity = Math.pow(life, 2.0) * 4.0;
             targetInstability = life > 0.1 ? 1.0 : 0.0;
 
         } else {
-            // Stable Mode: Consistent low-level buzz
-            targetInstability = 0.3;
-            targetIntensity = 0.5;
+            // Stable Mode with optional Tension
+            // Base: 0.3 instability, 0.5 intensity
+            // Tension (0-1) adds to this
+            targetInstability = 0.3 + (tension * 2.0);
+            targetIntensity = 0.5 + (tension * 2.0);
         }
 
         materialRef.current.uniforms.uInstability.value = THREE.MathUtils.lerp(
