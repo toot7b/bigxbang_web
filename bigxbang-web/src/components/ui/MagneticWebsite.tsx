@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { Environment, Html } from '@react-three/drei';
 import Asterisk from './Asterisk';
@@ -9,6 +9,7 @@ import { ElectricLine } from './ElectricLine';
 import { AutomationEnergyRing } from './AutomationEnergyRing';
 import { cn } from '@/lib/utils';
 import * as THREE from 'three';
+import { DottedGlowBackground } from './DottedGlowBackground';
 
 // --- SHOCKWAVE COMPONENT ---
 const SHOCKWAVE_FRAGMENT = `
@@ -151,28 +152,109 @@ const ImpactShockwave = ({ position, onComplete, size = 4.0, variant = 'simple' 
 };
 
 // --- HERO ASSEMBLY COMPONENTS ---
-// --- HERO ASSEMBLY COMPONENTS ---
-const HeroNavbar = () => (
-    <div className="w-[360px] h-9 bg-black/60 border border-white/10 rounded-full flex items-center justify-between px-5 backdrop-blur-md">
-        <div className="flex items-center gap-3"><div className="w-2.5 h-2.5 bg-[#306EE8] rounded-full" /><div className="w-14 h-2 bg-white/20 rounded-full" /></div>
-        <div className="flex items-center gap-5"><div className="w-9 h-2 bg-white/10 rounded-full" /><div className="w-9 h-2 bg-white/10 rounded-full" /><div className="w-18 h-6 bg-[#306EE8]/20 border border-[#306EE8]/50 rounded-full flex items-center justify-center"><div className="w-9 h-1 bg-[#306EE8] rounded-full" /></div></div>
-    </div>
+
+// --- PIXEL REVEAL WRAPPER ---
+// Simulates a "Resolution Decode" where the object solidifies from a pixelated grid.
+// --- PIXEL REVEAL WRAPPER ---
+// Simulates a "Holographic Construction" where digital particles fill the space before the object solidifies.
+const PixelReveal = ({ children, revealed, delay = 0, className }: { children: React.ReactNode, revealed: boolean, delay?: number, className?: string }) => {
+    const [status, setStatus] = useState<'hidden' | 'constructing' | 'revealed'>('hidden');
+
+    useEffect(() => {
+        if (revealed) {
+            // 1. Swarm appears immediately
+            const t1 = setTimeout(() => setStatus('constructing'), delay);
+            // 2. Scan Wipe starts after dots are established
+            const t2 = setTimeout(() => setStatus('revealed'), delay + 500); // 500ms of pure dots
+            return () => { clearTimeout(t1); clearTimeout(t2); };
+        } else {
+            setStatus('hidden');
+        }
+    }, [revealed, delay]);
+
+    return (
+        <div className={cn("relative w-fit h-fit", className)}>
+            {/* The Content: Wipes in from Left */}
+            <div
+                className={cn("relative z-10 transition-all duration-700 ease-in-out",
+                    status === 'revealed' ? "opacity-100 blur-0" : "opacity-0 blur-sm"
+                )}
+                style={{
+                    // Reveal from Left: Clip the RIGHT side from 100% to 0%
+                    clipPath: status === 'revealed' ? 'inset(0 0 0 0)' : 'inset(0 100% 0 0)'
+                }}
+            >
+                {children}
+            </div>
+
+            {/* The Construction Layer: Dotted Glow Particles */}
+            <div
+                className={cn("absolute inset-0 z-20 pointer-events-none transition-all duration-700 ease-in-out",
+                    (status === 'constructing' || status === 'revealed') ? "opacity-100" : "opacity-0"
+                )}
+                style={{
+                    // Hide from Left: Clip the LEFT side from 0% to 100% (following the content reveal)
+                    clipPath: status === 'revealed' ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)'
+                }}
+            >
+                {/* 1. Base Dark Background */}
+                <div className="absolute inset-0 bg-[#000510]/80 backdrop-blur-[2px]" />
+
+                {/* 2. The Particles */}
+                <DottedGlowBackground
+                    gap={6}
+                    radius={1.5}
+                    color="#00A3FF"
+                    glowColor="#00E0FF"
+                    opacity={0.9}
+                    speedMin={2.0}
+                    speedMax={4.0}
+                />
+
+                {/* 3. Border Outline */}
+                <div className="absolute inset-0 border border-[#00A3FF]/30" />
+            </div>
+        </div>
+    );
+};
+
+const HeroNavbar = ({ revealed }: { revealed: boolean }) => (
+    <PixelReveal revealed={revealed} delay={300} className="origin-top">
+        <div className="w-[360px] h-9 bg-black/60 border border-white/10 rounded-full flex items-center justify-between px-5 backdrop-blur-md">
+            <div className="flex items-center gap-3"><div className="w-2.5 h-2.5 bg-[#306EE8] rounded-full" /><div className="w-14 h-2 bg-white/20 rounded-full" /></div>
+            <div className="flex items-center gap-5"><div className="w-9 h-2 bg-white/10 rounded-full" /><div className="w-9 h-2 bg-white/10 rounded-full" /><div className="w-18 h-6 bg-[#306EE8]/20 border border-[#306EE8]/50 rounded-full flex items-center justify-center"><div className="w-9 h-1 bg-[#306EE8] rounded-full" /></div></div>
+        </div>
+    </PixelReveal>
 );
-const HeroText = () => (
-    <div className="flex flex-col gap-2.5 origin-center scale-65"><div className="flex flex-col gap-1"><div className="w-44 h-5.5 bg-white/90 rounded-sm" /><div className="w-26 h-5.5 bg-white/50 rounded-sm" /></div><div className="w-36 h-2 bg-white/20 rounded-sm" /><div className="flex gap-2.5 mt-1"><div className="w-22 h-7 bg-[#306EE8] rounded-md" /><div className="w-22 h-7 border border-white/20 rounded-md" /></div></div>
+const HeroText = ({ revealed }: { revealed: boolean }) => (
+    <PixelReveal revealed={revealed} delay={450} className="origin-center scale-65">
+        <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-1"><div className="w-44 h-5.5 bg-white/90 rounded-sm" /><div className="w-26 h-5.5 bg-white/50 rounded-sm" /></div>
+            <div className="w-36 h-2 bg-white/20 rounded-sm" />
+            <div className="flex gap-2.5 mt-1"><div className="w-22 h-7 bg-[#306EE8] rounded-md" /><div className="w-22 h-7 border border-white/20 rounded-md" /></div>
+        </div>
+    </PixelReveal>
 );
-const HeroCard = () => (
-    <div className="w-44 h-30 bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-xl backdrop-blur-md p-2.5 flex flex-col gap-2.5 origin-center scale-65"><div className="w-full h-18 bg-white/5 rounded-lg border border-white/5 relative overflow-hidden"><div className="absolute inset-0 bg-gradient-to-tr from-[#306EE8]/20 to-transparent" /></div><div className="w-full h-2 bg-white/20 rounded-full" /><div className="w-2/3 h-2 bg-white/10 rounded-full" /></div>
+const HeroCard = ({ revealed }: { revealed: boolean }) => (
+    <PixelReveal revealed={revealed} delay={450} className="origin-center scale-65">
+        <div className="w-44 h-30 bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-xl backdrop-blur-md p-2.5 flex flex-col gap-2.5">
+            <div className="w-full h-18 bg-white/5 rounded-lg border border-white/5 relative overflow-hidden"><div className="absolute inset-0 bg-gradient-to-tr from-[#306EE8]/20 to-transparent" /></div><div className="w-full h-2 bg-white/20 rounded-full" /><div className="w-2/3 h-2 bg-white/10 rounded-full" />
+        </div>
+    </PixelReveal>
 );
-const HeroFooter = () => (
-    <div className="flex items-center justify-center gap-10 opacity-30"><div className="w-20 h-3 bg-white/20 rounded-md" /><div className="w-20 h-3 bg-white/20 rounded-md" /><div className="w-20 h-3 bg-white/20 rounded-md" /></div>
+const HeroFooter = ({ revealed }: { revealed: boolean }) => (
+    <PixelReveal revealed={revealed} delay={600} className="origin-bottom">
+        <div className="flex items-center justify-center gap-10 opacity-60">
+            <div className="w-20 h-3 bg-white/20 rounded-md" /><div className="w-20 h-3 bg-white/20 rounded-md" /><div className="w-20 h-3 bg-white/20 rounded-md" />
+        </div>
+    </PixelReveal>
 );
-const HeroAssembly3D = () => (
+const HeroAssembly3D = ({ revealed }: { revealed: boolean }) => (
     <group>
-        <Html position={[0, 2.3, 0]} center><HeroNavbar /></Html>
-        <Html position={[-2.8, 0, 0]} center><HeroText /></Html>
-        <Html position={[2.8, 0, 0]} center><HeroCard /></Html>
-        <Html position={[0, -2.3, 0]} center><HeroFooter /></Html>
+        <Html position={[0, 2.3, 0]} center><HeroNavbar revealed={revealed} /></Html>
+        <Html position={[-2.8, 0, 0]} center><HeroText revealed={revealed} /></Html>
+        <Html position={[2.8, 0, 0]} center><HeroCard revealed={revealed} /></Html>
+        <Html position={[0, -2.3, 0]} center><HeroFooter revealed={revealed} /></Html>
     </group>
 );
 
@@ -243,6 +325,7 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
     const [blastTriggers, setBlastTriggers] = useState<boolean[]>([false, false, false, false]);
     const [shockwaveTrigger, setShockwaveTrigger] = useState(false);
     const [frameShock, setFrameShock] = useState(false);
+    const [heroRevealed, setHeroRevealed] = useState(false);
 
     // Initial Positions (Static Reference)
     const initCorners = useMemo(() => [
@@ -298,6 +381,7 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
             setShockwaveTrigger(true);
             setTimeout(() => setFrameShock(true), 350); // Visual delay for impact
             setTimeout(() => setFrameShock(false), 700); // Reset after shake
+            setTimeout(() => setHeroRevealed(true), 0.05); // Reveal UI IMMEDIATELY (Start of explosion)
         }
     });
 
@@ -430,7 +514,7 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
             />
 
             {/* 3. HERO ASSEMBLY */}
-            <HeroAssembly3D />
+            <HeroAssembly3D revealed={heroRevealed} />
 
             {/* 4. CORNER NODES */}
             {initCorners.map((pos, i) => (
