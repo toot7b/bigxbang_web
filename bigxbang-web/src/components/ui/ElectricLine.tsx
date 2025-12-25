@@ -35,6 +35,8 @@ const SCANNER_FRAGMENT = `
     uniform float uIntensity; 
     uniform float uInstability; 
     uniform vec3 uColor;
+    uniform float uLength;
+    uniform float uFadeEdges; // 1.0 = Fade, 0.0 = No Fade
     varying vec2 vUv;
 
     // --- NOISE ---
@@ -67,11 +69,14 @@ const SCANNER_FRAGMENT = `
         float jaggedness = 15.0; 
         if (uIntensity > 0.5) jaggedness = 30.0; 
 
-        float distortion = fbm(vec2(vUv.x * jaggedness - tNoise, tNoise * 0.5)); 
+        // Scale X noise by length to keep density consistent
+        float density = uLength > 0.0 ? uLength : 10.0;
+        float distortion = fbm(vec2(vUv.x * jaggedness * (density / 10.0) - tNoise, tNoise * 0.5)); 
         float path = (distortion - 0.5) * amp; 
 
         if (uInstability > 0.0) {
-            path += sin(vUv.x * 10.0 + uTime * 50.0) * 0.1 * uInstability;
+            // Consistent sine wave frequency
+            path += sin(vUv.x * (density * 2.0) + uTime * 50.0) * 0.1 * uInstability;
         } 
         
         float dist = abs(vUv.y - 0.5 - path);
@@ -79,12 +84,15 @@ const SCANNER_FRAGMENT = `
         float glow = exp(-abs(vUv.y - 0.5) * GLOW_FALLOFF);
         
         float interaction = (bolt + glow) * uIntensity;
-        // MATCH REFERENCE: Reverted to 0.3 cap to preserve Deep Blue Saturation (Automation style)
         vec3 finalColor = mix(uColor, vec3(1.0), clamp(interaction * 0.4, 0.0, 0.3));
         
         float alpha = interaction;
-        float fade = smoothstep(0.0, 0.05, vUv.x) * (1.0 - smoothstep(0.95, 1.0, vUv.x));
-        alpha *= fade;
+        
+        // Conditional Fade
+        if (uFadeEdges > 0.5) {
+             float fade = smoothstep(0.0, 0.05, vUv.x) * (1.0 - smoothstep(0.95, 1.0, vUv.x));
+             alpha *= fade;
+        }
         
         gl_FragColor = vec4(finalColor, clamp(alpha, 0.0, 1.0));
     }
@@ -97,7 +105,8 @@ export const ElectricLine = ({
     trigger = false,
     color = "#00A3FF",
     tension = 0,
-    cornerPoint
+    cornerPoint,
+    fadeEdges = true // Default to true to keep existing behavior for blasts
 }: {
     start: [number, number, number],
     end: [number, number, number],
@@ -105,9 +114,11 @@ export const ElectricLine = ({
     trigger?: boolean,
     color?: string,
     tension?: number,
-    cornerPoint?: [number, number, number]
+    cornerPoint?: [number, number, number],
+    fadeEdges?: boolean
 }) => {
     const materialRef = useRef<THREE.ShaderMaterial>(null);
+    const meshRef = useRef<THREE.Mesh>(null);
     const blastLife = useRef(0.0);
     const lastTrigger = useRef(trigger);
 
@@ -139,6 +150,16 @@ export const ElectricLine = ({
         const time = state.clock.elapsedTime;
         materialRef.current.uniforms.uTime.value = time;
         materialRef.current.uniforms.uColor.value.set(color);
+        materialRef.current.uniforms.uFadeEdges.value = fadeEdges ? 1.0 : 0.0;
+
+        // Update Length Uniform from Geometry
+        if (meshRef.current?.geometry) {
+            const geo = meshRef.current.geometry as THREE.TubeGeometry;
+            // Ensure parameters and path exist (safety check)
+            if (geo.parameters?.path && materialRef.current.uniforms.uLength) {
+                materialRef.current.uniforms.uLength.value = geo.parameters.path.getLength();
+            }
+        }
 
         let targetInstability = 0.0;
         let targetIntensity = 0.0;
@@ -160,8 +181,6 @@ export const ElectricLine = ({
 
         } else {
             // Stable Mode with optional Tension
-            // Base: 0.3 instability, 0.5 intensity
-            // Tension (0-1) adds to this
             targetInstability = 0.3 + (tension * 2.0);
             targetIntensity = 0.5 + (tension * 2.0);
         }
@@ -181,7 +200,7 @@ export const ElectricLine = ({
     if (!isValid || !curve) return null;
 
     return (
-        <mesh>
+        <mesh ref={meshRef}>
             <tubeGeometry args={[curve, 64, 0.04, 8, false]} />
             <shaderMaterial
                 ref={materialRef}
@@ -195,7 +214,9 @@ export const ElectricLine = ({
                     uTime: { value: 0 },
                     uIntensity: { value: 0 },
                     uInstability: { value: 0 },
-                    uColor: { value: new THREE.Color(color) }
+                    uColor: { value: new THREE.Color(color) },
+                    uLength: { value: 1.0 },
+                    uFadeEdges: { value: 1.0 }
                 }}
             />
         </mesh>

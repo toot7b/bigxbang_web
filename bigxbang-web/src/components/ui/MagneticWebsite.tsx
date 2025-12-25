@@ -287,7 +287,7 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
                     lineEnd = c2.clone().sub(dir.clone().multiplyScalar(R));
                 }
 
-                return <ElectricLine key={`frame-${i}`} start={lineStart.toArray()} end={lineEnd.toArray()} mode="stable" color="#00A3FF" />;
+                return <ElectricLine key={`frame-${i}`} start={lineStart.toArray()} end={lineEnd.toArray()} mode="stable" color="#00A3FF" fadeEdges={!isFinale} />;
             })}
 
             {/* 2.5 CORNER CURVES - FINALE ONLY */}
@@ -314,6 +314,7 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
                         cornerPoint={cornerPos.toArray()}
                         mode="stable"
                         color="#00A3FF"
+                        fadeEdges={false}
                     />
                 );
             })}
