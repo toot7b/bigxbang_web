@@ -25,7 +25,7 @@ export const HeroBrowser = ({
                 "bg-[#1A1A1A]", // Lighter than full black, requested "un peu plus clair"
                 className
             )}
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: "100%", height: "100%", transformOrigin: "center" }} // Scale handled by parent via Html wrapper or Framer, but here we just ensure origin
             {...props}
         >
             {/* WINDOW TOP BAR */}

@@ -5,7 +5,7 @@ import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { Environment, Html } from '@react-three/drei';
 import Asterisk from './Asterisk';
 import { ElectricLine } from './ElectricLine';
-import { DynamicElectricLine } from './DynamicElectricLine';
+
 import { AutomationEnergyRing } from './AutomationEnergyRing';
 import { cn } from '@/lib/utils';
 import * as THREE from 'three';
@@ -41,27 +41,111 @@ const SHOCKWAVE_FRAGMENT = `
     }
 `;
 
+const PLASMA_FRAGMENT = `
+    uniform float uTime;
+    uniform float uLife; // 0 (start) -> 1 (end)
+    uniform vec3 uColor;
+    varying vec2 vUv;
+    float hash(float n) { return fract(sin(n) * 43758.5453123); }
+    float noise(vec2 x) {
+        vec2 p = floor(x);
+        vec2 f = fract(x);
+        f = f * f * (3.0 - 2.0 * f);
+        float n = p.x + p.y * 57.0;
+        return mix(mix(hash(n + 0.0), hash(n + 1.0), f.x),
+                   mix(hash(n + 57.0), hash(n + 58.0), f.x), f.y);
+    }
+    float fbm(vec2 p) {
+        float f = 0.0;
+        f += 0.5000 * noise(p); p *= 2.02;
+        f += 0.2500 * noise(p); p *= 2.03;
+        f += 0.1250 * noise(p);
+        return f;
+    }
+    void main() {
+        vec2 center = vec2(0.5);
+        vec2 p = vUv - center;
+        // Aspect ratio correction for circle on rectangular plane (9.2 / 6.0 = ~1.53)
+        p.x *= 1.53;
+        
+        float dist = length(p);
+        float angle = atan(p.y, p.x);
+        
+        // PLASMA EXPLOSION LOGIC (Natural Circle)
+        // Radius expands to fit window height (0.5 * 1.0)
+        float radius = uLife * 0.9; 
+        
+        float baseWidth = 0.25 * (1.0 - uLife); 
+        
+        // Heavy Distortion (Plasma)
+        float noiseVal = fbm(vec2(angle * 3.0, uTime * 2.0 - dist * 5.0));
+        float distort = (noiseVal - 0.5) * 0.4 * (1.0 - uLife);
+        
+        float circle = abs(dist - radius + distort);
+        float ring = 1.0 - smoothstep(0.0, baseWidth, circle);
+        
+        // Inner Glow (Fill)
+        float innerGlow = smoothstep(radius, 0.0, dist) * 0.6 * (1.0 - uLife);
+        
+        float alpha = ring + innerGlow;
+        
+        // Debris
+        float debris = step(0.92, noise(vUv * 25.0 + uTime)) * (1.0 - smoothstep(radius, radius + 0.1, dist)) * smoothstep(radius - 0.2, radius, dist);
+        alpha += debris * (1.0 - uLife);
+
+        vec3 color = mix(uColor, vec3(1.0, 1.0, 1.0), ring * 0.9 + innerGlow * 0.5);
+        float opacity = pow(1.0 - uLife, 0.5);
+        
+        // VIGNETTE (Soft Edge Fade)
+        // Fades out the effect as it touches the exact border of the geometry
+        float edgeX = smoothstep(0.48, 0.45, abs(vUv.x - 0.5));
+        float edgeY = smoothstep(0.48, 0.45, abs(vUv.y - 0.5));
+        alpha *= edgeX * edgeY;
+
+        gl_FragColor = vec4(color, alpha * opacity * 2.5); 
+    }
+`;
+
 const NODE_VERTEX = `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 
-const ImpactShockwave = ({ position, onComplete }: { position: [number, number, number], onComplete: () => void }) => {
+const ImpactShockwave = ({ position, onComplete, size = 4.0, variant = 'simple' }: { position: [number, number, number], onComplete: () => void, size?: number | [number, number], variant?: 'simple' | 'plasma' }) => {
     const materialRef = useRef<THREE.ShaderMaterial>(null);
     const waveLife = useRef(0.0);
     const { camera } = useThree();
     const meshRef = useRef<THREE.Mesh>(null);
 
+    // Handle args
+    const planeArgs: [number, number] = Array.isArray(size) ? size : [size, size];
+
     useFrame((state, delta) => {
         if (!materialRef.current || !meshRef.current) return;
         meshRef.current.quaternion.copy(camera.quaternion);
         materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
-        waveLife.current += delta * 3.0; // Fast impact
+
+        // Slower speed for plasma to appreciate the detail
+        const speed = variant === 'plasma' ? 1.0 : 3.0;
+        waveLife.current += delta * speed;
+
         if (waveLife.current >= 1.0) onComplete();
         materialRef.current.uniforms.uLife.value = waveLife.current;
     });
 
     return (
         <mesh ref={meshRef} position={position}>
-            <planeGeometry args={[4.0, 4.0]} />
-            <shaderMaterial ref={materialRef} vertexShader={NODE_VERTEX} fragmentShader={SHOCKWAVE_FRAGMENT} transparent depthWrite={false} blending={THREE.AdditiveBlending} uniforms={{ uTime: { value: 0 }, uLife: { value: 0 }, uColor: { value: new THREE.Color("#00A3FF") } }} />
+            <planeGeometry args={planeArgs} />
+            <shaderMaterial
+                ref={materialRef}
+                vertexShader={NODE_VERTEX}
+                fragmentShader={variant === 'plasma' ? PLASMA_FRAGMENT : SHOCKWAVE_FRAGMENT}
+                transparent
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                uniforms={{
+                    uTime: { value: 0 },
+                    uLife: { value: 0 },
+                    uColor: { value: new THREE.Color("#00A3FF") }
+                }}
+            />
         </mesh>
     );
 };
@@ -157,6 +241,8 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
     const [isFinale, setIsFinale] = useState(false);
     const finaleTimer = useRef(0);
     const [blastTriggers, setBlastTriggers] = useState<boolean[]>([false, false, false, false]);
+    const [shockwaveTrigger, setShockwaveTrigger] = useState(false);
+    const [frameShock, setFrameShock] = useState(false);
 
     // Initial Positions (Static Reference)
     const initCorners = useMemo(() => [
@@ -166,19 +252,6 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
 
     // REFS FOR DIRECT ANIMATION
     const cornerNodeRefs = useRef<(THREE.Group | null)[]>([]);
-
-    // For the LINES to follow the nodes without re-render, we need to pass Refs or use a specialized line.
-    // BUT the user insists on using the EXISTING ElectricLine. 
-    // Existing ElectricLine takes `start` and `end` as [number, number, number] | Vector3.
-    // If we want them to animate, we MUST re-render the parent or the line needs to opt-in to refs.
-    // Compromise: We will use a `useFrame` to force update a locally created Ref-based line?
-    // User hates "fancy".
-    // Let's rely on the fact that `blast` is fast.
-    // We will triggers the blasts (static start/end from initCorners is fine because at t=0 of blast, nodes are there).
-    // As nodes move IN, the blast might look weird if it stays at perimeter.
-    // Use `forceUpdate` pattern? No, expensive.
-    // Let's just use the `initCorners` for the START of the blast.
-    // The blast is a "shot". It doesn't necessarily need to stick to the moving node perfectly if it's an "impulse".
 
     const corners = useRef([
         new THREE.Vector3(-4.6, 3.0, 0), new THREE.Vector3(4.6, 3.0, 0),
@@ -219,6 +292,13 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
                 cornerNodeRefs.current[i]!.position.copy(c);
             }
         });
+
+        // 2. SHOCKWAVE TRIGGER at Impact (approx DURATION_PULL)
+        if (t >= DURATION_PULL - 0.05 && t < DURATION_PULL + 0.05 && !shockwaveTrigger) {
+            setShockwaveTrigger(true);
+            setTimeout(() => setFrameShock(true), 350); // Visual delay for impact
+            setTimeout(() => setFrameShock(false), 700); // Reset after shake
+        }
     });
 
     const handleCenterHover = () => {
@@ -232,6 +312,9 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
             setTimeout(() => setBlastTriggers([false, false, false, false]), 600); // 600ms blast
 
             setIsFinale(true);
+            setShockwaveTrigger(false); // Reset shockwave
+            setFrameShock(false);
+            finaleTimer.current = 0;
         }
     };
 
@@ -267,6 +350,11 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
             {/* 1.5 SHOCKWAVES */}
             {blastTriggers.map((active, i) => active && <ImpactShockwave key={`shock-${i}`} position={initCorners[i].toArray()} onComplete={() => { }} />)}
 
+            {/* CENTRAL IMPACT SHOCKWAVE (WINDOW MASKED) */}
+            {/* Size = [9.2, 6.0] matching the frame exactly */}
+            {shockwaveTrigger && <ImpactShockwave position={[0, 0, -0.1]} onComplete={() => { }} size={[9.2, 6.0]} variant="plasma" />}
+
+
             {/* 2. THE FRAME */}
             {initCorners.map((_, i) => {
                 const nextI = (i + 1) % 4;
@@ -287,7 +375,17 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
                     lineEnd = c2.clone().sub(dir.clone().multiplyScalar(R));
                 }
 
-                return <ElectricLine key={`frame-${i}`} start={lineStart.toArray()} end={lineEnd.toArray()} mode="stable" color="#00A3FF" fadeEdges={!isFinale} />;
+                return (
+                    <ElectricLine
+                        key={`frame-${i}`}
+                        start={lineStart.toArray()}
+                        end={lineEnd.toArray()}
+                        mode="stable"
+                        color="#00A3FF"
+                        fadeEdges={!isFinale}
+                        turbulence={frameShock ? 0.3 : 0} // SHOCK REACTION: SUBTLE SHAKE
+                    />
+                );
             })}
 
             {/* 2.5 CORNER CURVES - FINALE ONLY */}
@@ -315,6 +413,7 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
                         mode="stable"
                         color="#00A3FF"
                         fadeEdges={false}
+                        turbulence={frameShock ? 0.5 : 0} // SHOCK REACTION: SUBTLE SHAKE
                     />
                 );
             })}

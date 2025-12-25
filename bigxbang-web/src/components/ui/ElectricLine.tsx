@@ -105,6 +105,7 @@ export const ElectricLine = ({
     trigger = false,
     color = "#00A3FF",
     tension = 0,
+    turbulence = 0, // NEW: Controls physical shake independent of color
     cornerPoint,
     fadeEdges = true // Default to true to keep existing behavior for blasts
 }: {
@@ -114,6 +115,7 @@ export const ElectricLine = ({
     trigger?: boolean,
     color?: string,
     tension?: number,
+    turbulence?: number,
     cornerPoint?: [number, number, number],
     fadeEdges?: boolean
 }) => {
@@ -140,9 +142,14 @@ export const ElectricLine = ({
             return new THREE.LineCurve3(s, e);
         }
         // Stable mode: Slight curve for organic feel
+        // If tension is high, line should be straighter (less organic curve)
+        if (tension && tension > 0.5) {
+            return new THREE.LineCurve3(s, e);
+        }
+
         const mid = s.clone().lerp(e, 0.5);
         return new THREE.CatmullRomCurve3([s, mid, e]);
-    }, [start, end, isValid, mode, cornerPoint]);
+    }, [start, end, isValid, mode, cornerPoint, tension]);
 
     useFrame((state, delta) => {
         if (!materialRef.current) return;
@@ -180,8 +187,14 @@ export const ElectricLine = ({
             targetInstability = life > 0.1 ? 1.0 : 0.0;
 
         } else {
-            // Stable Mode with optional Tension
-            targetInstability = 0.3 + (tension * 2.0);
+            // Stable Mode
+            // Tension -> Intensity (Energy/Brightness)
+            // Turbulence -> Instability (Physical Shake/Jitter)
+
+            // Base instability + turbulence prop (multiplied for effect)
+            targetInstability = 0.3 + (turbulence * 2.0);
+
+            // Base intensity + tension prop
             targetIntensity = 0.5 + (tension * 2.0);
         }
 
