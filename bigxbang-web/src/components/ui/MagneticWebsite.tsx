@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
-import { Environment, Html } from '@react-three/drei';
+import { Environment, Html, Points, PointMaterial } from '@react-three/drei';
 import Asterisk from './Asterisk';
 import { ElectricLine } from './ElectricLine';
 
@@ -153,11 +153,151 @@ const ImpactShockwave = ({ position, onComplete, size = 4.0, variant = 'simple' 
 
 // --- HERO ASSEMBLY COMPONENTS ---
 
+// --- FRAME BACKGROUND (Glossy dark surface that expands with explosion) ---
+const FrameBackground = ({ triggered }: { triggered: boolean }) => {
+    const meshRef = useRef<THREE.Mesh>(null);
+    const [scale, setScale] = useState(0);
+    const startTime = useRef<number | null>(null);
+    const DURATION = 1300; // 1000ms to fully expand
+
+    useFrame(() => {
+        if (!triggered) {
+            setScale(0);
+            startTime.current = null;
+            return;
+        }
+
+        if (startTime.current === null) {
+            startTime.current = Date.now();
+        }
+
+        const elapsed = Date.now() - startTime.current;
+        const progress = Math.min(elapsed / DURATION, 1.0);
+        // Ease out cubic for smooth deceleration
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setScale(eased);
+    });
+
+    if (scale <= 0) return null;
+
+    // Create rounded rectangle shape
+    const shape = useMemo(() => {
+        const s = new THREE.Shape();
+        const w = 9.2 / 2;
+        const h = 6.0 / 2;
+        const r = 0.8;
+        s.moveTo(-w + r, -h);
+        s.lineTo(w - r, -h);
+        s.quadraticCurveTo(w, -h, w, -h + r);
+        s.lineTo(w, h - r);
+        s.quadraticCurveTo(w, h, w - r, h);
+        s.lineTo(-w + r, h);
+        s.quadraticCurveTo(-w, h, -w, h - r);
+        s.lineTo(-w, -h + r);
+        s.quadraticCurveTo(-w, -h, -w + r, -h);
+        return s;
+    }, []);
+
+    return (
+        <mesh ref={meshRef} position={[0, 0, -0.2]} scale={[scale, scale, 1]}>
+            <shapeGeometry args={[shape]} />
+            <meshPhysicalMaterial
+                color="#161616"
+                roughness={0.1}
+                metalness={0.3}
+                clearcoat={1.0}
+                clearcoatRoughness={0.1}
+                reflectivity={0.3}
+            />
+        </mesh>
+    );
+};
+
 // --- PIXEL REVEAL WRAPPER ---
 // Simulates a "Resolution Decode" where the object solidifies from a pixelated grid.
+// --- RESIDUAL PARTICLES ---
+// --- RESIDUAL PARTICLES ---
+// Brief burst of particles that drift outward from the frame after explosion
+const ResidualParticles = () => {
+    const ref = useRef<THREE.Points>(null);
+    const [opacity, setOpacity] = useState(1.0);
+    const startTime = useRef(Date.now());
+    const DURATION = 2000; // 2 seconds lifespan
+
+    // Generate particles along the frame perimeter (box outline)
+    const [positions] = useState(() => {
+        const pos = new Float32Array(60 * 3); // 60 particles
+        const frameW = 9.2 / 2;
+        const frameH = 6.0 / 2;
+        for (let i = 0; i < 60; i++) {
+            const side = Math.floor(Math.random() * 4);
+            let x = 0, y = 0;
+            switch (side) {
+                case 0: x = (Math.random() - 0.5) * frameW * 2; y = frameH; break; // Top
+                case 1: x = (Math.random() - 0.5) * frameW * 2; y = -frameH; break; // Bottom
+                case 2: x = -frameW; y = (Math.random() - 0.5) * frameH * 2; break; // Left
+                case 3: x = frameW; y = (Math.random() - 0.5) * frameH * 2; break; // Right
+            }
+            pos[i * 3] = x + (Math.random() - 0.5) * 0.5;
+            pos[i * 3 + 1] = y + (Math.random() - 0.5) * 0.5;
+            pos[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
+        }
+        return pos;
+    });
+
+    // Velocities: particles drift outward from frame center
+    const [velocities] = useState(() => {
+        const vel = new Float32Array(60 * 3);
+        for (let i = 0; i < 60; i++) {
+            const x = positions[i * 3];
+            const y = positions[i * 3 + 1];
+            const len = Math.sqrt(x * x + y * y) || 1;
+            // Outward drift
+            vel[i * 3] = (x / len) * (0.3 + Math.random() * 0.5);
+            vel[i * 3 + 1] = (y / len) * (0.3 + Math.random() * 0.5);
+            vel[i * 3 + 2] = (Math.random() - 0.5) * 0.2;
+        }
+        return vel;
+    });
+
+    useFrame((state, delta) => {
+        if (!ref.current) return;
+        const elapsed = Date.now() - startTime.current;
+        const progress = Math.min(elapsed / DURATION, 1.0);
+
+        // Fade out
+        setOpacity(1.0 - progress);
+
+        // Move particles outward
+        const posArray = ref.current.geometry.attributes.position.array as Float32Array;
+        for (let i = 0; i < 60; i++) {
+            posArray[i * 3] += velocities[i * 3] * delta;
+            posArray[i * 3 + 1] += velocities[i * 3 + 1] * delta;
+            posArray[i * 3 + 2] += velocities[i * 3 + 2] * delta;
+        }
+        ref.current.geometry.attributes.position.needsUpdate = true;
+    });
+
+    // Don't render if fully faded
+    if (opacity <= 0) return null;
+
+    return (
+        <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
+            <PointMaterial
+                transparent
+                color="#00A3FF"
+                size={0.06}
+                sizeAttenuation={true}
+                depthWrite={false}
+                opacity={opacity * 0.7}
+            />
+        </Points>
+    );
+};
+
 // --- PIXEL REVEAL WRAPPER ---
 // Simulates a "Holographic Construction" where digital particles fill the space before the object solidifies.
-const PixelReveal = ({ children, revealed, delay = 0, className }: { children: React.ReactNode, revealed: boolean, delay?: number, className?: string }) => {
+const PixelReveal = ({ children, revealed, delay = 0, className, onMouseEnter, onMouseLeave }: { children: React.ReactNode, revealed: boolean, delay?: number, className?: string, onMouseEnter?: () => void, onMouseLeave?: () => void }) => {
     const [status, setStatus] = useState<'hidden' | 'constructing' | 'revealed'>('hidden');
 
     useEffect(() => {
@@ -173,7 +313,11 @@ const PixelReveal = ({ children, revealed, delay = 0, className }: { children: R
     }, [revealed, delay]);
 
     return (
-        <div className={cn("relative w-fit h-fit", className)}>
+        <div
+            className={cn("relative w-fit h-fit", className)}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+        >
             {/* The Content: Wipes in from Left */}
             <div
                 className={cn("relative z-10 transition-all duration-700 ease-in-out",
@@ -218,16 +362,16 @@ const PixelReveal = ({ children, revealed, delay = 0, className }: { children: R
     );
 };
 
-const HeroNavbar = ({ revealed }: { revealed: boolean }) => (
-    <PixelReveal revealed={revealed} delay={300} className="origin-top">
+const HeroNavbar = ({ revealed, onHover }: { revealed: boolean; onHover?: (h: boolean) => void }) => (
+    <PixelReveal revealed={revealed} delay={300} className="origin-top" onMouseEnter={() => onHover?.(true)} onMouseLeave={() => onHover?.(false)}>
         <div className="w-[360px] h-9 bg-black/60 border border-white/10 rounded-full flex items-center justify-between px-5 backdrop-blur-md">
             <div className="flex items-center gap-3"><div className="w-2.5 h-2.5 bg-[#306EE8] rounded-full" /><div className="w-14 h-2 bg-white/20 rounded-full" /></div>
             <div className="flex items-center gap-5"><div className="w-9 h-2 bg-white/10 rounded-full" /><div className="w-9 h-2 bg-white/10 rounded-full" /><div className="w-18 h-6 bg-[#306EE8]/20 border border-[#306EE8]/50 rounded-full flex items-center justify-center"><div className="w-9 h-1 bg-[#306EE8] rounded-full" /></div></div>
         </div>
     </PixelReveal>
 );
-const HeroText = ({ revealed }: { revealed: boolean }) => (
-    <PixelReveal revealed={revealed} delay={450} className="origin-center scale-65">
+const HeroText = ({ revealed, onHover }: { revealed: boolean; onHover?: (h: boolean) => void }) => (
+    <PixelReveal revealed={revealed} delay={450} className="origin-center scale-65" onMouseEnter={() => onHover?.(true)} onMouseLeave={() => onHover?.(false)}>
         <div className="flex flex-col gap-2.5">
             <div className="flex flex-col gap-1"><div className="w-44 h-5.5 bg-white/90 rounded-sm" /><div className="w-26 h-5.5 bg-white/50 rounded-sm" /></div>
             <div className="w-36 h-2 bg-white/20 rounded-sm" />
@@ -235,26 +379,26 @@ const HeroText = ({ revealed }: { revealed: boolean }) => (
         </div>
     </PixelReveal>
 );
-const HeroCard = ({ revealed }: { revealed: boolean }) => (
-    <PixelReveal revealed={revealed} delay={450} className="origin-center scale-65">
+const HeroCard = ({ revealed, onHover }: { revealed: boolean; onHover?: (h: boolean) => void }) => (
+    <PixelReveal revealed={revealed} delay={450} className="origin-center scale-65" onMouseEnter={() => onHover?.(true)} onMouseLeave={() => onHover?.(false)}>
         <div className="w-44 h-30 bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-xl backdrop-blur-md p-2.5 flex flex-col gap-2.5">
             <div className="w-full h-18 bg-white/5 rounded-lg border border-white/5 relative overflow-hidden"><div className="absolute inset-0 bg-gradient-to-tr from-[#306EE8]/20 to-transparent" /></div><div className="w-full h-2 bg-white/20 rounded-full" /><div className="w-2/3 h-2 bg-white/10 rounded-full" />
         </div>
     </PixelReveal>
 );
-const HeroFooter = ({ revealed }: { revealed: boolean }) => (
-    <PixelReveal revealed={revealed} delay={600} className="origin-bottom">
+const HeroFooter = ({ revealed, onHover }: { revealed: boolean; onHover?: (h: boolean) => void }) => (
+    <PixelReveal revealed={revealed} delay={600} className="origin-bottom" onMouseEnter={() => onHover?.(true)} onMouseLeave={() => onHover?.(false)}>
         <div className="flex items-center justify-center gap-10 opacity-60">
             <div className="w-20 h-3 bg-white/20 rounded-md" /><div className="w-20 h-3 bg-white/20 rounded-md" /><div className="w-20 h-3 bg-white/20 rounded-md" />
         </div>
     </PixelReveal>
 );
-const HeroAssembly3D = ({ revealed }: { revealed: boolean }) => (
+const HeroAssembly3D = ({ revealed, hoveredNode, setHoveredNode }: { revealed: boolean; hoveredNode: number | null; setHoveredNode: (v: number | null) => void }) => (
     <group>
-        <Html position={[0, 2.3, 0]} center><HeroNavbar revealed={revealed} /></Html>
-        <Html position={[-2.8, 0, 0]} center><HeroText revealed={revealed} /></Html>
-        <Html position={[2.8, 0, 0]} center><HeroCard revealed={revealed} /></Html>
-        <Html position={[0, -2.3, 0]} center><HeroFooter revealed={revealed} /></Html>
+        <Html position={[0, 2.3, 0]} center><HeroNavbar revealed={revealed} onHover={(h) => setHoveredNode(h ? 0 : null)} /></Html>
+        <Html position={[-2.8, 0, 0]} center><HeroText revealed={revealed} onHover={(h) => setHoveredNode(h ? 1 : null)} /></Html>
+        <Html position={[2.8, 0, 0]} center><HeroCard revealed={revealed} onHover={(h) => setHoveredNode(h ? 2 : null)} /></Html>
+        <Html position={[0, -2.3, 0]} center><HeroFooter revealed={revealed} onHover={(h) => setHoveredNode(h ? 3 : null)} /></Html>
     </group>
 );
 
@@ -326,6 +470,8 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
     const [shockwaveTrigger, setShockwaveTrigger] = useState(false);
     const [frameShock, setFrameShock] = useState(false);
     const [heroRevealed, setHeroRevealed] = useState(false);
+    const [hoveredNode, setHoveredNode] = useState<number | null>(null);
+    const [showParticles, setShowParticles] = useState(false);
 
     // Initial Positions (Static Reference)
     const initCorners = useMemo(() => [
@@ -382,6 +528,7 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
             setTimeout(() => setFrameShock(true), 350); // Visual delay for impact
             setTimeout(() => setFrameShock(false), 700); // Reset after shake
             setTimeout(() => setHeroRevealed(true), 0.05); // Reveal UI IMMEDIATELY (Start of explosion)
+            setTimeout(() => setShowParticles(true), 800); // Particles appear AFTER UI reveal starts
         }
     });
 
@@ -459,6 +606,14 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
                     lineEnd = c2.clone().sub(dir.clone().multiplyScalar(R));
                 }
 
+                // Hover Tension Mapping: Frame Line Index -> HoveredNode Index
+                // Line 0 (Top: TL->TR) -> Navbar (0)
+                // Line 1 (Right: TR->BR) -> Card (2)
+                // Line 2 (Bottom: BR->BL) -> Footer (3)
+                // Line 3 (Left: BL->TL) -> Text (1)
+                const hoverNodeMap: Record<number, number> = { 0: 0, 1: 2, 2: 3, 3: 1 };
+                const lineTension = hoveredNode === hoverNodeMap[i] ? 0.25 : 0;
+
                 return (
                     <ElectricLine
                         key={`frame-${i}`}
@@ -467,7 +622,8 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
                         mode="stable"
                         color="#00A3FF"
                         fadeEdges={!isFinale}
-                        turbulence={frameShock ? 0.3 : 0} // SHOCK REACTION: SUBTLE SHAKE
+                        turbulence={frameShock ? 0.3 : lineTension} // SHOCK REACTION or HOVER PULSE
+                        tension={lineTension}
                     />
                 );
             })}
@@ -514,7 +670,12 @@ const MagneticScene = ({ guideStep, setGuideStep }: {
             />
 
             {/* 3. HERO ASSEMBLY */}
-            <HeroAssembly3D revealed={heroRevealed} />
+            {/* GLOSSY FRAME BACKGROUND - Expands with explosion */}
+            <FrameBackground triggered={shockwaveTrigger} />
+            <HeroAssembly3D revealed={heroRevealed} hoveredNode={hoveredNode} setHoveredNode={setHoveredNode} />
+
+            {/* RESIDUAL PARTICLES (Post-Explosion Ambiance) */}
+            {showParticles && <ResidualParticles />}
 
             {/* 4. CORNER NODES */}
             {initCorners.map((pos, i) => (

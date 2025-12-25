@@ -11,14 +11,19 @@ gsap.registerPlugin(ScrollTrigger);
 const SERVICES_DATA = [
     {
         id: 1,
-        subtitle: "MODULE 01 // FRONT",
+        subtitle: "MODULE 01 // WEB",
         title: "Expérience Web",
         description: "Une interface web immersive qui ne ressemble à rien de connu. Performance maximale, design liquide, impact immédiat.",
-        color: "#306EE8", // Electric Blue
+        color: "#306EE8",
+        features: [
+            "Design sur-mesure et unique",
+            "Animations fluides et interactives",
+            "Optimisation SEO et performance"
+        ],
         stats: [
-            { label: "Impact Visuel", value: 98 },
-            { label: "Performance", value: 95 },
-            { label: "Résultats", value: 90 }
+            { label: "Performance", value: 100 },
+            { label: "Impact", value: 100 },
+            { label: "Scalabilité", value: 80 }
         ]
     },
     {
@@ -26,23 +31,33 @@ const SERVICES_DATA = [
         subtitle: "MODULE 02 // AUTOMATION",
         title: "Le Réseau",
         description: "Connectez vos outils. Automatisez les tâches ingrates. Laissez la machine travailler pendant que vous dormez.",
-        color: "#306EE8", // Electric Blue
+        color: "#306EE8",
+        features: [
+            "Intégration multi-plateformes",
+            "Workflows automatisés 24/7",
+            "Monitoring et alertes en temps réel"
+        ],
         stats: [
-            { label: "Vitesse", value: 100 },
-            { label: "Autonomie", value: 95 },
-            { label: "Scalabilité", value: 92 }
+            { label: "Performance", value: 100 },
+            { label: "Impact", value: 80 },
+            { label: "Scalabilité", value: 100 }
         ]
     },
     {
         id: 3,
-        subtitle: "MODULE 03 // CORE",
-        title: "Système Custom",
-        description: "Un logiciel sur-mesure pour vos besoins spécifiques. Une architecture robuste taillée pour la complexité.",
-        color: "#306EE8", // Electric Blue
+        subtitle: "MODULE 03 // BRAND",
+        title: "Identité de Marque",
+        description: "Créez une identité visuelle forte et cohérente. Du logo aux guidelines, tout ce qu'il faut pour marquer les esprits.",
+        color: "#306EE8",
+        features: [
+            "Logo et charte graphique",
+            "Univers visuel unique",
+            "Guidelines complètes"
+        ],
         stats: [
-            { label: "Sur-Mesure", value: 100 },
-            { label: "Robustesse", value: 98 },
-            { label: "Sécurité", value: 95 }
+            { label: "Performance", value: 80 },
+            { label: "Impact", value: 100 },
+            { label: "Scalabilité", value: 100 }
         ]
     }
 ];
@@ -171,6 +186,7 @@ export default function Services() {
                     title={activeData.title}
                     subtitle={activeData.subtitle}
                     description={activeData.description}
+                    features={activeData.features}
                     stats={activeData.stats}
                     color={activeData.color}
                     // Ref Forwarding
