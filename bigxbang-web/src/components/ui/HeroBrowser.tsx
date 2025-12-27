@@ -14,7 +14,7 @@ export const HeroBrowser = ({
     className,
     width = 800,
     height = 500,
-    url = "bigxbang.io",
+    url = "bigxbang.studio",
     children,
     ...props
 }: HeroBrowserProps) => {

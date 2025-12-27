@@ -86,17 +86,17 @@ export default function Services() {
             ScrollTrigger.create({
                 trigger: sectionRef.current, // Pin the WHOLE section (Header + Cards)
                 start: "top top",
-                end: "+=8000",
+                end: "+=4000",
                 pin: true,
-                scrub: 1.5, // Heavy scrub for "slow/liquid" feel
+                scrub: 0.5,
                 onUpdate: (self) => {
                     const progress = self.progress * totalTransitions; // 0 -> 2
                     const localProgress = progress % 1; // 0 -> 1
 
                     // --- STATE LOGIC ---
                     // COMPLETE (Burst) at CENTER (0.45-0.55) = Scanner touching asset
-                    // SCANNING during movement (0.2-0.45 and 0.55-0.8)
-                    // IDLE at rest (0-0.2 and 0.8-1.0) = Scanner not visible
+                    // SCANNING during movement (0.1-0.9) - Widened range to ensure visibility
+                    // IDLE at rest (0-0.1 and 0.9-1.0) = Scanner not visible
 
                     const distToSwap = Math.abs(localProgress - 0.5);
                     let newState = ScannerState.IDLE;
@@ -162,6 +162,10 @@ export default function Services() {
 
     return (
         <section ref={sectionRef} className="relative w-full bg-black text-white py-20 overflow-hidden">
+            {/* GRADIENT BACKGROUND */}
+            <div
+                className="absolute inset-0 bg-[radial-gradient(ellipse_110%_100%_at_bottom_left,_#306EE8_0%,_rgba(48,110,232,0.4)_55%,_#000000_100%)] pointer-events-none"
+            />
 
             {/* Header Area */}
             <div className="relative z-20 flex flex-col items-center text-center max-w-4xl mx-auto px-4 mb-12 max-h-[15vh]">
