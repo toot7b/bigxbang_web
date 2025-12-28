@@ -144,10 +144,10 @@ export const TimelineBeam = ({ progress, className }: TimelineBeamProps) => {
                 finalColor += vec3(1.0) * tipIntensity * 0.5; 
                 
                 // 6. FINAL ALPHA
-                // We want the rail (Inactive, beamMask ~ 0) to be faint but VISIBLE.
-                // Boost visibility to 0.4/0.5 minimum to ensure it's seen against dark backgrounds
+                // We want to hide the future trajectory (Inactive part).
+                // So inactive visibility (first arg of mix) is 0.0.
                 
-                float visibility = mix(0.4, 1.0, beamMask); 
+                float visibility = mix(0.0, 1.0, beamMask); 
                 float finalAlpha = baseShape * visibility;
                 
                 // Boost alpha at tip
@@ -157,8 +157,9 @@ export const TimelineBeam = ({ progress, className }: TimelineBeamProps) => {
                 float startFade = smoothstep(0.0, 0.1, invertedY);
                 finalAlpha *= startFade;
 
-                // 8. GLOBAL FADE OUT AT BOTTOM (Hard Stop)
-                float endFade = 1.0 - smoothstep(0.833, 0.835, invertedY);
+                // 8. GLOBAL FADE OUT AT BOTTOM (Soft/Flared Stop)
+                // "Évasé" look: Soft gradient disappearing into the node rather than a hard cut.
+                float endFade = 1.0 - smoothstep(0.75, 0.835, invertedY);
                 finalAlpha *= endFade;
 
                 gl_FragColor = vec4(finalColor, finalAlpha);
