@@ -24,6 +24,8 @@ export interface ServiceCardProps {
     scannerRef?: React.RefObject<HTMLDivElement | null>;
     // Passed from Parent Controller
     scannerState?: ScannerState;
+    // Callbacks
+    onTabChange?: (id: number) => void;
 }
 
 export const ServiceCard = ({
@@ -38,7 +40,8 @@ export const ServiceCard = ({
     visualRef,
     textRef,
     scannerRef,
-    scannerState
+    scannerState,
+    onTabChange
 }: ServiceCardProps) => {
 
     return (
@@ -83,12 +86,39 @@ export const ServiceCard = ({
                     <div className="w-3 h-3 rounded-full bg-[#FEBC2E]/80" />
                     <div className="w-3 h-3 rounded-full bg-[#28C840]/80" />
                 </div>
-                {/* URL Bar (Restored) */}
-                <div className="flex-1 max-w-[500px] h-7 bg-black/20 rounded-md flex items-center justify-center mx-auto border border-white/5 shadow-inner">
-                    <span className="text-[10px] font-mono text-white/30 flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-white/20"></span>
-                        bigxbang.studio/modules/{subtitle.split('// ')[1] || 'core'}
-                    </span>
+                {/* TABS NAVIGATION (Replacing URL Bar) */}
+                <div className="flex-1 h-full flex items-end justify-center px-4 gap-2">
+                    {[
+                        { id: 1, label: "01. WEB" },
+                        { id: 2, label: "02. AUTO" },
+                        { id: 3, label: "03. CORE" }
+                    ].map((tab) => (
+                        <div
+                            key={tab.id}
+                            onClick={() => onTabChange?.(tab.id)}
+                            className={cn(
+                                "group/tab relative h-8 px-5 flex items-center justify-center gap-2 text-[10px] sm:text-xs font-mono font-medium tracking-wide transition-all duration-300 rounded-t-lg cursor-pointer select-none overflow-hidden",
+                                tab.id === id
+                                    ? "bg-gradient-to-b from-[#306EE8]/10 to-transparent text-[#306EE8] border-t border-[#306EE8]/30"
+                                    : "text-white/30 hover:text-white/80 hover:bg-white/5 border-t border-transparent"
+                            )}
+                        >
+                            {/* ACTIVE PULSING DOT */}
+                            {tab.id === id && (
+                                <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#306EE8] opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#306EE8]"></span>
+                                </span>
+                            )}
+
+                            {tab.label}
+
+                            {/* HOVER GLOW (Inactive Only) */}
+                            {tab.id !== id && (
+                                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover/tab:opacity-100 transition-opacity duration-300 blur-sm" />
+                            )}
+                        </div>
+                    ))}
                 </div>
                 <div className="w-14" /> {/* Balance */}
             </div>
@@ -176,8 +206,7 @@ export const ServiceCard = ({
 
                     {/* MODULE INDICATOR - Same style as Method section */}
                     <div className="inline-flex items-center px-3 py-1 mb-6 rounded-full border border-[#306EE8]/50 bg-[#306EE8]/10 w-fit backdrop-blur-sm">
-                        <span className="text-xs font-jakarta font-bold mr-2 text-[#306EE8]">0{id}</span>
-                        <span className="text-xs font-jakarta text-white/70 uppercase tracking-wider">{subtitle.split('// ')[1] || subtitle}</span>
+                        <span className="text-xs font-jakarta text-white/90 uppercase tracking-wider font-semibold">{subtitle.split('// ')[1] || subtitle}</span>
                     </div>
 
                     {/* TITLE */}

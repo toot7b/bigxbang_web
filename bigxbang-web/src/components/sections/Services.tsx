@@ -3,11 +3,12 @@
 import React, { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { ScannerState } from "@/components/ui/TechScanner";
 import { ElectricCircuitOverlay } from "@/components/ui/ElectricCircuitOverlay";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const SERVICES_DATA = [
     {
@@ -66,11 +67,16 @@ const SERVICES_DATA = [
 export default function Services() {
     const sectionRef = useRef<HTMLElement>(null);
     const triggerRef = useRef<HTMLDivElement>(null);
+    const stRef = useRef<globalThis.ScrollTrigger | null>(null);
 
     // REFS to control the child components directly (Performance)
     const visualRef = useRef<HTMLDivElement>(null);
     const textRef = useRef<HTMLDivElement>(null);
     const scannerRef = useRef<HTMLDivElement>(null);
+
+    // Flag for "Teleport Mode" to suppress animations during fast scroll/jumps
+    const isAutoScrolling = useRef(false);
+    const autoScrollTimeout = useRef<NodeJS.Timeout | null>(null);
 
     // STATE for Content
     const [activeData, setActiveData] = useState(SERVICES_DATA[0]);
@@ -84,17 +90,37 @@ export default function Services() {
             const totalTransitions = SERVICES_DATA.length - 1;
             let currentDisplayedId = SERVICES_DATA[0].id;
 
-            ScrollTrigger.create({
+            stRef.current = ScrollTrigger.create({
                 trigger: sectionRef.current, // Pin the WHOLE section (Header + Cards)
                 start: "top top",
                 end: "+=4000",
                 pin: true,
-                scrub: 0.5,
+                scrub: 0.5, // Reduced inertia slightly to help settling
                 onUpdate: (self) => {
                     const progress = self.progress * totalTransitions; // 0 -> 2
                     const localProgress = progress % 1; // 0 -> 1
 
-                    // --- STATE LOGIC ---
+                    // --- TELEPORT MODE GUARD ---
+                    // If we are auto-scrolling (clicking tabs), we MUTE all transition effects.
+                    // This prevents the scanner from speeding across the screen and prevents tabs from flickering.
+                    if (isAutoScrolling.current) {
+                        if (scannerRef.current) {
+                            scannerRef.current.style.transition = "none";
+                            scannerRef.current.style.opacity = "0";
+                        }
+                        if (visualRef.current) visualRef.current.style.opacity = "1";
+                        if (textRef.current) {
+                            textRef.current.style.opacity = "1";
+                            textRef.current.style.transform = "none";
+                        }
+
+                        // CRITICAL: We DO NOT update activeData here. 
+                        // It is set manually in handleTabClick to ensure the destination UI is locked.
+                        return;
+                    }
+
+                    // --- NORMAL SCROLL LOGIC ---
+
                     // COMPLETE (Burst) at CENTER (0.45-0.55) = Scanner touching asset
                     // SCANNING during movement (0.1-0.9) - Widened range to ensure visibility
                     // IDLE at rest (0-0.1 and 0.9-1.0) = Scanner not visible
@@ -131,6 +157,10 @@ export default function Services() {
 
                     // 2. Visual Glitch / Scanner (Left Side)
                     if (visualRef.current && scannerRef.current) {
+                        // Ensure transition is restored if it was removed
+                        if (scannerRef.current.style.transition === "none") {
+                            scannerRef.current.style.transition = "";
+                        }
 
                         // Scanner Position logic (Continuous)
                         let scanPos = -20;
@@ -149,6 +179,7 @@ export default function Services() {
                     const targetIndex = Math.round(progress);
                     const safeIndex = Math.min(Math.max(0, targetIndex), SERVICES_DATA.length - 1);
 
+                    // Only swap data if we are NOT in auto-scroll (handled by guard above, but safe to check)
                     if (SERVICES_DATA[safeIndex].id !== currentDisplayedId) {
                         setActiveData(SERVICES_DATA[safeIndex]);
                         currentDisplayedId = SERVICES_DATA[safeIndex].id;
@@ -161,22 +192,59 @@ export default function Services() {
         return () => ctx.revert();
     }, []);
 
+    // Handle Tab Click -> Scroll to specific section point
+    const handleTabClick = (id: number) => {
+        if (!stRef.current) return;
+
+        // Clear existing timeout to prevent early unlock if spamming clicks
+        if (autoScrollTimeout.current) {
+            clearTimeout(autoScrollTimeout.current);
+            autoScrollTimeout.current = null;
+        }
+
+        // 1. INSTANTLY switch state to target (Locks Tabs & Content)
+        const targetData = SERVICES_DATA.find(d => d.id === id);
+        if (targetData) setActiveData(targetData);
+
+        // 2. Enable Teleport Mode
+        isAutoScrolling.current = true;
+
+        const totalTransitions = SERVICES_DATA.length - 1;
+        const targetIndex = id - 1; // 0, 1, 2
+        const targetProgress = targetIndex / totalTransitions;
+
+        // Calculate scroll position
+        const st = stRef.current;
+        const scrollPos = st.start + (st.end - st.start) * targetProgress;
+
+        gsap.to(window, {
+            scrollTo: scrollPos,
+            duration: 1.2, // Slightly faster for responsiveness
+            ease: "power3.inOut",
+            onComplete: () => {
+                // BUFFER: Keep it locked slightly longer to let scroll scrub settle
+                autoScrollTimeout.current = setTimeout(() => {
+                    isAutoScrolling.current = false;
+                    // Restore transition here safely
+                    if (scannerRef.current) scannerRef.current.style.transition = "";
+                }, 100);
+            }
+        });
+    };
+
     return (
         <section ref={sectionRef} className="relative z-10 w-full bg-black text-white py-20 overflow-hidden">
             {/* GRADIENT BACKGROUND */}
-            {/* GRADIENT BACKGROUND (Main Blue + Film Grain) */}
-            {/* GRADIENT BACKGROUND (Main Blue + Film Grain + Grid + Particles) */}
-            {/* GRADIENT BACKGROUND (Main Blue + Subtle Film Grain) */}
             <div className="absolute inset-0 pointer-events-none z-0">
-                {/* 1. MAIN LIGHT (Bottom Left - Existing Blue) */}
+                {/* 1. MAIN LIGHT */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_110%_100%_at_bottom_left,_#306EE8_0%,_rgba(48,110,232,0.4)_55%,_#000000_100%)]" />
 
-                {/* 2. NOISE TEXTURE (Grain - Reduced) */}
+                {/* 2. NOISE TEXTURE */}
                 <div className="absolute inset-0 opacity-[0.015] mix-blend-overlay"
                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
                 />
 
-                {/* 3. ELECTRIC CIRCUIT OVERLAY (Canvas 2D) */}
+                {/* 3. ELECTRIC CIRCUIT OVERLAY */}
                 <ElectricCircuitOverlay className="z-10" />
             </div>
 
@@ -212,6 +280,8 @@ export default function Services() {
                     scannerRef={scannerRef}
                     // State Forwarding
                     scannerState={scannerState}
+                    // Callbacks
+                    onTabChange={handleTabClick}
                 />
 
             </div>
