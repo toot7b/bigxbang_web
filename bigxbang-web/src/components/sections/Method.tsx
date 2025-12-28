@@ -4,10 +4,15 @@ import { UnifiedMethodVisual } from "@/components/ui/UnifiedMethodVisual";
 import { Ripple } from "@/components/ui/Ripple";
 import { TimelineNode } from "@/components/ui/TimelineNode";
 import { TimelineBeam } from "@/components/ui/TimelineBeam";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function Method() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -33,55 +38,64 @@ export default function Method() {
 
     // Track Scroll Progress for the Beam
     const [scrollProgress, setScrollProgress] = useState(0);
-    // Derived active step based on scroll progress (closest node)
-
 
     useEffect(() => {
-        const handleScroll = () => {
+        // Use GSAP ScrollTrigger to drive the beam
+        // This addresses potential conflicts with Lenis or other interactions
+
+        let trigger: ScrollTrigger | undefined;
+
+        const ctx = gsap.context(() => {
             if (!containerRef.current) return;
 
-            const rect = containerRef.current.getBoundingClientRect();
-            const totalHeight = rect.height;
-            const viewportHeight = window.innerHeight;
-            const viewportCenter = viewportHeight / 2;
+            trigger = ScrollTrigger.create({
+                trigger: containerRef.current,
+                start: "top center", // Start when section top hits center (Beam entry)
+                end: "bottom center", // End when section bottom hits center
+                scrub: true, // Smooth value
+                onUpdate: (self) => {
+                    // Update Beam Progress with Dual-Speed Calibration
+                    // Goal: Sync 55.6% Scroll (User's Point) with 50% Beam (Center Node)
+                    const raw = self.progress;
+                    let calibrated = 0;
+                    const CHECKPOINT_SCROLL = 0.556;
+                    const CHECKPOINT_BEAM = 0.50;
 
-            // The Beam follows the CENTER of the viewport
-            // User Feedback: "Beam is in advance". We need to delay it.
-            // By subtracting an offset, we effectively make the "virtual scroll" lower.
-            const scrollCenter = -rect.top + viewportCenter - (viewportHeight * 0.2); // ~20vh delay
+                    if (raw <= CHECKPOINT_SCROLL) {
+                        // Slow down initial part
+                        calibrated = raw * (CHECKPOINT_BEAM / CHECKPOINT_SCROLL);
+                    } else {
+                        // Speed up second part to catch up to 100%
+                        calibrated = CHECKPOINT_BEAM + (raw - CHECKPOINT_SCROLL) * ((1 - CHECKPOINT_BEAM) / (1 - CHECKPOINT_SCROLL));
+                    }
+                    setScrollProgress(calibrated);
 
-            // Normalize: 0 to 1 over the full container height
-            const progress = Math.max(0, Math.min(1, scrollCenter / (totalHeight - viewportHeight * 0.2)));
-            setScrollProgress(progress);
+                    // Update Active Step (Text Highlight) - Uses RAW progress or Calibrated?
+                    // User said "ne touche pas au bloc de texte". Text highlight is based on 'minDistance' logic below,
+                    // which uses bounding clients. This part is INDEPENDENT of scrollProgress state, 
+                    // so it remains physically accurate to the scroll position. Perfect.
 
-            // Calculate which step is active based on actual positions
-            let closestStep = 0;
-            let minDistance = Infinity;
+                    const viewportCenter = window.innerHeight / 2;
+                    let closestStep = 0;
+                    let minDistance = Infinity;
 
-            stepRefs.current.forEach((stepEl, index) => {
-                if (!stepEl) return;
+                    stepRefs.current.forEach((stepEl, index) => {
+                        if (!stepEl) return;
+                        const stepRect = stepEl.getBoundingClientRect();
+                        const stepCenter = stepRect.top + stepRect.height / 2;
+                        const distance = Math.abs(stepCenter - viewportCenter);
 
-                const stepRect = stepEl.getBoundingClientRect();
-                // Distance from step center to viewport center
-                const stepCenter = stepRect.top + stepRect.height / 2;
-                const distance = Math.abs(stepCenter - viewportCenter);
-
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestStep = index;
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestStep = index;
+                        }
+                    });
+                    setActiveStep(closestStep);
                 }
             });
+        });
 
-            setActiveStep(closestStep);
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        window.addEventListener("resize", handleScroll);
-        handleScroll(); // Init
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            window.removeEventListener("resize", handleScroll);
-        };
+        return () => ctx.revert();
     }, []);
 
     return (
@@ -89,7 +103,7 @@ export default function Method() {
         <section
             id="methode"
             ref={containerRef}
-            className="relative w-full bg-[#0a0a0a] text-white -mt-1 min-h-[200vh]"
+            className="relative z-0 w-full bg-[#0a0a0a] text-white -mt-1 min-h-[200vh]"
         >
 
             {/* GLOBAL BACKGROUNDS (Fixed) */}
