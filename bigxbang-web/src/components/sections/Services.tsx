@@ -233,7 +233,7 @@ export default function Services() {
     };
 
     return (
-        <section ref={sectionRef} className="relative z-10 w-full bg-black text-white py-20 overflow-hidden">
+        <section ref={sectionRef} className="relative z-10 w-full bg-black text-white py-20 overflow-hidden rounded-b-[60px]">
             {/* GRADIENT BACKGROUND */}
             <div className="absolute inset-0 pointer-events-none z-0">
                 {/* 1. MAIN LIGHT */}

@@ -3,6 +3,7 @@ import Hero from "@/components/sections/Hero";
 import Problem from "@/components/sections/Problem";
 import Method from "@/components/sections/Method";
 import Services from "@/components/sections/Services";
+import CaseStudies from "@/components/sections/CaseStudies";
 
 export default function Home() {
   return (
@@ -12,7 +13,7 @@ export default function Home() {
       <Problem />
       <Method />
       <Services />
-      <div className="h-screen"></div> {/* Spacer for scrolling */}
+      <CaseStudies />
     </main>
   );
 }
