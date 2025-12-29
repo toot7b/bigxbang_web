@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
-import { motion } from "framer-motion";
-import { Brain, Lock, Layout, BarChart3, Cpu } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Brain, Lock, Layout, BarChart3, Cpu, Target } from "lucide-react";
+import { useLenis } from "lenis/react";
+import OnboardingAutomation from "@/components/case-studies/content/OnboardingAutomation";
+import ProspectionRefonte from "@/components/case-studies/content/ProspectionRefonte";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -54,7 +57,7 @@ const SkeletonEncryption = () => {
                 <motion.div
                     key={i}
                     variants={variants}
-                    style={{ width: `${Math.random() * 50 + 20}%` }}
+                    style={{ width: `${Math.random() * 50 + 20}% ` }}
                     className="h-2 rounded-full bg-white/30"
                 />
             ))}
@@ -118,7 +121,7 @@ const SkeletonAnalytics = () => {
                 <motion.div
                     key={i}
                     initial={{ height: "10%" }}
-                    animate={{ height: `${h * 100}%` }}
+                    animate={{ height: `${h * 100}% ` }}
                     transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse", delay: i * 0.1 }}
                     className="w-4 bg-white/30 rounded-t-sm"
                 />
@@ -132,41 +135,45 @@ const SkeletonAnalytics = () => {
 
 const items = [
     {
-        title: "Neural Interface",
-        description: "Connexion directe cerveau-machine pour une latence zéro.",
+        title: "Onboarding Automation",
+        description: "Zero-touch onboarding avec Stripe, Python et Notion.",
         header: <SkeletonNeural />,
         icon: <Brain className="h-4 w-4 text-neutral-300" />,
         className: "md:col-span-1",
-    },
-    {
-        title: "Encryption Quantum",
-        description: "Sécurité inviolable par les standards post-quantiques.",
-        header: <SkeletonEncryption />,
-        icon: <Lock className="h-4 w-4 text-neutral-300" />,
-        className: "md:col-span-1",
-    },
-    {
-        title: "Fluid Design",
-        description: "Interfaces liquides qui s'adaptent à l'utilisateur.",
-        header: <SkeletonFluid />,
-        icon: <Layout className="h-4 w-4 text-neutral-300" />,
-        className: "md:col-span-1",
+        href: "/case-studies/onboarding-automation"
     },
     {
         title: "Core System",
-        description: "L'architecture centrale qui propulse l'ensemble de l'écosystème BigXBang.",
+        description: "L'architecture WebGL qui propulse l'expérience BigXBang.",
+        header: <SkeletonEncryption />,
+        icon: <Lock className="h-4 w-4 text-neutral-300" />,
+        className: "md:col-span-1",
+        href: "/case-studies/bigxbang-engine"
+    },
+    {
+        title: "Smart Newsletter",
+        description: "Curated content generation via LLMs.",
+        header: <SkeletonFluid />,
+        icon: <Layout className="h-4 w-4 text-neutral-300" />,
+        className: "md:col-span-1",
+        href: "/case-studies/ai-newsletter"
+    },
+    {
+        title: "Pipeline de Prospection B2B",
+        description: "Comment on a transformé 7h de travail répétitif en 47min d'exécution automatique.",
         header: <SkeletonCore />,
         icon: <Cpu className="h-4 w-4 text-white" />,
         // Styling specifically for the Blue Card
         className: "md:col-span-2 md:row-span-1 bg-[#306EE8] border-white/20 shadow-[0_0_50px_rgba(48,110,232,0.3)] [&>div>div]:text-white [&>div>div.font-jakarta]:text-white/80",
-        // Note: The selector override [&>div...] is to force text white inside this specific card
+        href: "/case-studies/prospection-refonte"
     },
     {
-        title: "Real-time Analytics",
-        description: "Tableaux de bord vivants et prédictifs.",
+        title: "Data Sentry",
+        description: "Monitoring et analytics temps réel.",
         header: <SkeletonAnalytics />,
         icon: <BarChart3 className="h-4 w-4 text-neutral-300" />,
         className: "md:col-span-1",
+        href: "/case-studies/data-sentry"
     },
 ];
 
@@ -175,6 +182,18 @@ export default function CaseStudies() {
     const sectionRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
+    const [openStudy, setOpenStudy] = useState<string | null>(null);
+    const lenis = useLenis();
+
+    useEffect(() => {
+        if (openStudy) {
+            lenis?.stop();
+            document.body.style.overflow = 'hidden';
+        } else {
+            lenis?.start();
+            document.body.style.overflow = '';
+        }
+    }, [openStudy, lenis]);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -200,50 +219,94 @@ export default function CaseStudies() {
     }, []);
 
     return (
-        <section
-            ref={sectionRef}
-            className="relative z-0 w-full min-h-screen bg-white text-black -mt-[100px] pt-[100px]"
-        >
-            {/* DIMMING OVERLAY */}
-            <div
-                ref={overlayRef}
-                className="absolute inset-0 bg-black z-20 pointer-events-none"
-            />
-
-            {/* CONTENT CONTAINER */}
-            <div
-                ref={contentRef}
-                className="relative z-10 w-full min-h-screen flex flex-col justify-start items-center p-4 md:p-8 pt-12 md:pt-24"
-                style={{ transform: 'translateY(-50%)' }}
+        <div id="case-studies" className="scroll-mt-[100px]">
+            <section
+                ref={sectionRef}
+                className="relative z-0 w-full min-h-screen bg-white text-black -mt-[100px] pt-[100px]"
             >
-                {/* HEADER */}
-                <div className="text-center max-w-4xl px-4 mb-16">
-                    <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-black/10 bg-black/5 backdrop-blur-sm mb-6">
-                        <span className="font-jakarta text-xs font-medium text-black/80">R&D Lab</span>
+                {/* DIMMING OVERLAY */}
+                <div
+                    ref={overlayRef}
+                    className="absolute inset-0 bg-black z-20 pointer-events-none"
+                />
+
+                {/* CONTENT CONTAINER */}
+                <div
+                    ref={contentRef}
+                    className="relative z-10 w-full min-h-screen flex flex-col justify-start items-center p-4 md:p-8 pt-12 md:pt-24"
+                    style={{ transform: 'translateY(-50%)' }}
+                >
+                    {/* HEADER */}
+                    <div className="text-center max-w-4xl px-4 mb-16">
+                        <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-black/10 bg-black/5 backdrop-blur-sm mb-6">
+                            <span className="font-jakarta text-xs font-medium text-black/80">R&D Lab</span>
+                        </div>
+                        <h1 className="font-clash text-3xl md:text-5xl font-medium text-black mb-4">
+                            Experimental <span className="text-[#306EE8]">Protocols</span>
+                        </h1>
+                        <h2 className="font-jakarta text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed text-black/80">
+                            Exploration des frontières numériques. Nos expérimentations deviennent vos standards de demain.
+                        </h2>
                     </div>
-                    <h1 className="font-clash text-3xl md:text-5xl font-medium text-black mb-4">
-                        Experimental <span className="text-[#306EE8]">Protocols</span>
-                    </h1>
-                    <h2 className="font-jakarta text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed text-black/80">
-                        Exploration des frontières numériques. Nos expérimentations deviennent vos standards de demain.
-                    </h2>
+
+                    {/* BENTO GRID */}
+                    <BentoGrid className="max-w-5xl mx-auto md:auto-rows-[18rem]">
+                        {items.map((item, i) => (
+                            <BentoGridItem
+                                key={i}
+                                title={item.title}
+                                description={item.description}
+                                header={item.header}
+                                icon={item.icon}
+                                className={cn(item.className, item.title === "Pipeline de Prospection B2B" ? "!bg-[#306EE8] !border-transparent" : "bg-[#111111] border-white/5")}
+                                href={item.href}
+                                onClick={(e) => {
+                                    if (item.href.includes('onboarding-automation')) {
+                                        e.preventDefault();
+                                        setOpenStudy('onboarding-automation');
+                                    } else if (item.href.includes('prospection-refonte')) {
+                                        e.preventDefault();
+                                        setOpenStudy('prospection-refonte');
+                                    } else {
+                                        if (typeof window !== 'undefined') {
+                                            sessionStorage.setItem('caseStudyReturnPosition', window.scrollY.toString());
+                                        }
+                                    }
+                                }}
+                            />
+                        ))}
+                    </BentoGrid>
+
                 </div>
+            </section>
 
-                {/* BENTO GRID */}
-                <BentoGrid className="max-w-5xl mx-auto md:auto-rows-[18rem]">
-                    {items.map((item, i) => (
-                        <BentoGridItem
-                            key={i}
-                            title={item.title}
-                            description={item.description}
-                            header={item.header}
-                            icon={item.icon}
-                            className={cn(item.className, item.title === "Core System" ? "!bg-[#306EE8] !border-transparent" : "bg-[#111111] border-white/5")}
-                        />
-                    ))}
-                </BentoGrid>
-
-            </div>
-        </section>
+            {/* MODAL OVERLAY */}
+            <AnimatePresence>
+                {openStudy === 'onboarding-automation' && (
+                    <motion.div
+                        initial={{ y: "100%" }}
+                        animate={{ y: "0%" }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        className="fixed inset-0 z-[200] overflow-y-auto bg-black"
+                        data-lenis-prevent
+                    >
+                        <OnboardingAutomation mode="modal" onClose={() => setOpenStudy(null)} />
+                    </motion.div>
+                )}
+                {openStudy === 'prospection-refonte' && (
+                    <motion.div
+                        initial={{ y: "100%" }}
+                        animate={{ y: "0%" }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        className="fixed inset-0 z-[200] overflow-y-auto bg-black"
+                        data-lenis-prevent
+                    >
+                        <ProspectionRefonte mode="modal" onClose={() => setOpenStudy(null)} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     );
 }

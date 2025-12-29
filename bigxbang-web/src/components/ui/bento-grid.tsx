@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 import React from "react";
 
 export const BentoGrid = ({
@@ -28,20 +29,19 @@ export const BentoGridItem = ({
     description,
     header,
     icon,
+    href,
+    onClick,
 }: {
     className?: string;
     title?: string | React.ReactNode;
     description?: string | React.ReactNode;
     header?: React.ReactNode;
     icon?: React.ReactNode;
+    href?: string;
+    onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }) => {
-    return (
-        <div
-            className={cn(
-                "row-span-1 rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-4 dark:bg-black dark:border-white/[0.2] bg-zinc-900 border border-white/10 justify-between flex flex-col space-y-4",
-                className
-            )}
-        >
+    const Content = () => (
+        <>
             {header}
             <div className="group-hover/bento:translate-x-2 transition duration-200">
                 {icon}
@@ -52,6 +52,32 @@ export const BentoGridItem = ({
                     {description}
                 </div>
             </div>
+        </>
+    );
+
+    if (href) {
+        return (
+            <Link
+                href={href}
+                onClick={onClick}
+                className={cn(
+                    "row-span-1 rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-4 dark:bg-black dark:border-white/[0.2] bg-zinc-900 border border-white/10 justify-between flex flex-col space-y-4 cursor-pointer hover:scale-[1.02] active:scale-[0.98]",
+                    className
+                )}
+            >
+                <Content />
+            </Link>
+        );
+    }
+
+    return (
+        <div
+            className={cn(
+                "row-span-1 rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-4 dark:bg-black dark:border-white/[0.2] bg-zinc-900 border border-white/10 justify-between flex flex-col space-y-4",
+                className
+            )}
+        >
+            <Content />
         </div>
     );
 };
