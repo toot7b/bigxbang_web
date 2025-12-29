@@ -10,6 +10,7 @@ import { Brain, Lock, Layout, BarChart3, Cpu, Target } from "lucide-react";
 import { useLenis } from "lenis/react";
 import OnboardingAutomation from "@/components/case-studies/content/OnboardingAutomation";
 import ProspectionRefonte from "@/components/case-studies/content/ProspectionRefonte";
+import MagneticWebsiteCaseStudy from "@/components/case-studies/content/MagneticWebsiteCaseStudy";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -143,12 +144,12 @@ const items = [
         href: "/case-studies/onboarding-automation"
     },
     {
-        title: "Core System",
-        description: "L'architecture WebGL qui propulse l'expérience BigXBang.",
+        title: "MagneticWebsite",
+        description: "Le site qui se construit devant toi. Gamification de l'attention.",
         header: <SkeletonEncryption />,
         icon: <Lock className="h-4 w-4 text-neutral-300" />,
         className: "md:col-span-1",
-        href: "/case-studies/bigxbang-engine"
+        href: "/case-studies/magnetic-website"
     },
     {
         title: "Smart Newsletter",
@@ -267,6 +268,9 @@ export default function CaseStudies() {
                                     } else if (item.href.includes('prospection-refonte')) {
                                         e.preventDefault();
                                         setOpenStudy('prospection-refonte');
+                                    } else if (item.href.includes('magnetic-website')) {
+                                        e.preventDefault();
+                                        setOpenStudy('magnetic-website');
                                     } else {
                                         if (typeof window !== 'undefined') {
                                             sessionStorage.setItem('caseStudyReturnPosition', window.scrollY.toString());
@@ -304,6 +308,18 @@ export default function CaseStudies() {
                         data-lenis-prevent
                     >
                         <ProspectionRefonte mode="modal" onClose={() => setOpenStudy(null)} />
+                    </motion.div>
+                )}
+                {openStudy === 'magnetic-website' && (
+                    <motion.div
+                        initial={{ y: "100%" }}
+                        animate={{ y: "0%" }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        className="fixed inset-0 z-[200] overflow-y-auto bg-black"
+                        data-lenis-prevent
+                    >
+                        <MagneticWebsiteCaseStudy mode="modal" onClose={() => setOpenStudy(null)} />
                     </motion.div>
                 )}
             </AnimatePresence>
