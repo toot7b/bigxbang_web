@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { CaseStudyLayout, Section, SectionHeader } from "@/components/case-studies/CaseStudyLayout";
 import { CodeWindow, InfoBox, SectionTitle, Paragraph, BulletList, Strong } from "@/components/case-studies";
 import { IconBox } from "@/components/case-studies/IconBox";
@@ -26,19 +27,6 @@ const META = {
     ]
 };
 
-// Placeholder component for screenshots
-const ScreenshotPlaceholder = ({ instruction, caption }: { instruction: string; caption: string }) => (
-    <div className="my-8 border-2 border-dashed border-[#306EE8]/50 rounded-xl p-8 bg-[#306EE8]/5">
-        <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#306EE8]/20 text-[#306EE8] text-xs font-mono mb-4">
-                📸 SCREENSHOT À FAIRE
-            </div>
-            <p className="text-white font-medium mb-2">{instruction}</p>
-            <p className="text-zinc-400 text-sm italic">&quot;{caption}&quot;</p>
-        </div>
-    </div>
-);
-
 interface MagneticWebsiteProps {
     mode?: 'page' | 'modal';
     onClose?: () => void;
@@ -62,10 +50,16 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                     Le problème, ce n&apos;est pas ton contenu. C&apos;est l&apos;expérience. Un site classique, c&apos;est un document qu&apos;on scroll. L&apos;utilisateur est <Strong>spectateur passif</Strong>. Il défile, survole, et oublie.
                 </Paragraph>
 
-                <ScreenshotPlaceholder
-                    instruction="Screenshot d'un site template classique (Wix/Squarespace) avec un overlay 'AVANT'"
-                    caption="Le web moderne : joli, mais oubliable en 54 secondes."
-                />
+                <div className="my-8 rounded-xl overflow-hidden border border-white/10">
+                    <Image
+                        src="/case-studies/magnetic-website/Screenshot1.png"
+                        alt="Ancien site web - Avant BigXBang"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
+                    <p className="text-center text-zinc-400 text-sm italic mt-4">Le web moderne : joli, mais oubliable en 54 secondes.</p>
+                </div>
 
                 <InfoBox title="Le vrai enjeu pour ton business">
                     Tu paies pour amener des visiteurs (SEO, pubs, réseaux). Mais si ton site les fait partir en 54 secondes, tu jettes de l&apos;argent par la fenêtre. <Strong>L&apos;attention est devenue la ressource la plus rare.</Strong> Il faut la mériter.
@@ -94,10 +88,16 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                     <><Strong>L&apos;effort crée la valeur.</Strong> Ce qu&apos;on construit soi-même, on s&apos;en souvient. Effet IKEA appliqué au web.</>,
                 ]} />
 
-                <ScreenshotPlaceholder
-                    instruction="Vue du MagneticWebsite avec les 4 nœuds (coins) visibles, état initial avant interaction"
-                    caption="4 points cliquables. 4 parties du site à débloquer. L'utilisateur devient explorateur."
-                />
+                <div className="my-8 rounded-xl overflow-hidden border border-white/10">
+                    <Image
+                        src="/case-studies/magnetic-website/Screenshot2.png"
+                        alt="MagneticWebsite état initial - 4 nœuds"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
+                    <p className="text-center text-zinc-400 text-sm italic mt-4">4 points cliquables. 4 parties du site à débloquer. L&apos;utilisateur devient explorateur.</p>
+                </div>
 
                 <InfoBox title="Ce que ça change pour toi">
                     Au lieu de prier pour que le visiteur scroll jusqu&apos;à ton bouton d&apos;action, <Strong>tu crées un chemin qu&apos;il VEUT suivre</Strong>. Il ne part pas parce qu&apos;il est curieux de voir ce qui va apparaître ensuite.
@@ -120,10 +120,17 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                     Une apparition instantanée, ça passe inaperçu. Une construction progressive, <Strong>ça captive le regard</Strong>. Le cerveau suit le mouvement, anticipe la suite, reste concentré. C&apos;est 500 millisecondes de plus où le visiteur regarde TON contenu.
                 </Paragraph>
 
-                <ScreenshotPlaceholder
-                    instruction="GIF ou capture mid-animation : un élément (navbar ou card) en train de se construire avec les particules bleues"
-                    caption="500 millisecondes de magie. L'élément se matérialise sous les yeux."
-                />
+                <div className="my-8 rounded-xl overflow-hidden border border-white/10">
+                    <Image
+                        src="/case-studies/magnetic-website/animation.gif"
+                        alt="Animation de construction d'un élément"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                        unoptimized
+                    />
+                    <p className="text-center text-zinc-400 text-sm italic mt-4">500 millisecondes de magie. L&apos;élément se matérialise sous les yeux.</p>
+                </div>
 
                 <SectionTitle>Comment ça marche (version simple)</SectionTitle>
 
@@ -137,18 +144,67 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                     "Résultat : l'élément semble se solidifier devant toi",
                 ]} />
 
-                <CodeWindow title="Le concept en pseudo-code">
-                    {`// Quand le visiteur déclenche l'apparition :
+                <CodeWindow title="PixelReveal.tsx (extrait)">
+                    {`// Le composant PixelReveal : fait apparaître un élément "pixel par pixel"
 
-1. Afficher les particules bleues (effet "en construction")
-   → Le visiteur sait qu'il se passe quelque chose
+import React, { useState, useEffect } from 'react';
+import DottedGlowBackground from './DottedGlowBackground'; // Un composant pour les particules
 
-2. Après 500ms, faire apparaître le contenu réel
-   → Le contenu "balaye" de gauche à droite
-   → Les particules disparaissent en même temps
+interface PixelRevealProps {
+    children: React.ReactNode;
+    revealed: boolean; // Vrai quand l'élément doit apparaître
+    delay?: number;    // Délai avant le début de l'animation
+}
 
-3. Le visiteur voit : "J'ai fait apparaître ça"
-   → Dopamine. Engagement. Curiosité pour le prochain.`}
+const PixelReveal: React.FC<PixelRevealProps> = ({ children, revealed, delay = 0 }) => {
+    // 3 états possibles : caché, en construction, révélé
+    const [status, setStatus] = useState<'hidden' | 'constructing' | 'revealed'>('hidden');
+
+    useEffect(() => {
+        if (revealed) {
+            // Étape 1 : Les particules apparaissent après le délai
+            const t1 = setTimeout(() => setStatus('constructing'), delay);
+            
+            // Étape 2 : Le contenu se révèle 500ms plus tard
+            const t2 = setTimeout(() => setStatus('revealed'), delay + 500);
+            
+            return () => { clearTimeout(t1); clearTimeout(t2); };
+        } else {
+            // Si l'élément n'est plus "revealed", on le cache
+            setStatus('hidden');
+        }
+    }, [revealed, delay]);
+
+    return (
+        <div className="relative">
+            {/* Le contenu réel : apparaît de gauche à droite */}
+            <div 
+                className="transition-all duration-500 ease-out" // Animation douce
+                style={{
+                    clipPath: status === 'revealed' 
+                        ? 'inset(0 0 0 0)'      // Entièrement visible
+                        : 'inset(0 100% 0 0)'   // Caché (masqué par la droite)
+                }}
+            >
+                {children}
+            </div>
+
+            {/* Les particules : disparaissent quand le contenu arrive */}
+            <div 
+                className="absolute inset-0 transition-all duration-500 ease-out" // Animation douce
+                style={{
+                    clipPath: status === 'revealed' 
+                        ? 'inset(0 0 0 100%)'   // Disparues (vers la gauche)
+                        : 'inset(0 0 0 0)'      // Visibles
+                }}
+            >
+                {status === 'constructing' && <DottedGlowBackground color="#00A3FF" />}
+            </div>
+        </div>
+    );
+};
+
+export default PixelReveal;`}
                 </CodeWindow>
 
                 <InfoBox title="L'effet psychologique">
@@ -170,10 +226,16 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                     Pourquoi ? Parce que <Strong>chaque action mérite une récompense visuelle</Strong>. Un clic silencieux, ça ne donne pas envie de recommencer. Un clic qui déclenche une explosion ? Ça donne envie de cliquer partout.
                 </Paragraph>
 
-                <ScreenshotPlaceholder
-                    instruction="Capture de l'explosion plasma en pleine action (le cercle lumineux qui se propage)"
-                    caption="Chaque clic déclenche ça. Le cerveau adore."
-                />
+                <div className="my-8 rounded-xl overflow-hidden border border-white/10">
+                    <Image
+                        src="/case-studies/magnetic-website/Screenshot3.png"
+                        alt="Explosion plasma en action"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
+                    <p className="text-center text-zinc-400 text-sm italic mt-4">Chaque clic déclenche ça. Le cerveau adore.</p>
+                </div>
 
                 <SectionTitle>Ce qui se passe en coulisses</SectionTitle>
 
@@ -185,19 +247,60 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                     C&apos;est ce qui permet d&apos;avoir des effets fluides et réactifs, impossibles avec des animations classiques.
                 </Paragraph>
 
-                <CodeWindow title="L'idée derrière l'explosion (simplifié)">
-                    {`// Pour chaque pixel de l'écran, 60 fois par seconde :
+                <CodeWindow title="plasma_explosion.glsl (extrait)">
+                    {`// Ce code s'exécute sur la carte graphique, 60 fois par seconde
+// Pour chaque pixel de l'écran (représenté par 'vUv', de 0 à 1)
 
-1. Calculer la distance entre ce pixel et le centre de l'explosion
+// uLife : une valeur qui va de 0 (début de l'explosion) à 1 (fin)
+uniform float uLife;
+// uTime : le temps qui passe, utilisé pour animer le "bruit"
+uniform float uTime;
+// uColor : la couleur principale de l'explosion (ex: bleu)
+uniform vec3 uColor;
 
-2. Si le pixel est "dans l'anneau" de l'onde → le colorier en bleu/blanc
+// Fonction pour générer du bruit (pour l'effet plasma organique)
+// (Simplifié ici, en réalité c'est plus complexe, comme fbm ou Perlin noise)
+float fbm(vec2 coord) {
+    return fract(sin(dot(coord, vec2(12.9898, 78.233))) * 43758.5453);
+}
 
-3. Ajouter un peu de bruit aléatoire → l'anneau n'est jamais parfaitement rond
-   (ça donne l'effet "plasma" organique)
+void main() {
+    // 1. Calculer la distance de ce pixel au centre de l'explosion (qui est à 0.5, 0.5)
+    float dist = length(vUv - vec2(0.5));
+    
+    // 2. L'anneau de l'explosion grandit avec le temps (uLife)
+    float radius = uLife * 0.9;  // Plus uLife augmente, plus l'anneau est grand
+    
+    // 3. Calculer l'angle du pixel par rapport au centre
+    float angle = atan(vUv.y - 0.5, vUv.x - 0.5);
 
-4. Faire grandir l'anneau et baisser son opacité → l'onde s'estompe
+    // 4. Ajouter du "bruit" pour un effet plasma organique
+    //    (l'anneau n'est jamais parfaitement rond, il est déformé)
+    float noiseVal = fbm(vec2(angle * 3.0, uTime * 2.0)); // Utilise l'angle et le temps pour le bruit
+    float distort = (noiseVal - 0.5) * 0.4; // Ajuste l'intensité de la distorsion
+    
+    // 5. Définir l'épaisseur de l'anneau
+    float baseWidth = 0.05; 
 
-// Résultat : une explosion fluide, unique à chaque fois.`}
+    // 6. Si ce pixel est "dans l'anneau" de l'onde → le colorier
+    //    smoothstep crée un dégradé doux aux bords de l'anneau
+    float ring = 1.0 - smoothstep(0.0, baseWidth, abs(dist - radius + distort));
+    
+    // 7. Ajouter un halo lumineux au centre de l'explosion
+    //    Plus le pixel est proche du centre, plus il est lumineux
+    float innerGlow = smoothstep(radius, 0.0, dist) * 0.6;
+    
+    // 8. Couleur finale : mélange la couleur de base (uColor) avec du blanc
+    //    L'anneau et le halo sont plus blancs
+    vec3 color = mix(uColor, vec3(1.0), ring * 0.9 + innerGlow);
+    
+    // 9. L'opacité diminue avec le temps → l'onde s'estompe progressivement
+    float opacity = pow(1.0 - uLife, 0.5); // Utilise une puissance pour un estompage non linéaire
+    
+    // gl_FragColor est la couleur finale du pixel
+    // C'est un vecteur 4 (rouge, vert, bleu, alpha/opacité)
+    gl_FragColor = vec4(color, (ring + innerGlow) * opacity);
+}`}
                 </CodeWindow>
 
                 <InfoBox title="Pourquoi c'est important pour ton business">
@@ -212,25 +315,37 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                 </SectionHeader>
 
                 <Paragraph>
-                    Quand tous les points ont été débloqués, le visiteur clique au centre. Et là, <Strong>tout s&apos;assemble</Strong>. Le menu apparaît en haut. Le texte principal au milieu. Les cartes sur les côtés. Le footer en bas.
+                    Quand tous les éléments sont prêts, le visiteur clique sur le nœud central. Et là, <Strong>tout s&apos;assemble</Strong>. Le menu apparaît en haut. Le texte principal au milieu. Les cartes sur les côtés. Le footer en bas.
                 </Paragraph>
 
                 <Paragraph>
-                    Chaque élément arrive dans l&apos;ordre logique, avec son animation de construction. En 2 secondes, le site est complet. Mais ces 2 secondes sont <Strong>inoubliables</Strong>.
+                    Chaque élément arrive dans l&apos;ordre logique, avec son animation de construction. En quelques secondes, le site est complet. Mais ces secondes sont <Strong>inoubliables</Strong>.
                 </Paragraph>
 
-                <ScreenshotPlaceholder
-                    instruction="Estado final avec tous les éléments assemblés (la mini-page web complète dans le cadre)"
-                    caption="Le résultat : un site complet, construit par le visiteur lui-même."
-                />
+                <div className="my-8 rounded-xl overflow-hidden border border-white/10">
+                    <Image
+                        src="/case-studies/magnetic-website/Screenshot4.png"
+                        alt="État initial - Point central"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
+                    <p className="text-center text-zinc-400 text-sm italic mt-4">Un point central. Le visiteur clique et déclenche l&apos;assemblage.</p>
+                </div>
 
-                <ScreenshotPlaceholder
-                    instruction="Montage avant/après côte à côte (état initial 4 points VS état final page complète)"
-                    caption="Avant : 4 points mystérieux. Après : un site que tu as construit. Tu t'en souviens."
-                />
+                <div className="my-8 rounded-xl overflow-hidden border border-white/10">
+                    <Image
+                        src="/case-studies/magnetic-website/Screenshot5.png"
+                        alt="État final - Site assemblé"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
+                    <p className="text-center text-zinc-400 text-sm italic mt-4">Le résultat : un site complet, construit par le visiteur lui-même.</p>
+                </div>
 
                 <InfoBox title="L'effet IKEA du web">
-                    C&apos;est prouvé : on valorise davantage ce qu&apos;on a construit soi-même. Même si c&apos;est juste &quot;cliquer 4 fois&quot;, le visiteur a le sentiment d&apos;avoir participé. <Strong>Ton site devient SON site.</Strong> Il s&apos;en souviendra.
+                    C&apos;est prouvé : on valorise davantage ce qu&apos;on a construit soi-même. Même si c&apos;est juste &quot;cliquer sur un point&quot;, le visiteur a le sentiment d&apos;avoir participé. <Strong>Ton site devient SON site.</Strong> Il s&apos;en souviendra.
                 </InfoBox>
             </Section>
 
@@ -259,10 +374,6 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                     On automatise les tâches répétitives pour libérer ce qui fait de toi un humain. On gamifie les expériences pour captiver l&apos;attention. On code ce que les autres jugent &quot;trop complexe&quot;. <Strong>Parce que c&apos;est là que se fait la différence.</Strong>
                 </InfoBox>
 
-                <ScreenshotPlaceholder
-                    instruction="Vue des différents états de hover sur les nœuds (l'anneau d'énergie bleu qui s'active au survol)"
-                    caption="Chaque survol a sa réaction. Le site est vivant."
-                />
             </Section>
 
             {/* POUR TON BUSINESS */}
