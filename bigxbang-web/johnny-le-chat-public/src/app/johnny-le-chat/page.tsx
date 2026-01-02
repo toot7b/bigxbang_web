@@ -104,8 +104,8 @@ export default function JohnnyLeChatPage() {
         >
 
             {/* --- FAKE NAVBAR --- */}
-            <nav className="absolute top-0 left-0 w-full p-8 flex justify-between items-center z-20 font-nunito text-black/60 uppercase tracking-widest text-sm mix-blend-multiply pointer-events-none select-none">
-                <img src="/cat-paw.svg" alt="Badge" className="w-20 h-20 rotate-[-5deg] drop-shadow-sm opacity-80" />
+            <nav className="absolute top-0 left-0 w-full p-4 md:p-8 flex justify-between items-center z-20 font-nunito text-black/60 uppercase tracking-widest text-sm mix-blend-multiply pointer-events-none select-none">
+                <img src="/cat-paw.svg" alt="Badge" className="w-16 h-16 md:w-20 md:h-20 rotate-[-5deg] drop-shadow-sm opacity-80" />
                 <div className="flex gap-8 md:gap-12 hidden md:flex">
                     <span className="relative">
                         Accueil
@@ -127,7 +127,7 @@ export default function JohnnyLeChatPage() {
                     <span>Croquettes</span>
                     <span className="border-b-2 border-black/20">Contact</span>
                 </div>
-                <div className="flex gap-4 md:hidden text-xs">
+                <div className="flex gap-3 md:hidden text-[10px]">
                     <span className="relative">
                         Accueil
                         <svg className="absolute left-0 top-1/2 w-full h-3 -translate-y-1/2 pointer-events-none" viewBox="0 0 60 12" preserveAspectRatio="none">
@@ -136,6 +136,7 @@ export default function JohnnyLeChatPage() {
                     </span>
                     <a href="https://github.com/toot7b/johnny-le-chat" target="_blank" rel="noopener noreferrer" className="pointer-events-auto hover:text-black transition-colors">Github</a>
                     <span>Croquettes</span>
+                    <span>Contact</span>
                 </div>
             </nav>
 

@@ -73,9 +73,13 @@ export default function JohnnyLeChatCaseStudy({ mode = 'page', onClose }: Johnny
                 </Paragraph>
 
                 <div className="my-8 rounded-xl overflow-hidden border border-white/10 relative group">
-                    <div className="aspect-video bg-zinc-900 flex items-center justify-center text-zinc-500">
-                        PLACEHOLDER: /case-studies/johnny/gemini_conversation.png
-                    </div>
+                    <Image
+                        src="/case-studies/johnny/gemini_conversation.png"
+                        alt="Conversation Gemini"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
                     <p className="text-center text-zinc-400 text-sm italic mt-4">Plusieurs itérations pour trouver le dosage parfait de "kawaï".</p>
                 </div>
 
@@ -93,9 +97,13 @@ export default function JohnnyLeChatCaseStudy({ mode = 'page', onClose }: Johnny
                 </InfoBox>
 
                 <div className="my-8 rounded-xl overflow-hidden border border-white/10 relative">
-                    <div className="aspect-video bg-zinc-900 flex items-center justify-center text-zinc-500">
-                        PLACEHOLDER: /case-studies/johnny/upscayl_ui.png
-                    </div>
+                    <Image
+                        src="/case-studies/johnny/upscayl_ui.png"
+                        alt="Interface Upscayl"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
                     <p className="text-center text-zinc-400 text-sm italic mt-4">Upscayl en action : on récupère du piqué et du détail.</p>
                 </div>
 
@@ -105,9 +113,13 @@ export default function JohnnyLeChatCaseStudy({ mode = 'page', onClose }: Johnny
                 </Paragraph>
 
                 <div className="my-8 rounded-xl overflow-hidden border border-white/10 relative">
-                    <div className="aspect-video bg-zinc-900 flex items-center justify-center text-zinc-500">
-                        PLACEHOLDER: /case-studies/johnny/veo_generation.png
-                    </div>
+                    <Image
+                        src="/case-studies/johnny/veo_generation.png"
+                        alt="Génération Gemini Veo"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
                     <p className="text-center text-zinc-400 text-sm italic mt-4">Johnny prend vie. C'est magique.</p>
                 </div>
             </Section>
@@ -142,9 +154,13 @@ drive.mount('/content/drive')
                 </CodeWindow>
 
                 <div className="my-8 rounded-xl overflow-hidden border border-white/10 relative">
-                    <div className="aspect-video bg-zinc-900 flex items-center justify-center text-zinc-500">
-                        PLACEHOLDER: /case-studies/johnny/colab_video2x.png
-                    </div>
+                    <Image
+                        src="/case-studies/johnny/colab_video2x.png"
+                        alt="Script Colab Video2X"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
                     <p className="text-center text-zinc-400 text-sm italic mt-4">On délègue le calcul lourd au cloud.</p>
                 </div>
             </Section>
@@ -171,9 +187,13 @@ drive.mount('/content/drive')
                 ]} />
 
                 <div className="my-8 rounded-xl overflow-hidden border border-white/10 relative">
-                    <div className="aspect-video bg-zinc-900 flex items-center justify-center text-zinc-500">
-                        PLACEHOLDER: /case-studies/johnny/ae_timeline_loop.png
-                    </div>
+                    <Image
+                        src="/case-studies/johnny/ae_timeline_loop.png"
+                        alt="Timeline After Effects Loop"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
                     <p className="text-center text-zinc-400 text-sm italic mt-4">La technique du "Boomerang" pour un loop parfait.</p>
                 </div>
 
@@ -187,9 +207,13 @@ drive.mount('/content/drive')
                 </Paragraph>
 
                 <div className="my-8 rounded-xl overflow-hidden border border-white/10 relative">
-                    <div className="aspect-video bg-zinc-900 flex items-center justify-center text-zinc-500">
-                        PLACEHOLDER: /case-studies/johnny/ae_masking.png
-                    </div>
+                    <Image
+                        src="/case-studies/johnny/ae_masking.png"
+                        alt="Masquage After Effects"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto"
+                    />
                     <p className="text-center text-zinc-400 text-sm italic mt-4">Parfois, un bon fondu vaut mieux qu'un mauvais détourage.</p>
                 </div>
             </Section>
@@ -219,11 +243,26 @@ drive.mount('/content/drive')
                     "Responsive design pour qu'il soit aussi mignon sur mobile que sur desktop"
                 ]} />
 
-                <div className="my-8 rounded-xl overflow-hidden border border-white/10 relative">
-                    <div className="aspect-video bg-zinc-900 flex items-center justify-center text-zinc-500">
-                        PLACEHOLDER: /case-studies/johnny/final_result.png
+                <div className="my-8 grid md:grid-cols-4 gap-4 items-end">
+                    <div className="md:col-span-3 rounded-xl overflow-hidden border border-white/10">
+                        <Image
+                            src="/case-studies/johnny/final_result_desktop.png"
+                            alt="Résultat Final Desktop"
+                            width={1920}
+                            height={1080}
+                            className="w-full h-auto"
+                        />
                     </div>
-                    <p className="text-center text-zinc-400 text-sm italic mt-4">Le résultat final : fluide, léger, vivant.</p>
+                    <div className="md:col-span-1 rounded-xl overflow-hidden border border-white/10">
+                        <Image
+                            src="/case-studies/johnny/final_result_mobile.png"
+                            alt="Résultat Final Mobile"
+                            width={1080}
+                            height={1920}
+                            className="w-full h-auto"
+                        />
+                    </div>
+                    <p className="col-span-full text-center text-zinc-400 text-sm italic mt-2">Le résultat final sur Desktop et Mobile : fluide, léger, vivant.</p>
                 </div>
             </Section>
 
