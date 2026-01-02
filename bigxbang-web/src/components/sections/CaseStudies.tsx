@@ -185,7 +185,7 @@ const items = [
 ];
 
 
-export default function CaseStudies() {
+export default function CaseStudies({ compact = false }: { compact?: boolean } = {}) {
     const sectionRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -236,7 +236,10 @@ export default function CaseStudies() {
         <div id="case-studies" className="scroll-mt-[100px]">
             <section
                 ref={sectionRef}
-                className="relative z-0 w-full min-h-screen bg-white text-black -mt-[100px] pt-[100px] overflow-hidden"
+                className={cn(
+                    "relative z-0 w-full min-h-screen bg-white text-black overflow-hidden",
+                    compact ? "mt-0 pt-16" : "-mt-[100px] pt-[100px]"
+                )}
             >
                 {/* DIMMING OVERLAY */}
                 <div
