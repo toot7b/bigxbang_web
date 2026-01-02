@@ -7,6 +7,10 @@
   /* Blue Royal - Use this everywhere */
   --font-clash: var(--font-clash);
   --font-jakarta: var(--font-jakarta);
+  --font-londrina: var(--font-londrina);
+  --font-londrina-solid: var(--font-londrina-solid);
+  --font-nunito: var(--font-nunito);
+  --font-space: var(--font-space);
 }
 
 /* Custom base styles */
