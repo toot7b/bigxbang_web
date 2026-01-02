@@ -6,7 +6,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 import { AnimatePresence, motion } from "framer-motion";
-import { Brain, Lock, Layout, BarChart3, Cpu, Target } from "lucide-react";
+import { BrainCircuit, Layout, Dna } from "lucide-react";
+import Asterisk from "@/components/ui/Asterisk";
 import { useLenis } from "lenis/react";
 import OnboardingAutomation from "@/components/case-studies/content/OnboardingAutomation";
 import ProspectionRefonte from "@/components/case-studies/content/ProspectionRefonte";
@@ -16,119 +17,99 @@ import JohnnyLeChatCaseStudy from "@/components/case-studies/content/JohnnyLeCha
 
 gsap.registerPlugin(ScrollTrigger);
 
-// --- SKELETONS (R&D / Tech Theme) ---
+// --- LOTTIE IMPORTS ---
+import RobotAnim from "@/../public/icons/Robot.json";
+import WebDesignAnim from "@/../public/icons/Web design.json";
+import EmailAnim from "@/../public/icons/email.json";
+import ProspectionAnim from "@/../public/icons/Prospection.json";
+import UFORocketAnim from "@/../public/icons/UFO_rocket2.json";
 
-const SkeletonNeural = () => {
-    // Pulsing brain nodes
-    const variants = {
-        initial: { scale: 1, opacity: 0.5 },
-        animate: { scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5], transition: { duration: 2, repeat: Infinity } },
-    };
-    return (
-        <motion.div
-            initial="initial"
-            animate="animate"
-            className="flex flex-1 w-full h-full min-h-[6rem] bg-black/20 dark:bg-white/5 rounded-lg flex-col items-center justify-center space-y-2 overflow-hidden"
-        >
-            <div className="flex gap-2">
-                <motion.div variants={variants} className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md" />
-                <motion.div variants={variants} className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md" style={{ transitionDelay: "0.2s" }} />
-            </div>
-            <div className="flex gap-2">
-                <motion.div variants={variants} className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md" style={{ transitionDelay: "0.4s" }} />
-            </div>
-        </motion.div>
-    );
-};
+// Dynamic Lottie import to avoid SSR issues
+import dynamic from "next/dynamic";
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-const SkeletonEncryption = () => {
-    // Shifting bars / code lines
-    const variants = {
-        initial: { width: "40%" },
-        animate: {
-            width: ["40%", "80%", "30%", "60%"],
-            transition: { duration: 3, repeat: Infinity, repeatType: "reverse" as const, ease: "easeInOut" as const }
-        }
-    };
+// --- LOTTIE HEADER COMPONENT ---
+const LottieHeader = ({ animationData }: { animationData: object }) => {
+    const lottieRef = React.useRef<any>(null);
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
+    // Use MutationObserver to detect when parent card is hovered (via group-hover class)
+    React.useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        // Find the closest group/bento parent
+        const card = container.closest('.group\\/bento');
+        if (!card) return;
+
+        const handleMouseEnter = () => lottieRef.current?.play();
+        const handleMouseLeave = () => lottieRef.current?.stop();
+
+        card.addEventListener('mouseenter', handleMouseEnter);
+        card.addEventListener('mouseleave', handleMouseLeave);
+
+        return () => {
+            card.removeEventListener('mouseenter', handleMouseEnter);
+            card.removeEventListener('mouseleave', handleMouseLeave);
+        };
+    }, []);
+
     return (
-        <motion.div
-            initial="initial"
-            animate="animate"
-            className="flex flex-1 w-full h-full min-h-[6rem] bg-black/20 dark:bg-white/5 rounded-lg flex-col justify-center px-4 space-y-2"
+        <div
+            ref={containerRef}
+            className="flex flex-1 w-full h-full min-h-[6rem] bg-black/20 dark:bg-white/5 rounded-lg items-center justify-center overflow-hidden p-4"
         >
-            {[1, 2, 3, 4].map((i) => (
-                <motion.div
-                    key={i}
-                    variants={variants}
-                    style={{ width: `${Math.random() * 50 + 20}% ` }}
-                    className="h-2 rounded-full bg-white/30"
+            <div className="transition-opacity duration-300 opacity-20 group-hover/bento:opacity-60">
+                <Lottie
+                    lottieRef={lottieRef}
+                    animationData={animationData}
+                    loop={false}
+                    autoplay={false}
+                    className="w-16 h-16"
                 />
-            ))}
-        </motion.div>
-    );
-};
-
-const SkeletonCore = () => {
-    // Complex rotating geometry for the Core System
-    const rotateVar = {
-        animate: { rotate: 360, transition: { duration: 10, repeat: Infinity, ease: "linear" as const } }
-    };
-    return (
-        <motion.div
-            className="flex flex-1 w-full h-full min-h-[6rem] bg-transparent rounded-lg items-center justify-center relative overflow-hidden"
-        >
-            {/* Abstract Rings */}
-            <motion.div
-                variants={rotateVar}
-                animate="animate"
-                className="w-48 h-48 border-[1px] border-white/20 rounded-full absolute"
-                style={{ borderStyle: "dashed" }}
-            />
-            <motion.div
-                variants={rotateVar}
-                animate="animate"
-                className="w-32 h-32 border-[1px] border-white/40 rounded-full absolute"
-            />
-            <motion.div
-                animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-16 h-16 bg-white rounded-full blur-xl absolute"
-            />
-        </motion.div>
-    );
-};
-
-const SkeletonFluid = () => {
-    // Floating UI cards
-    return (
-        <div className="flex flex-1 w-full h-full min-h-[6rem] bg-black/20 dark:bg-white/5 rounded-lg relative overflow-hidden p-4">
-            <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" as const }}
-                className="absolute top-4 left-4 w-24 h-16 bg-white/10 rounded-md border border-white/10"
-            />
-            <motion.div
-                animate={{ y: [0, 15, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" as const, delay: 1 }}
-                className="absolute bottom-4 right-4 w-20 h-20 bg-white/20 rounded-full blur-sm"
-            />
+            </div>
         </div>
     );
 };
 
-const SkeletonAnalytics = () => {
-    // Growing bars
+// --- SKELETON FOR BLUE CARD (Pipeline) ---
+const SkeletonCore = () => {
+    const lottieRef = React.useRef<any>(null);
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const card = container.closest('.group\\/bento');
+        if (!card) return;
+
+        const handleMouseEnter = () => lottieRef.current?.play();
+        const handleMouseLeave = () => lottieRef.current?.stop();
+
+        card.addEventListener('mouseenter', handleMouseEnter);
+        card.addEventListener('mouseleave', handleMouseLeave);
+
+        return () => {
+            card.removeEventListener('mouseenter', handleMouseEnter);
+            card.removeEventListener('mouseleave', handleMouseLeave);
+        };
+    }, []);
+
     return (
-        <div className="flex flex-1 w-full h-full min-h-[6rem] bg-black/20 dark:bg-white/5 rounded-lg items-end justify-center space-x-2 p-4 pb-0">
-            {[0.4, 0.8, 0.6, 0.9, 0.5].map((h, i) => (
-                <motion.div
-                    key={i}
-                    initial={{ height: "10%" }}
-                    animate={{ height: `${h * 100}% ` }}
-                    transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse", delay: i * 0.1 }}
-                    className="w-4 bg-white/30 rounded-t-sm"
+        <div
+            ref={containerRef}
+            className="flex flex-1 w-full h-full min-h-[6rem] bg-transparent rounded-lg items-center justify-center relative overflow-hidden"
+        >
+            <div className="transition-opacity duration-300 opacity-30 group-hover/bento:opacity-80">
+                <Lottie
+                    lottieRef={lottieRef}
+                    animationData={ProspectionAnim}
+                    loop={false}
+                    autoplay={false}
+                    className="w-24 h-24"
                 />
-            ))}
+            </div>
         </div>
     );
 };
@@ -136,28 +117,43 @@ const SkeletonAnalytics = () => {
 
 // --- BENTO ITEMS CONFIG ---
 
+// Icon separator component
+const IconSeparator = () => <Asterisk className="h-2 w-2 text-neutral-500 mx-1" />;
+
 const items = [
     {
         title: "Onboarding Automation",
         description: "Zero-touch onboarding avec Stripe, Python et Notion.",
-        header: <SkeletonNeural />,
-        icon: <Brain className="h-4 w-4 text-neutral-300" />,
+        header: <LottieHeader animationData={RobotAnim} />,
+        icon: <BrainCircuit className="h-4 w-4 text-neutral-300" />,
         className: "md:col-span-1",
         href: "/case-studies/onboarding-automation"
     },
     {
         title: "MagneticWebsite",
         description: "Le site qui se construit devant toi. Gamification de l'attention.",
-        header: <SkeletonEncryption />,
-        icon: <Lock className="h-4 w-4 text-neutral-300" />,
+        header: <LottieHeader animationData={WebDesignAnim} />,
+        icon: (
+            <span className="flex items-center">
+                <Layout className="h-4 w-4 text-neutral-300" />
+                <IconSeparator />
+                <Dna className="h-4 w-4 text-neutral-300" />
+            </span>
+        ),
         className: "md:col-span-1",
         href: "/case-studies/magnetic-website"
     },
     {
         title: "Smart Newsletter",
         description: "La newsletter qui s'écrit (presque) toute seule.",
-        header: <SkeletonFluid />,
-        icon: <Layout className="h-4 w-4 text-neutral-300" />,
+        header: <LottieHeader animationData={EmailAnim} />,
+        icon: (
+            <span className="flex items-center">
+                <BrainCircuit className="h-4 w-4 text-neutral-300" />
+                <IconSeparator />
+                <Dna className="h-4 w-4 text-neutral-300" />
+            </span>
+        ),
         className: "md:col-span-1",
         href: "/case-studies/smart-newsletter"
     },
@@ -165,16 +161,24 @@ const items = [
         title: "Pipeline de Prospection B2B",
         description: "Comment on a transformé 7h de travail répétitif en 47min d'exécution automatique.",
         header: <SkeletonCore />,
-        icon: <Cpu className="h-4 w-4 text-white" />,
+        icon: <BrainCircuit className="h-4 w-4 text-white" />,
         // Styling specifically for the Blue Card
-        className: "md:col-span-2 md:row-span-1 bg-[#306EE8] border-white/20 shadow-[0_0_50px_rgba(48,110,232,0.3)] [&>div>div]:text-white [&>div>div.font-jakarta]:text-white/80",
+        className: "md:col-span-2 md:row-span-1 bg-[#306EE8] border-white/20 shadow-[0_0_50px_rgba(48,110,232,0.3)] [&_div.font-clash]:text-white [&_div.font-jakarta]:text-white/80",
         href: "/case-studies/prospection-refonte"
     },
     {
         title: "Johnny Le Chat",
         description: "Une mascotte de qualité studio, sans le studio. Générée et animée par IA.",
-        header: <SkeletonNeural />, // Recycling skeleton for now or could create a new one
-        icon: <Target className="h-4 w-4 text-neutral-300" />,
+        header: <LottieHeader animationData={UFORocketAnim} />,
+        icon: (
+            <span className="flex items-center">
+                <BrainCircuit className="h-4 w-4 text-neutral-300" />
+                <IconSeparator />
+                <Layout className="h-4 w-4 text-neutral-300" />
+                <IconSeparator />
+                <Dna className="h-4 w-4 text-neutral-300" />
+            </span>
+        ),
         className: "md:col-span-1",
         href: "/case-studies/johnny-le-chat"
     },
@@ -198,6 +202,8 @@ export default function CaseStudies() {
         }
     }, [openStudy, lenis]);
 
+    const [bentoVisible, setBentoVisible] = useState(false);
+
     useEffect(() => {
         const ctx = gsap.context(() => {
             if (!sectionRef.current || !contentRef.current || !overlayRef.current) return;
@@ -213,19 +219,24 @@ export default function CaseStudies() {
                     const yPercent = -50 + (50 * progress);
                     contentRef.current!.style.transform = `translateY(${yPercent}%)`;
                     overlayRef.current!.style.opacity = `${1 - progress}`;
+
+                    // Trigger Bento animation when overlay is fully gone
+                    if (progress > 0.98 && !bentoVisible) {
+                        setBentoVisible(true);
+                    }
                 }
             });
 
         }, sectionRef);
 
         return () => ctx.revert();
-    }, []);
+    }, [bentoVisible]);
 
     return (
         <div id="case-studies" className="scroll-mt-[100px]">
             <section
                 ref={sectionRef}
-                className="relative z-0 w-full min-h-screen bg-white text-black -mt-[100px] pt-[100px]"
+                className="relative z-0 w-full min-h-screen bg-white text-black -mt-[100px] pt-[100px] overflow-hidden"
             >
                 {/* DIMMING OVERLAY */}
                 <div
@@ -239,6 +250,17 @@ export default function CaseStudies() {
                     className="relative z-10 w-full min-h-screen flex flex-col justify-start items-center p-4 md:p-8 pt-12 md:pt-24"
                     style={{ transform: 'translateY(-50%)' }}
                 >
+                    {/* SUBTLE DOT BACKGROUND - Increased visibility */}
+                    <div className="absolute top-64 -bottom-32 left-1/2 -translate-x-1/2 w-[140vw] z-[-1] pointer-events-none">
+                        <div className={cn(
+                            "absolute inset-0 h-full w-full",
+                            "[background-size:20px_20px]",
+                            "[background-image:radial-gradient(#a1a1aa_1px,transparent_1px)]"
+                        )} />
+                        {/* Mask: Content visible in center, fading out to edges */}
+                        <div className="absolute inset-0 bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_40%,black_80%)]" />
+                    </div>
+
                     {/* HEADER */}
                     <div className="text-center max-w-4xl px-4 mb-16">
                         <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-black/10 bg-black/5 backdrop-blur-sm mb-6">
@@ -253,41 +275,83 @@ export default function CaseStudies() {
                     </div>
 
                     {/* BENTO GRID */}
-                    <BentoGrid className="max-w-5xl mx-auto md:auto-rows-[18rem]">
-                        {items.map((item, i) => (
-                            <BentoGridItem
-                                key={i}
-                                title={item.title}
-                                description={item.description}
-                                header={item.header}
-                                icon={item.icon}
-                                className={cn(item.className, item.title === "Pipeline de Prospection B2B" ? "!bg-[#306EE8] !border-transparent" : "bg-[#111111] border-white/5")}
-                                href={item.href}
-                                onClick={(e) => {
-                                    if (item.href.includes('onboarding-automation')) {
-                                        e.preventDefault();
-                                        setOpenStudy('onboarding-automation');
-                                    } else if (item.href.includes('prospection-refonte')) {
-                                        e.preventDefault();
-                                        setOpenStudy('prospection-refonte');
-                                    } else if (item.href.includes('magnetic-website')) {
-                                        e.preventDefault();
-                                        setOpenStudy('magnetic-website');
-                                    } else if (item.href.includes('smart-newsletter')) {
-                                        e.preventDefault();
-                                        setOpenStudy('smart-newsletter');
-                                    } else if (item.href.includes('johnny-le-chat')) {
-                                        e.preventDefault();
-                                        setOpenStudy('johnny-le-chat');
-                                    } else {
-                                        if (typeof window !== 'undefined') {
-                                            sessionStorage.setItem('caseStudyReturnPosition', window.scrollY.toString());
+                    <motion.div
+                        className="max-w-5xl mx-auto grid md:auto-rows-[18rem] grid-cols-1 md:grid-cols-3 gap-4"
+                        initial="hidden"
+                        animate={bentoVisible ? "visible" : "hidden"}
+                        variants={{
+                            hidden: {},
+                            visible: {
+                                transition: {
+                                    staggerChildren: 0.12,
+                                    delayChildren: 0.3
+                                }
+                            }
+                        }}
+                    >
+                        {items.map((item, i) => {
+                            // Determine slide direction based on position in grid
+                            // Row 1: 0 (left), 1 (center), 2 (right)
+                            // Row 2: 3 (left, spans 2), 4 (right)
+                            const getInitialPosition = () => {
+                                if (i === 0 || i === 3) return { x: -80, y: 0 }; // Left side
+                                if (i === 2 || i === 4) return { x: 80, y: 0 };  // Right side
+                                return { x: 0, y: 50 }; // Center (from bottom)
+                            };
+                            const initialPos = getInitialPosition();
+
+                            return (
+                                <motion.div
+                                    key={i}
+                                    variants={{
+                                        hidden: { opacity: 0, x: initialPos.x, y: initialPos.y },
+                                        visible: {
+                                            opacity: 1,
+                                            x: 0,
+                                            y: 0,
+                                            transition: {
+                                                type: "spring",
+                                                stiffness: 60,
+                                                damping: 15
+                                            }
                                         }
-                                    }
-                                }}
-                            />
-                        ))}
-                    </BentoGrid>
+                                    }}
+                                    className={cn(item.className, "rounded-xl")}
+                                >
+                                    <BentoGridItem
+                                        title={item.title}
+                                        description={item.description}
+                                        header={item.header}
+                                        icon={item.icon}
+                                        className={cn("h-full", item.title === "Pipeline de Prospection B2B" ? "!bg-[#306EE8] !border-transparent" : "bg-[#111111] border-white/5")}
+                                        href={item.href}
+                                        onClick={(e) => {
+                                            if (item.href.includes('onboarding-automation')) {
+                                                e.preventDefault();
+                                                setOpenStudy('onboarding-automation');
+                                            } else if (item.href.includes('prospection-refonte')) {
+                                                e.preventDefault();
+                                                setOpenStudy('prospection-refonte');
+                                            } else if (item.href.includes('magnetic-website')) {
+                                                e.preventDefault();
+                                                setOpenStudy('magnetic-website');
+                                            } else if (item.href.includes('smart-newsletter')) {
+                                                e.preventDefault();
+                                                setOpenStudy('smart-newsletter');
+                                            } else if (item.href.includes('johnny-le-chat')) {
+                                                e.preventDefault();
+                                                setOpenStudy('johnny-le-chat');
+                                            } else {
+                                                if (typeof window !== 'undefined') {
+                                                    sessionStorage.setItem('caseStudyReturnPosition', window.scrollY.toString());
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </motion.div>
+                            );
+                        })}
+                    </motion.div>
 
                 </div>
             </section>
