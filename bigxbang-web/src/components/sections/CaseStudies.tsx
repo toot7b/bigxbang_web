@@ -11,6 +11,7 @@ import { useLenis } from "lenis/react";
 import OnboardingAutomation from "@/components/case-studies/content/OnboardingAutomation";
 import ProspectionRefonte from "@/components/case-studies/content/ProspectionRefonte";
 import MagneticWebsiteCaseStudy from "@/components/case-studies/content/MagneticWebsiteCaseStudy";
+import SmartNewsletter from "@/components/case-studies/content/SmartNewsletter";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -45,7 +46,7 @@ const SkeletonEncryption = () => {
         initial: { width: "40%" },
         animate: {
             width: ["40%", "80%", "30%", "60%"],
-            transition: { duration: 3, repeat: Infinity, repeatType: "reverse" as const, ease: "easeInOut" }
+            transition: { duration: 3, repeat: Infinity, repeatType: "reverse" as const, ease: "easeInOut" as const }
         }
     };
     return (
@@ -69,7 +70,7 @@ const SkeletonEncryption = () => {
 const SkeletonCore = () => {
     // Complex rotating geometry for the Core System
     const rotateVar = {
-        animate: { rotate: 360, transition: { duration: 10, repeat: Infinity, ease: "linear" } }
+        animate: { rotate: 360, transition: { duration: 10, repeat: Infinity, ease: "linear" as const } }
     };
     return (
         <motion.div
@@ -102,12 +103,12 @@ const SkeletonFluid = () => {
         <div className="flex flex-1 w-full h-full min-h-[6rem] bg-black/20 dark:bg-white/5 rounded-lg relative overflow-hidden p-4">
             <motion.div
                 animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" as const }}
                 className="absolute top-4 left-4 w-24 h-16 bg-white/10 rounded-md border border-white/10"
             />
             <motion.div
                 animate={{ y: [0, 15, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" as const, delay: 1 }}
                 className="absolute bottom-4 right-4 w-20 h-20 bg-white/20 rounded-full blur-sm"
             />
         </div>
@@ -153,11 +154,11 @@ const items = [
     },
     {
         title: "Smart Newsletter",
-        description: "Curated content generation via LLMs.",
+        description: "La newsletter qui s'écrit (presque) toute seule.",
         header: <SkeletonFluid />,
         icon: <Layout className="h-4 w-4 text-neutral-300" />,
         className: "md:col-span-1",
-        href: "/case-studies/ai-newsletter"
+        href: "/case-studies/smart-newsletter"
     },
     {
         title: "Pipeline de Prospection B2B",
@@ -271,6 +272,9 @@ export default function CaseStudies() {
                                     } else if (item.href.includes('magnetic-website')) {
                                         e.preventDefault();
                                         setOpenStudy('magnetic-website');
+                                    } else if (item.href.includes('smart-newsletter')) {
+                                        e.preventDefault();
+                                        setOpenStudy('smart-newsletter');
                                     } else {
                                         if (typeof window !== 'undefined') {
                                             sessionStorage.setItem('caseStudyReturnPosition', window.scrollY.toString());
@@ -320,6 +324,18 @@ export default function CaseStudies() {
                         data-lenis-prevent
                     >
                         <MagneticWebsiteCaseStudy mode="modal" onClose={() => setOpenStudy(null)} />
+                    </motion.div>
+                )}
+                {openStudy === 'smart-newsletter' && (
+                    <motion.div
+                        initial={{ y: "100%" }}
+                        animate={{ y: "0%" }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        className="fixed inset-0 z-[200] overflow-y-auto bg-black"
+                        data-lenis-prevent
+                    >
+                        <SmartNewsletter mode="modal" onClose={() => setOpenStudy(null)} />
                     </motion.div>
                 )}
             </AnimatePresence>
