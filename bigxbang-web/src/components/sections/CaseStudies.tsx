@@ -12,6 +12,7 @@ import OnboardingAutomation from "@/components/case-studies/content/OnboardingAu
 import ProspectionRefonte from "@/components/case-studies/content/ProspectionRefonte";
 import MagneticWebsiteCaseStudy from "@/components/case-studies/content/MagneticWebsiteCaseStudy";
 import SmartNewsletter from "@/components/case-studies/content/SmartNewsletter";
+import JohnnyLeChatCaseStudy from "@/components/case-studies/content/JohnnyLeChatCaseStudy";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -170,12 +171,12 @@ const items = [
         href: "/case-studies/prospection-refonte"
     },
     {
-        title: "Data Sentry",
-        description: "Monitoring et analytics temps réel.",
-        header: <SkeletonAnalytics />,
-        icon: <BarChart3 className="h-4 w-4 text-neutral-300" />,
+        title: "Johnny Le Chat",
+        description: "Une mascotte de qualité studio, sans le studio. Générée et animée par IA.",
+        header: <SkeletonNeural />, // Recycling skeleton for now or could create a new one
+        icon: <Target className="h-4 w-4 text-neutral-300" />,
         className: "md:col-span-1",
-        href: "/case-studies/data-sentry"
+        href: "/case-studies/johnny-le-chat"
     },
 ];
 
@@ -275,6 +276,9 @@ export default function CaseStudies() {
                                     } else if (item.href.includes('smart-newsletter')) {
                                         e.preventDefault();
                                         setOpenStudy('smart-newsletter');
+                                    } else if (item.href.includes('johnny-le-chat')) {
+                                        e.preventDefault();
+                                        setOpenStudy('johnny-le-chat');
                                     } else {
                                         if (typeof window !== 'undefined') {
                                             sessionStorage.setItem('caseStudyReturnPosition', window.scrollY.toString());
@@ -336,6 +340,18 @@ export default function CaseStudies() {
                         data-lenis-prevent
                     >
                         <SmartNewsletter mode="modal" onClose={() => setOpenStudy(null)} />
+                    </motion.div>
+                )}
+                {openStudy === 'johnny-le-chat' && (
+                    <motion.div
+                        initial={{ y: "100%" }}
+                        animate={{ y: "0%" }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        className="fixed inset-0 z-[200] overflow-y-auto bg-black"
+                        data-lenis-prevent
+                    >
+                        <JohnnyLeChatCaseStudy mode="modal" onClose={() => setOpenStudy(null)} />
                     </motion.div>
                 )}
             </AnimatePresence>

@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: 0 0% 100%;
+  --color-foreground: 0 0% 3.9%;
+  --color-primary: #306EE8;
+  /* Blue Royal - Use this everywhere */
+  --font-clash: var(--font-clash);
+  --font-jakarta: var(--font-jakarta);
+  --font-londrina: var(--font-londrina);
+  --font-londrina-solid: var(--font-londrina-solid);
+  --font-nunito: var(--font-nunito);
+  --font-space: var(--font-space);
+}
+
+/* Custom base styles */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+}
+
+.dark {
+  --background: 0 0% 3.9%;
+  --foreground: 0 0% 98%;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-jakarta);
+}
+
+@layer components {
+  .btn-shiny {
+    /* Dimensions: Thinner */
+    padding: 0.5rem 1.5rem !important;
+    min-height: auto !important;
+    min-width: auto !important;
+    border-radius: 9999px !important;
+    font-weight: 600;
+
+    /* Base State: White background, Black text */
+    background-color: white !important;
+    background-image: none !important;
+    /* Ensure no gradient by default */
+    color: black !important;
+    border: none;
+    cursor: pointer;
+
+    /* Transitions */
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  /* Hover State: Blue Shiny Gradient */
+  .btn-shiny:hover {
+    /* Text remains black or changes if needed, keeping black for now as requested to not change it */
+    color: white !important;
+    box-shadow: 0px 0px 20px rgba(48, 110, 232, 0.5);
+  }
+
+  /* Pseudo-element for the gradient to allow transition */
+  .btn-shiny::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(325deg,
+        #306EE8 0%,
+        #60a5fa 55%,
+        #306EE8 90%);
+    background-size: 200% auto;
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s ease-in-out, background-position 0.5s ease;
+  }
+
+  .btn-shiny:hover::before {
+    opacity: 1;
+    background-position: right top;
+  }
+
+  @keyframes gentle-pulse {
+
+    0%,
+    100% {
+      opacity: 0.08;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.3;
+      transform: scale(1.1);
+    }
+  }
+}
+
+/* Spotlights Animation - REVERSED to animate FROM top TO center */
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%) scale(1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -62%) scale(1);
+  }
+}
+
+.animate-spotlight {
+  animation: spotlight 2s ease .75s 1 forwards;
+}
+
+@keyframes guide-glow-v2 {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(48, 110, 232, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 40px 10px rgba(48, 110, 232, 0.7);
+  }
+}
+
+.animate-guide-glow-v2 {
+  animation: guide-glow-v2 4s ease-in-out infinite;
+}
