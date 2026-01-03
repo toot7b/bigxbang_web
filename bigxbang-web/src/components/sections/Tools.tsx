@@ -6,17 +6,17 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
 import ToolsOrbit from "@/components/ui/ToolsOrbit";
 import ToolsOrbitMobile from "@/components/ui/ToolsOrbitMobile";
+import QuantumFlowBackground from "@/components/ui/QuantumFlowBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Tools() {
     const sectionRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-    const overlayRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            if (!sectionRef.current || !contentRef.current || !overlayRef.current) return;
+            if (!sectionRef.current || !contentRef.current) return;
 
             // PARALLAX + REVEAL ANIMATION (Identical to CaseStudies but White Overlay -> Black BG)
             ScrollTrigger.create({
@@ -30,9 +30,6 @@ export default function Tools() {
 
                     // Slide content up from -50% to 0%
                     contentRef.current!.style.transform = `translateY(${yPercent}%)`;
-
-                    // Fade out the WHITE overlay to reveal BLACK background
-                    overlayRef.current!.style.opacity = `${1 - progress}`;
                 }
             });
 
@@ -45,14 +42,12 @@ export default function Tools() {
         <div id="tools" className="scroll-mt-[100px]">
             <section
                 ref={sectionRef}
-                className="relative z-0 w-full min-h-screen bg-black text-white -mt-[60px] pt-40 overflow-hidden"
+                className="relative z-0 w-full min-h-screen text-white -mt-[60px] pt-40 overflow-hidden"
                 style={{ zIndex: 0 }} // Ensure it doesn't overlap CaseStudies which should be higher
             >
-                {/* DIMMING OVERLAY (White to match previous section, fading out) */}
-                <div
-                    ref={overlayRef}
-                    className="absolute inset-0 bg-white z-20 pointer-events-none"
-                />
+                <div className="absolute inset-0 z-0">
+                    <QuantumFlowBackground />
+                </div>
 
                 {/* CONTENT CONTAINER */}
                 <div

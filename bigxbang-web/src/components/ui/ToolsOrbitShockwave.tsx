@@ -115,7 +115,7 @@ const ShockwaveMesh = ({ active }: { active: boolean }) => {
 export default function ToolsOrbitShockwave({ active }: { active: boolean }) {
     return (
         <div className="w-full h-full" style={{ pointerEvents: 'none' }}>
-            <Canvas camera={{ position: [0, 0, 10], fov: 50 }} gl={{ alpha: true }} transparent>
+            <Canvas camera={{ position: [0, 0, 10], fov: 50 }} gl={{ alpha: true }}>
                 <ShockwaveMesh active={active} />
             </Canvas>
         </div>

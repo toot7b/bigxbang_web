@@ -132,48 +132,102 @@ body {
   animation: guide-glow-v2 4s ease-in-out infinite;
 }
 
-/* --- Orbit Animations --- */
-@keyframes spin {
-  to {
+/* --- Orbit Animations with Irregularity --- */
+@keyframes spin-irregular {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(95deg);
+  }
+  50% {
+    transform: rotate(175deg);
+  }
+  75% {
+    transform: rotate(268deg);
+  }
+  100% {
     transform: rotate(360deg);
   }
 }
 
-@keyframes spin-reverse {
-  from {
+@keyframes spin-irregular-2 {
+  0% {
     transform: rotate(0deg);
   }
+  20% {
+    transform: rotate(78deg);
+  }
+  45% {
+    transform: rotate(155deg);
+  }
+  70% {
+    transform: rotate(260deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
-  to {
+@keyframes spin-reverse-irregular {
+  0% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(-100deg);
+  }
+  55% {
+    transform: rotate(-190deg);
+  }
+  80% {
+    transform: rotate(-285deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes spin-reverse-irregular-2 {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-85deg);
+  }
+  50% {
+    transform: rotate(-185deg);
+  }
+  75% {
+    transform: rotate(-272deg);
+  }
+  100% {
     transform: rotate(-360deg);
   }
 }
 
 /* Orbit Containers */
 .animate-spin-slow {
-  animation: spin 30s linear infinite;
+  animation: spin-irregular 32s ease-in-out infinite;
 }
 
 .animate-spin-slower {
-  animation: spin 45s linear infinite;
+  animation: spin-irregular-2 48s ease-in-out infinite;
 }
 
 .animate-spin-reverse-slower {
-  animation: spin-reverse 45s linear infinite;
+  animation: spin-reverse-irregular 46s ease-in-out infinite;
 }
 
 .animate-counter-spin-slow {
-  animation: spin-reverse 30s linear infinite;
+  animation: spin-reverse-irregular-2 32s ease-in-out infinite;
 }
 
 .animate-counter-spin-slower {
-  animation: spin-reverse 45s linear infinite;
-  /* Counteracts spin-slower */
+  animation: spin-reverse-irregular 48s ease-in-out infinite;
 }
 
 .animate-counter-spin-reverse-slower {
-  animation: spin 45s linear infinite;
-  /* Counteracts spin-reverse-slower */
+  animation: spin-irregular 46s ease-in-out infinite;
 }
 
 /* Custom Shockwave Animation (Cleaner than Ping) */
@@ -207,4 +261,50 @@ body {
 
 .animate-struggle {
   animation: struggle 1.2s ease-in-out infinite;
+}
+
+/* Quantum Flow Background */
+@keyframes aurora1 {
+  0%, 100% {
+    transform: translateY(0%) scaleY(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(-8%) scaleY(1.15);
+    opacity: 0.5;
+  }
+}
+
+@keyframes aurora2 {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translateX(8%) translateY(-5%);
+    opacity: 0.35;
+  }
+}
+
+@keyframes aurora3 {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translateX(-8%) translateY(-6%);
+    opacity: 0.4;
+  }
+}
+
+.animate-aurora1 {
+  animation: aurora1 8s ease-in-out infinite;
+}
+
+.animate-aurora2 {
+  animation: aurora2 12s ease-in-out infinite;
+}
+
+.animate-aurora3 {
+  animation: aurora3 10s ease-in-out infinite;
 }
