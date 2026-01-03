@@ -169,6 +169,24 @@ export default function ToolsOrbit({ className }: ToolsOrbitProps) {
     );
 }
 
+// --- Helper function to extract rotation angle from a transform matrix ---
+function getRotationFromMatrix(element: HTMLElement | null): number {
+    if (!element) return 0;
+    const style = window.getComputedStyle(element);
+    const transform = style.transform;
+    if (transform === 'none') return 0;
+
+    // Parse matrix(a, b, c, d, tx, ty) or matrix3d(...)
+    const values = transform.match(/matrix.*\((.+)\)/);
+    if (!values) return 0;
+
+    const parts = values[1].split(', ').map(Number);
+    // For 2D matrix: rotation = atan2(b, a)
+    const a = parts[0];
+    const b = parts[1];
+    return Math.atan2(b, a) * (180 / Math.PI);
+}
+
 // --- Helper Component ---
 interface OrbitIconProps {
     src: string;
@@ -207,8 +225,45 @@ function OrbitIcon({
     // Track local hover to strictly exclude THIS icon from struggle effect
     const [isHovered, setIsHovered] = React.useState(false);
 
+    // Refs for dynamic rotation tracking
+    const iconContainerRef = React.useRef<HTMLDivElement>(null);
+    const iconImageRef = React.useRef<HTMLDivElement>(null);
+    const tooltipRef = React.useRef<HTMLDivElement>(null);
+    const animationFrameRef = React.useRef<number>(0);
+
+    // Track icon + tooltip rotation to keep them horizontal
+    React.useEffect(() => {
+        const updateRotations = () => {
+            if (iconContainerRef.current) {
+                // Get the orbit container (parent - the rotating orbit div)
+                const orbitContainer = iconContainerRef.current.parentElement;
+                if (orbitContainer) {
+                    const orbitRotation = getRotationFromMatrix(orbitContainer);
+                    // Apply counter-rotation to icon to keep it upright
+                    if (iconImageRef.current) {
+                        iconImageRef.current.style.transform = `rotate(${-orbitRotation}deg)`;
+                    }
+                    // Apply counter-rotation to tooltip
+                    if (tooltipRef.current) {
+                        tooltipRef.current.style.transform = `translateX(-50%) rotate(${-orbitRotation}deg)`;
+                    }
+                }
+            }
+            animationFrameRef.current = requestAnimationFrame(updateRotations);
+        };
+
+        animationFrameRef.current = requestAnimationFrame(updateRotations);
+
+        return () => {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+        };
+    }, []);
+
     return (
         <div
+            ref={iconContainerRef}
             className={cn(
                 "absolute rounded-full border-2 border-white/20 bg-[#0a0a0a] shadow-[0_0_15px_rgba(255,255,255,0.1)] pointer-events-auto cursor-pointer transition-all duration-500 group z-50",
                 position,
@@ -226,10 +281,10 @@ function OrbitIcon({
         >
             {/* Struggle Wrapper: Isolates transform animation from positioning */}
             <div className={cn("flex items-center justify-center", (isOrbitPaused && !isCenterHovered && !isHovered) && "animate-struggle")}>
-                {/* Image Container with Counter-Rotation */}
+                {/* Image Container - Counter-rotated via JS to stay upright */}
                 <div
-                    className={cn("relative flex flex-col items-center", iconSize, counterAnim)}
-                    style={{ animationPlayState: isOrbitPaused ? "paused" : "running" }}
+                    ref={iconImageRef}
+                    className={cn("relative flex flex-col items-center", iconSize)}
                 >
                     <Image
                         src={src}
@@ -237,17 +292,20 @@ function OrbitIcon({
                         fill
                         className={cn("object-contain transition-opacity", isInvert && "invert")}
                     />
-
-                    {/* Tooltip - Only show on DIRECT hover, not shockwave reaction */}
-                    <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 flex flex-col items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-[100] w-auto">
-                        <h3 className="text-white font-clash font-bold text-lg tracking-wide drop-shadow-md whitespace-nowrap">
-                            {alt}
-                        </h3>
-                        <p className="text-white/90 font-jakarta text-[11px] font-medium uppercase tracking-wider mt-1 whitespace-nowrap">
-                            {description}
-                        </p>
-                    </div>
                 </div>
+            </div>
+
+            {/* Tooltip - Dynamically counter-rotated via JS to stay horizontal */}
+            <div
+                ref={tooltipRef}
+                className="absolute top-full mt-8 left-1/2 flex flex-col items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-[100] w-auto"
+            >
+                <h3 className="text-white font-clash font-bold text-lg tracking-wide drop-shadow-md whitespace-nowrap">
+                    {alt}
+                </h3>
+                <p className="text-white/90 font-jakarta text-[11px] font-medium uppercase tracking-wider mt-1 whitespace-nowrap">
+                    {description}
+                </p>
             </div>
         </div>
     );
