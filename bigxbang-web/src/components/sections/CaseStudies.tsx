@@ -237,8 +237,8 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
             <section
                 ref={sectionRef}
                 className={cn(
-                    "relative z-0 w-full min-h-screen bg-white text-black overflow-hidden",
-                    compact ? "mt-0 pt-16" : "-mt-[100px] pt-[100px]"
+                    "relative z-10 w-full min-h-screen bg-white text-black overflow-hidden rounded-b-[60px]",
+                    compact ? "-mt-[40px] pt-24 pb-16" : "-mt-[100px] pt-[100px]"
                 )}
             >
                 {/* DIMMING OVERLAY */}

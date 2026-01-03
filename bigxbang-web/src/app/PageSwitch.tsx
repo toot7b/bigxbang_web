@@ -12,6 +12,7 @@ import { useIsDesktop } from "@/lib/useIsDesktop";
 import { MobileProblemList } from "@/components/sections/mobile/MobileProblemList";
 import { MobileMethodSteps } from "@/components/sections/mobile/MobileMethodSteps";
 import { MobileServicesStack } from "@/components/sections/mobile/MobileServicesStack";
+import Tools from "@/components/sections/Tools";
 
 const MOBILE_PROBLEMS = [
   { id: 1, label: "Temps perdu", description: "Des heures gaspillées sur des tâches répétitives." },
@@ -108,6 +109,7 @@ function DesktopLanding() {
       <Method />
       <Services />
       <CaseStudies />
+      <Tools />
     </main>
   );
 }
@@ -151,7 +153,7 @@ function MobileLanding() {
       </section>
 
       {/* SERVICES */}
-      <section className="px-4 py-10">
+      <section className="relative z-20 px-4 py-10 bg-black rounded-b-[40px]">
         <div className="mb-6 text-center">
           <div className="inline-flex items-center px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[11px] text-white/80 uppercase tracking-wider">
             Nos artefacts
@@ -168,6 +170,9 @@ function MobileLanding() {
 
       {/* CASE STUDIES (Bento d'origine) */}
       <CaseStudies compact />
+
+      {/* TOOLS */}
+      <Tools />
 
       {/* CTA */}
       <section id="contact" className="px-4 py-12">
