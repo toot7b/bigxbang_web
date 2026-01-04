@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { cn } from "@/lib/utils";
+import Asterisk from "@/components/ui/Asterisk";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
@@ -88,14 +89,56 @@ export default function Manifesto() {
                     }
                 });
 
-                tl.to(box, {
-                    motionPath: {
-                        path: path,
-                        curviness: 2,
-                        autoRotate: true,
-                        alignOrigin: [0.5, 0.5]
-                    },
-                    ease: "none"
+                const totalPoints = pointContainers.length;
+
+                // Create a segmented timeline with DIRECT targeting
+                // We iterate through each point (destination)
+                pointContainers.forEach((container, i) => {
+                    const marker = container.querySelector(".marker");
+                    if (!marker) return;
+
+                    // Target coordinate for this segment is exactly path[i]
+                    // This ensures we hit the center of the marker relative to the box start.
+                    const target = path[i];
+
+                    // 1. Move Box to this EXACT point
+                    tl.to(box, {
+                        motionPath: {
+                            path: [target], // Move from current pos to this target
+                            curviness: 0,   // Direct path
+                            autoRotate: true,
+                            alignOrigin: [0.5, 0.5]
+                        },
+                        duration: 1.5, // Slower movement between points
+                        ease: "power2.inOut"
+                    });
+
+                    // 2. Activate Marker (Just before arrival)
+                    tl.to(marker, {
+                        scale: 1.5,
+                        borderColor: "#306EE8",
+                        boxShadow: "0 0 30px rgba(48,110,232,0.6)",
+                        duration: 0.2,
+                        ease: "back.out(1.7)"
+                    }, "-=0.25");
+
+                    // 3. The "Docking" Pause - Inverse Progressive (Sticky Top -> Fluid Bottom)
+                    // "Je veux l'inverse" -> Starts very slow/stuck, accelerates (less stuck) at bottom.
+                    // "Accentuate on last two" -> Force drop at end.
+                    let pauseDuration = 4.5 - (i * 0.6);
+                    if (i >= totalPoints - 2) {
+                        pauseDuration = 0.8; // Very fluid finish
+                    }
+                    tl.to({}, { duration: Math.max(0.5, pauseDuration) });
+
+                    // 4. Reduce Marker intensity when leaving (at start of next segment)
+                    // We'll queue this to happen right after the pause
+                    tl.to(marker, {
+                        scale: 1,
+                        borderColor: "rgba(75, 85, 99, 1)", // gray-600
+                        boxShadow: "0 0 15px rgba(0,0,0,0.2)",
+                        duration: 0.3
+                    });
                 });
             };
 
@@ -138,13 +181,16 @@ export default function Manifesto() {
                         {/* THE MOVING BOX - Z-INDEX 50 */}
                         <div
                             ref={boxRef}
-                            className="box absolute w-12 h-12 bg-[#306EE8] rounded-xl shadow-[0_0_30px_#306EE8] z-50"
+                            className="box absolute w-12 h-12 z-50 flex items-center justify-center p-1"
                             style={{
                                 left: '50%',
                                 top: '50%',
                                 transform: 'translate(-50%, -50%)'
                             }}
-                        />
+                        >
+                            {/* Visual Match: White Asterisk with Blue Glow to stand out on white bg */}
+                            <Asterisk className="w-full h-full text-white drop-shadow-[0_0_15px_rgba(48,110,232,0.9)]" />
+                        </div>
                     </div>
 
                     {/* POINTS */}
@@ -160,10 +206,8 @@ export default function Manifesto() {
                                     : "flex-row md:flex-row-reverse md:self-end"
                             )}
                         >
-                            {/* MARKER (Target) */}
-                            <div className="marker w-4 h-4 rounded-full border border-black/20 bg-black/5 flex-shrink-0 relative">
-                                <div className="absolute inset-0 bg-black/20 rounded-full animate-ping" />
-                            </div>
+                            {/* MARKER (Target) - Animated via GSAP (ScrollTrigger) */}
+                            <div className="marker w-16 h-16 flex-shrink-0 rounded-full border-2 border-gray-600 bg-[#0a0a0a] shadow-[0_0_15px_rgba(0,0,0,0.2)] z-10" />
 
                             {/* CONTENT */}
                             <div className="p-6 md:p-8 border border-black/10 rounded-2xl bg-white/50 backdrop-blur-sm max-w-md shadow-sm hover:border-[#306EE8]/50 transition-colors">

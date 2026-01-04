@@ -50,11 +50,9 @@ export function MobileManifesto() {
 
                 {MANIFESTO_ITEMS.map((item, i) => (
                     <div key={i} className="relative flex items-start gap-6">
-                        {/* Dot Marker */}
+                        {/* Dot Marker - Visual Match: Solid Gray Border */}
                         <div className="relative z-10 flex-shrink-0 mt-1">
-                            <div className="w-8 h-8 rounded-full bg-white border border-black/5 flex items-center justify-center shadow-sm">
-                                <div className="w-2.5 h-2.5 rounded-full bg-[#306EE8]" />
-                            </div>
+                            <div className="w-14 h-14 rounded-full border-2 border-gray-600 bg-[#0a0a0a] shadow-[0_0_15px_rgba(0,0,0,0.2)] transition-all duration-500 active:scale-110 active:border-[#306EE8] active:shadow-[0_0_30px_rgba(48,110,232,0.6)]" />
                         </div>
 
                         {/* Content */}
