@@ -97,21 +97,28 @@ export default function Manifesto() {
                     const marker = container.querySelector(".marker");
                     if (!marker) return;
 
-                    // Target coordinate for this segment is exactly path[i]
-                    // This ensures we hit the center of the marker relative to the box start.
+                    // ------------------------------------------------------------------
+                    // EASING-BASED CURVE SOLUTION
+                    // ------------------------------------------------------------------
+                    // By animating X and Y with DIFFERENT easing, we create a curved path.
+                    // This guarantees exact docking (we set exact x,y) + visual curviness.
+
                     const target = path[i];
 
-                    // 1. Move Box to this EXACT point
+                    // 1. Movement with curved trajectory via asymmetric X/Y easing
+                    // X: smooth acceleration/deceleration
+                    // Y: more linear progression
+                    // The difference creates an arc-like path
                     tl.to(box, {
-                        motionPath: {
-                            path: [target], // Move from current pos to this target
-                            curviness: 0,   // Direct path
-                            autoRotate: true,
-                            alignOrigin: [0.5, 0.5]
-                        },
-                        duration: 1.5, // Slower movement between points
+                        x: target.x,
+                        duration: 1.5,
                         ease: "power2.inOut"
                     });
+                    tl.to(box, {
+                        y: target.y,
+                        duration: 1.5,
+                        ease: "sine.inOut"
+                    }, "<"); // "<" means start at the same time as previous tween
 
                     // 2. Activate Marker (Just before arrival)
                     tl.to(marker, {
@@ -158,7 +165,7 @@ export default function Manifesto() {
 
     return (
         <div id="manifesto" className="relative bg-white text-black py-20 overflow-hidden min-h-screen">
-            <section ref={sectionRef} className="relative w-full max-w-4xl mx-auto px-4 flex flex-col gap-40">
+            <section ref={sectionRef} className="relative w-full max-w-6xl mx-auto px-4 flex flex-col gap-40">
 
                 {/* HEADLINE (Restored style) */}
                 <div className="text-center max-w-4xl px-4 mx-auto">
@@ -181,7 +188,7 @@ export default function Manifesto() {
                         {/* THE MOVING BOX - Z-INDEX 50 */}
                         <div
                             ref={boxRef}
-                            className="box absolute w-12 h-12 z-50 flex items-center justify-center p-1"
+                            className="box absolute w-12 h-12 z-20 flex items-center justify-center p-1"
                             style={{
                                 left: '50%',
                                 top: '50%',
@@ -198,19 +205,21 @@ export default function Manifesto() {
                         <div
                             key={i}
                             className={cn(
-                                "manifesto-point relative flex items-center gap-6 md:gap-12",
-                                // Mobile: Always Left-aligned (flex-row)
+                                "manifesto-point relative flex items-center gap-6 md:gap-16 w-full px-4 md:px-0",
                                 // Desktop: ZigZag (Alternating)
+                                // i % 2 === 0 (Left): [Marker] [Text] -> Aligned Left
+                                // i % 2 !== 0 (Right): [Text] [Marker] -> Aligned Right (via row-reverse)
                                 i % 2 === 0
-                                    ? "flex-row"
-                                    : "flex-row md:flex-row-reverse md:self-end"
+                                    ? "flex-row justify-start"
+                                    : "flex-row md:flex-row-reverse justify-start"
+                                // justify-start in row-reverse aligns to the RIGHT
                             )}
                         >
                             {/* MARKER (Target) - Animated via GSAP (ScrollTrigger) */}
                             <div className="marker w-16 h-16 flex-shrink-0 rounded-full border-2 border-gray-600 bg-[#0a0a0a] shadow-[0_0_15px_rgba(0,0,0,0.2)] z-10" />
 
                             {/* CONTENT */}
-                            <div className="p-6 md:p-8 border border-black/10 rounded-2xl bg-white/50 backdrop-blur-sm max-w-md shadow-sm hover:border-[#306EE8]/50 transition-colors">
+                            <div className="relative z-30 p-6 md:p-8 border border-black/10 rounded-2xl bg-white/50 backdrop-blur-sm max-w-md shadow-sm hover:border-[#306EE8]/50 transition-colors">
                                 <h3 className="font-clash text-xl md:text-2xl font-bold mb-2">{item.title}</h3>
                                 <p className="font-jakarta text-sm md:text-base text-gray-600">{item.desc}</p>
                             </div>
