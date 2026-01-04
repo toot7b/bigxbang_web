@@ -11,10 +11,26 @@ if (typeof window !== "undefined") {
 }
 
 const MANIFESTO_ITEMS = [
-    { title: "Chaos Engineering", desc: "Embrasser l'imprévu." },
-    { title: "Pixel Perfection", desc: "L'invisible fait la différence." },
-    { title: "Speed Absolute", desc: "La performance est une religion." },
-    { title: "User Obsession", desc: "Pour des humains, pas des écrans." },
+    {
+        title: "On ne résout pas les problèmes.",
+        desc: "On supprime le bruit. Le web est saturé de marques interchangeables et d’interfaces pensées pour des métriques. Chez BigxBang, on fait le tri. On garde ce qui crée du sens. On élimine ce qui décore."
+    },
+    {
+        title: "La stratégie, c’est savoir qui vous êtes.",
+        desc: "Vraiment. Pas un positionnement calqué sur la concurrence. Pas une cible abstraite. Une identité réelle. Ce que vous faites mieux que les autres. Pourquoi ça compte. Et pour qui."
+    },
+    {
+        title: "Le design n’est pas de la décoration.",
+        desc: "Un bon site ne suit pas les tendances. Il incarne votre identité. Notre style, c’est de ne pas en avoir. Et de révéler le vôtre."
+    },
+    {
+        title: "L’automatisation n’est pas une promesse.",
+        desc: "C’est une hygiène. On automatise la répétition pour libérer le temps de penser. La machine gère la mécanique. L’humain garde l’intelligence."
+    },
+    {
+        title: "L’outil amplifie. Il ne pense pas.",
+        desc: "Sans intention, IA et automation reproduisent le bruit. Notre rôle est de les rendre lisibles, utiles, élégants. Au service de votre vision. Et avec style."
+    },
 ];
 
 export default function Manifesto() {
@@ -39,9 +55,10 @@ export default function Manifesto() {
                 const sectionRect = sectionRef.current.getBoundingClientRect();
                 const sectionCenterX = sectionRect.left + sectionRect.width / 2;
 
-                // Select all points (markers)
-                const pointContainers = gsap.utils.toArray<HTMLElement>(".manifesto-point:not(.initial)");
+                // Select all points (markers) excluding the initial container and the ghost point
+                const pointContainers = gsap.utils.toArray<HTMLElement>(".manifesto-point:not(.initial):not(.ghost)");
 
+                const verticalOffset = 80; // pixels to keep the box above text blocks
                 const path = pointContainers.map((container) => {
                     const marker = container.querySelector(".marker");
                     if (!marker) return { x: 0, y: 0 };
@@ -50,7 +67,6 @@ export default function Manifesto() {
                     const markerCenterX = markerRect.left + markerRect.width / 2;
                     const markerCenterY = markerRect.top + markerRect.height / 2;
 
-                    // Simple direct path - let Z-index handle overlap visually
                     return {
                         x: markerCenterX - boxCenterX,
                         y: markerCenterY - boxCenterY
@@ -136,8 +152,12 @@ export default function Manifesto() {
                         <div
                             key={i}
                             className={cn(
-                                "manifesto-point relative flex items-center gap-12",
-                                i % 2 === 0 ? "flex-row" : "flex-row-reverse self-end" // Zigzag
+                                "manifesto-point relative flex items-center gap-6 md:gap-12",
+                                // Mobile: Always Left-aligned (flex-row)
+                                // Desktop: ZigZag (Alternating)
+                                i % 2 === 0
+                                    ? "flex-row"
+                                    : "flex-row md:flex-row-reverse md:self-end"
                             )}
                         >
                             {/* MARKER (Target) */}
@@ -146,15 +166,20 @@ export default function Manifesto() {
                             </div>
 
                             {/* CONTENT */}
-                            <div className="p-8 border border-black/10 rounded-2xl bg-white/50 backdrop-blur-sm max-w-md shadow-sm hover:border-[#306EE8]/50 transition-colors">
-                                <h3 className="font-clash text-2xl font-bold mb-2">{item.title}</h3>
-                                <p className="font-jakarta text-gray-600">{item.desc}</p>
+                            <div className="p-6 md:p-8 border border-black/10 rounded-2xl bg-white/50 backdrop-blur-sm max-w-md shadow-sm hover:border-[#306EE8]/50 transition-colors">
+                                <h3 className="font-clash text-xl md:text-2xl font-bold mb-2">{item.title}</h3>
+                                <p className="font-jakarta text-sm md:text-base text-gray-600">{item.desc}</p>
                             </div>
                         </div>
                     ))}
 
-                    {/* Ghost Point for Trajectory Control - Forces the curve to exit naturally */}
-                    <div className="manifesto-point relative flex items-center gap-12 flex-row opacity-0 pointer-events-none">
+                    {/* Ghost Point: Right aligned (since last item is Left) */}
+                    <div className="manifesto-point relative flex items-center gap-12 flex-row md:flex-row-reverse md:self-end opacity-0 pointer-events-none ghost">
+                        <div className="marker w-4 h-4" />
+                    </div>
+
+                    {/* Final Center Point: Box should end here (invisible, centered) */}
+                    <div className="manifesto-point final-center absolute inset-x-0 bottom-0 flex justify-center items-center pointer-events-none opacity-0 h-20">
                         <div className="marker w-4 h-4" />
                     </div>
                 </div>

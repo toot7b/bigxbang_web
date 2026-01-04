@@ -4,10 +4,26 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 const MANIFESTO_ITEMS = [
-    { title: "Chaos Engineering", desc: "Embrasser l'imprévu." },
-    { title: "Pixel Perfection", desc: "L'invisible fait la différence." },
-    { title: "Speed Absolute", desc: "La performance est une religion." },
-    { title: "User Obsession", desc: "Pour des humains, pas des écrans." },
+    {
+        title: "On ne résout pas les problèmes.",
+        desc: "On supprime le bruit. Le web est saturé de marques interchangeables et d’interfaces pensées pour des métriques. Chez BigxBang, on fait le tri. On garde ce qui crée du sens. On élimine ce qui décore."
+    },
+    {
+        title: "La stratégie, c’est savoir qui vous êtes.",
+        desc: "Vraiment. Pas un positionnement calqué sur la concurrence. Pas une cible abstraite. Une identité réelle. Ce que vous faites mieux que les autres. Pourquoi ça compte. Et pour qui."
+    },
+    {
+        title: "Le design n’est pas de la décoration.",
+        desc: "Un bon site ne suit pas les tendances. Il incarne votre identité. Notre style, c’est de ne pas en avoir. Et de révéler le vôtre."
+    },
+    {
+        title: "L’automatisation n’est pas une promesse.",
+        desc: "C’est une hygiène. On automatise la répétition pour libérer le temps de penser. La machine gère la mécanique. L’humain garde l’intelligence."
+    },
+    {
+        title: "L’outil amplifie. Il ne pense pas.",
+        desc: "Sans intention, IA et automation reproduisent le bruit. Notre rôle est de les rendre lisibles, utiles, élégants. Au service de votre vision. Et avec style."
+    },
 ];
 
 export function MobileManifesto() {
