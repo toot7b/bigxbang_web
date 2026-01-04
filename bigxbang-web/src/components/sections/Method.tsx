@@ -1,14 +1,22 @@
 "use client";
 
-import { UnifiedMethodVisual } from "@/components/ui/UnifiedMethodVisual";
+import dynamic from "next/dynamic";
 import { Ripple } from "@/components/ui/Ripple";
 import { TimelineNode } from "@/components/ui/TimelineNode";
-import { TimelineBeam } from "@/components/ui/TimelineBeam";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-
 import { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+
+// Dynamic imports for heavy WebGL components (speeds up compilation)
+const UnifiedMethodVisual = dynamic(
+    () => import("@/components/ui/UnifiedMethodVisual").then(mod => mod.UnifiedMethodVisual),
+    { ssr: false, loading: () => null }
+);
+const TimelineBeam = dynamic(
+    () => import("@/components/ui/TimelineBeam").then(mod => mod.TimelineBeam),
+    { ssr: false, loading: () => null }
+);
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);

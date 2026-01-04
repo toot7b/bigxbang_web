@@ -227,6 +227,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                 }
             });
 
+
         }, sectionRef);
 
         return () => ctx.revert();
@@ -250,7 +251,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                 {/* CONTENT CONTAINER */}
                 <div
                     ref={contentRef}
-                    className="relative z-10 w-full min-h-screen flex flex-col justify-start items-center p-4 md:p-8 pt-12 md:pt-24"
+                    className="relative z-10 w-full min-h-screen flex flex-col justify-center items-center p-4 md:p-8"
                     style={{ transform: 'translateY(-50%)' }}
                 >
                     {/* SUBTLE DOT BACKGROUND - Increased visibility */}
@@ -265,7 +266,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                     </div>
 
                     {/* HEADER */}
-                    <div className="text-center max-w-4xl px-4 mb-16">
+                    <div className="text-center max-w-4xl px-4 mt-40 mb-16">
                         <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-black/10 bg-black/5 backdrop-blur-sm mb-6">
                             <span className="font-jakarta text-xs font-medium text-black/80">R&D Lab</span>
                         </div>

@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
-import ToolsOrbit from "@/components/ui/ToolsOrbit";
-import ToolsOrbitMobile from "@/components/ui/ToolsOrbitMobile";
-import QuantumFlowBackground from "@/components/ui/QuantumFlowBackground";
+
+// Dynamic imports for heavy WebGL components (speeds up compilation)
+const ToolsOrbit = dynamic(() => import("@/components/ui/ToolsOrbit"), { ssr: false, loading: () => null });
+const ToolsOrbitMobile = dynamic(() => import("@/components/ui/ToolsOrbitMobile"), { ssr: false, loading: () => null });
+const QuantumFlowBackground = dynamic(() => import("@/components/ui/QuantumFlowBackground"), { ssr: false, loading: () => null });
 
 gsap.registerPlugin(ScrollTrigger);
 

@@ -7,12 +7,14 @@ import Problem from "@/components/sections/Problem";
 import Method from "@/components/sections/Method";
 import Services from "@/components/sections/Services";
 import CaseStudies from "@/components/sections/CaseStudies";
+import Tools from "@/components/sections/Tools";
+import Manifesto from "@/components/sections/Manifesto";
 import ScrollHandler from "@/components/ui/ScrollHandler";
 import { useIsDesktop } from "@/lib/useIsDesktop";
 import { MobileProblemList } from "@/components/sections/mobile/MobileProblemList";
 import { MobileMethodSteps } from "@/components/sections/mobile/MobileMethodSteps";
 import { MobileServicesStack } from "@/components/sections/mobile/MobileServicesStack";
-import Tools from "@/components/sections/Tools";
+import { MobileManifesto } from "@/components/sections/mobile/MobileManifesto";
 
 const MOBILE_PROBLEMS = [
   { id: 1, label: "Temps perdu", description: "Des heures gaspillées sur des tâches répétitives." },
@@ -110,6 +112,7 @@ function DesktopLanding() {
       <Services />
       <CaseStudies />
       <Tools />
+      <Manifesto />
     </main>
   );
 }
@@ -173,6 +176,9 @@ function MobileLanding() {
 
       {/* TOOLS */}
       <Tools />
+
+      {/* MANIFESTO Mobile */}
+      <MobileManifesto />
 
       {/* CTA */}
       <section id="contact" className="px-4 py-12">
