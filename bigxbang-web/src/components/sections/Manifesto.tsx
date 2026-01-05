@@ -164,18 +164,25 @@ export default function Manifesto() {
     }, []);
 
     return (
-        <div id="manifesto" className="relative bg-white text-black py-20 overflow-hidden min-h-screen">
+        <div id="manifesto" className="relative bg-black text-white py-20 overflow-hidden min-h-screen">
+            {/* Top Gradient: Signature Blue to Black */}
+            <div
+                className="absolute top-0 left-0 right-0 h-96 z-0 pointer-events-none"
+                style={{
+                    background: 'linear-gradient(to bottom, rgba(48, 110, 232, 0.2) 0%, rgba(0,0,0,1) 100%)'
+                }}
+            />
             <section ref={sectionRef} className="relative w-full max-w-6xl mx-auto px-4 flex flex-col gap-40">
 
                 {/* HEADLINE (Restored style) */}
                 <div className="text-center max-w-4xl px-4 mx-auto">
-                    <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-black/10 bg-black/5 mb-6">
-                        <span className="font-jakarta text-xs font-medium text-black/80">Our Vision</span>
+                    <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-6">
+                        <span className="font-jakarta text-xs font-medium text-white/80">Our Vision</span>
                     </div>
-                    <h1 className="font-clash text-3xl md:text-5xl font-medium text-black mb-4">
+                    <h1 className="font-clash text-3xl md:text-5xl font-medium text-white mb-4">
                         The <span className="text-[#306EE8]">Manifesto</span>
                     </h1>
-                    <h2 className="font-jakarta text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                    <h2 className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
                         Redefining the digital landscape, one pixel at a time.
                     </h2>
                 </div>
@@ -216,12 +223,12 @@ export default function Manifesto() {
                             )}
                         >
                             {/* MARKER (Target) - Animated via GSAP (ScrollTrigger) */}
-                            <div className="marker w-16 h-16 flex-shrink-0 rounded-full border-2 border-gray-600 bg-[#0a0a0a] shadow-[0_0_15px_rgba(0,0,0,0.2)] z-10" />
+                            <div className="marker w-16 h-16 flex-shrink-0 rounded-full border-2 border-gray-600 bg-[#0a0a0a] shadow-[0_0_15px_rgba(255,255,255,0.1)] z-10" />
 
                             {/* CONTENT */}
-                            <div className="relative z-30 p-6 md:p-8 border border-black/10 rounded-2xl bg-white/50 backdrop-blur-sm max-w-md shadow-sm hover:border-[#306EE8]/50 transition-colors">
-                                <h3 className="font-clash text-xl md:text-2xl font-bold mb-2">{item.title}</h3>
-                                <p className="font-jakarta text-sm md:text-base text-gray-600">{item.desc}</p>
+                            <div className="relative z-30 p-6 md:p-8 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm max-w-md shadow-sm hover:border-[#306EE8]/50 transition-colors">
+                                <h3 className="font-clash text-xl md:text-2xl font-bold text-white mb-2">{item.title}</h3>
+                                <p className="font-jakarta text-sm md:text-base text-gray-400">{item.desc}</p>
                             </div>
                         </div>
                     ))}
