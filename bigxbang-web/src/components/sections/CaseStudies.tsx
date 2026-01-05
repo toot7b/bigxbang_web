@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
@@ -203,8 +203,9 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
     }, [openStudy, lenis]);
 
     const [bentoVisible, setBentoVisible] = useState(false);
+    const bentoVisibleRef = useRef(false); // Ref to track without causing re-renders
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             if (!sectionRef.current || !contentRef.current || !overlayRef.current) return;
 
@@ -220,8 +221,9 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                     contentRef.current!.style.transform = `translateY(${yPercent}%)`;
                     overlayRef.current!.style.opacity = `${1 - progress}`;
 
-                    // Trigger Bento animation when overlay is fully gone
-                    if (progress > 0.98 && !bentoVisible) {
+                    // Trigger Bento animation when overlay is fully gone (using ref to prevent re-render loop)
+                    if (progress > 0.98 && !bentoVisibleRef.current) {
+                        bentoVisibleRef.current = true;
                         setBentoVisible(true);
                     }
                 }
@@ -231,7 +233,15 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
         }, sectionRef);
 
         return () => ctx.revert();
-    }, [bentoVisible]);
+    }, []); // Empty dependency array - ScrollTrigger created ONCE
+
+    // Trigger bento animation after a short delay on mount
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setBentoVisible(true);
+        }, 800); // 800ms delay for the reveal effect
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <div id="case-studies" className="scroll-mt-[100px]">
@@ -251,7 +261,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                 {/* CONTENT CONTAINER */}
                 <div
                     ref={contentRef}
-                    className="relative z-10 w-full min-h-screen flex flex-col justify-center items-center p-4 md:p-8"
+                    className="relative z-10 w-full min-h-screen flex flex-col justify-center items-center p-4 md:p-8 will-change-transform"
                     style={{ transform: 'translateY(-50%)' }}
                 >
                     {/* SUBTLE DOT BACKGROUND - Increased visibility */}
@@ -282,7 +292,8 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                     <motion.div
                         className="max-w-5xl mx-auto grid md:auto-rows-[18rem] grid-cols-1 md:grid-cols-3 gap-4"
                         initial="hidden"
-                        animate={bentoVisible ? "visible" : "hidden"}
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
                         variants={{
                             hidden: {},
                             visible: {
