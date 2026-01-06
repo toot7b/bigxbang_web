@@ -1,11 +1,15 @@
 "use client";
 
-import React, { useRef, useLayoutEffect, useEffect } from "react";
+import React, { useLayoutEffect, useRef, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { cn } from "@/lib/utils";
 import Asterisk from "@/components/ui/Asterisk";
+
+// DYNAMIC IMPORTS
+const ToolsOrbitShockwave = dynamic(() => import("@/components/ui/ToolsOrbitShockwave"), { ssr: false, loading: () => null });
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
@@ -38,6 +42,16 @@ export default function Manifesto() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const boxRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const markersRef = useRef<HTMLElement[]>([]); // Added markersRef
+
+    // START POINT VARIABLES
+    const startPointRef = useRef<{ active: boolean, scale: number, opacity: number }>({ active: true, scale: 1, opacity: 1 });
+
+    // SHOCKWAVE STATE (WebGL Trigger)
+    const [finalShockwaveActive, setFinalShockwaveActive] = useState(false);
+    // Ref to track if we already fired it to avoid React loop
+    const hasFiredShockwave = useRef(false);
+
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             // Wait for layout to settle
@@ -119,6 +133,20 @@ export default function Manifesto() {
                         duration: 1.5,
                         ease: "sine.inOut"
                     }, "<"); // "<" means start at the same time as previous tween
+
+                    // TRIGGER SHOCKWAVE ON FINAL ARRIVAL
+                    // We add a callback to the timeline right at the end of the movement of the LAST point.
+                    // ">-0.2" means "0.2s before the end of the previous tween".
+                    if (i === totalPoints - 1) {
+                        tl.call(() => {
+                            // Only fire if we are moving forward/down (checked via state or just fire?)
+                            // GSAP scrub calls this whenever playhead crosses.
+                            // We use setFinalShockwaveActive which toggles active prop.
+                            setFinalShockwaveActive(true);
+                            // Auto-reset handled by component or timeout
+                            setTimeout(() => setFinalShockwaveActive(false), 2000);
+                        }, undefined, ">-0.25");
+                    }
 
                     // 2. The "Docking" Pause - Inverse Progressive (Sticky Top -> Fluid Bottom)
                     // "Je veux l'inverse" -> Starts very slow/stuck, accelerates (less stuck) at bottom.
@@ -342,6 +370,7 @@ export default function Manifesto() {
                         markerEl.style.transform = "scale(1.5)";
                         markerEl.style.borderColor = "#306EE8";
                         markerEl.style.boxShadow = "0 0 30px rgba(48,110,232,0.6)";
+
                     } else {
                         // Reset Text
                         textContainer.style.borderColor = "";
@@ -390,6 +419,82 @@ export default function Manifesto() {
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
+            // 5. Handle Start Point "Propulsion" (Launch Pad)
+            // When asterisk moves away from start, expand and fade the start ring
+            const startMarker = document.querySelector('.manifesto-start-ring') as HTMLElement;
+            if (startMarker) {
+                // Get start marker center
+                const smRect = startMarker.getBoundingClientRect();
+                const smX = smRect.left - canvasRect.left + smRect.width / 2;
+                const smY = smRect.top - canvasRect.top + smRect.height / 2;
+
+                // Distance from box to start
+                const dStart = Math.sqrt(Math.pow(smX - boxX, 2) + Math.pow(smY - boxY, 2));
+
+                // Animate based on distance (0 to 100px)
+                if (dStart < 150) {
+                    // Propulsion effect: As it moves away, scale up and fade out
+                    // dStart 0 -> Scale 1, Opacity 1
+                    // dStart 100 -> Scale 2.5, Opacity 0
+                    const progress = Math.min(1, dStart / 100);
+                    const scale = 1 + (progress * 1.5); // 1 -> 2.5
+                    const opacity = 1 - Math.pow(progress, 0.5); // Fade out quickly
+
+                    startMarker.style.transform = `scale(${scale})`;
+                    startMarker.style.opacity = `${opacity}`;
+                    startMarker.style.borderColor = `rgba(48, 110, 232, ${opacity * 0.8})`; // Turn blueish on launch
+                } else {
+                    startMarker.style.opacity = '0';
+                }
+            }
+
+            // 6. FINAL SHOCKWAVE TRIGGER (Arrival at CTA)
+            // Fix: We calculate distance based on the DOM element directly, since 'path' variable is out of scope here.
+            const finalPointEl = document.querySelector('.manifesto-point.final-center') as HTMLElement;
+            if (finalPointEl) {
+                const fpRect = finalPointEl.getBoundingClientRect();
+                const parentRect = canvas.getBoundingClientRect(); // Canvas is absolute inset-0, so it matches frame of reference
+
+                // Canvas coordinates of final point center
+                // boxX/boxY are relative to the canvas/page flow? 
+                // Wait, boxX/boxY in this loop are derived from `box.getBoundingClientRect()`.
+                // So we just need to compare clientRects to be safe, or convert everything to canvas space.
+
+                const boxRect = box.getBoundingClientRect();
+                const boxCx = boxRect.left + boxRect.width / 2;
+                const boxCy = boxRect.top + boxRect.height / 2;
+
+                const fpCx = fpRect.left + fpRect.width / 2;
+                const fpCy = fpRect.top + fpRect.height / 2;
+
+                const distToLast = Math.sqrt(Math.pow(fpCx - boxCx, 2) + Math.pow(fpCy - boxCy, 2));
+
+                // 2-STAGE TRIGGER FOR PERFECT SYNC
+
+                // Stage 1: Visual Contact (50px) - The "Click"
+                if (distToLast < 50) {
+                    const finalMarker = finalPointEl.querySelector('.marker') as HTMLElement;
+                    if (finalMarker) {
+                        finalMarker.style.borderColor = "#306EE8";
+                        finalMarker.style.boxShadow = "0 0 50px rgba(48,110,232,0.9)";
+                        finalMarker.style.backgroundColor = "rgba(48,110,232,0.3)";
+                        finalMarker.style.transform = "scale(1.15)";
+                    }
+                } else {
+                    // Reset
+                    const finalMarker = finalPointEl.querySelector('.marker') as HTMLElement;
+                    if (finalMarker) {
+                        finalMarker.style.borderColor = "";
+                        finalMarker.style.boxShadow = "";
+                        finalMarker.style.backgroundColor = "";
+                        finalMarker.style.transform = "";
+                    }
+                }
+
+                // Stage 2: REMOVED (Handled by ScrollTrigger for better sync)
+                // The logical pre-fire is now driven by the timeline progress, not the physics loop.
+            }
+
             animationFrameId = requestAnimationFrame(render);
         };
 
@@ -434,6 +539,9 @@ export default function Manifesto() {
 
                     {/* INITIAL CONTAINER (Box starts here) */}
                     <div className="manifesto-point initial relative w-full flex justify-center items-center h-20">
+                        {/* START POINT MARKER (Ring) - The "Dock" */}
+                        <div className="manifesto-start-ring absolute w-14 h-14 rounded-full border border-white/20 z-10 box-border transition-colors duration-0" />
+
                         {/* THE MOVING BOX - Z-INDEX 50 */}
                         <div
                             ref={boxRef}
@@ -480,9 +588,14 @@ export default function Manifesto() {
                         <div className="marker w-4 h-4" />
                     </div>
 
-                    {/* Final Center Point: Box should end here (invisible, centered) */}
-                    <div className="manifesto-point final-center absolute inset-x-0 bottom-0 flex justify-center items-center pointer-events-none opacity-0 h-20">
-                        <div className="marker w-4 h-4" />
+                    {/* Final Center Point: Box ends here */}
+                    <div className="manifesto-point final-center absolute inset-x-0 bottom-0 flex justify-center items-center pointer-events-none h-20">
+                        {/* THE REAL WEBGL SHOCKWAVE (Layered on top) */}
+                        <div className="absolute w-[800px] h-[800px] flex items-center justify-center z-50 pointer-events-none">
+                            <ToolsOrbitShockwave active={finalShockwaveActive} />
+                        </div>
+                        {/* Invisible marker for spacing -> Now Visible Docking Ring */}
+                        <div className="marker w-16 h-16 rounded-full border-2 border-white/20 bg-white/5 z-10 transition-all duration-300" />
                     </div>
                 </div>
 
