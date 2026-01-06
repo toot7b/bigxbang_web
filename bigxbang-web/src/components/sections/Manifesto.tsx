@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useLayoutEffect } from "react";
+import React, { useRef, useLayoutEffect, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
@@ -37,7 +37,7 @@ const MANIFESTO_ITEMS = [
 export default function Manifesto() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const boxRef = useRef<HTMLDivElement>(null);
-
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             // Wait for layout to settle
@@ -163,8 +163,202 @@ export default function Manifesto() {
         return () => ctx.revert();
     }, []);
 
+    // Interactive Grid Animation
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const section = sectionRef.current;
+        const box = boxRef.current;
+
+        if (!canvas || !section || !box) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let animationFrameId: number;
+        const positionHistory: { x: number; y: number }[] = []; // Trail storage
+        const maxHistoryLength = 8; // Short trail
+        const markerRadius = 32; // Radius of the big marker circles (w-16 = 64px / 2)
+
+        const render = () => {
+            // Update canvas dimensions to match the FULL section (including scrollable area)
+            const parentEl = canvas.parentElement;
+            if (parentEl) {
+                const targetWidth = parentEl.scrollWidth || parentEl.offsetWidth;
+                const targetHeight = parentEl.scrollHeight || parentEl.offsetHeight;
+                if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+                }
+            }
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const gridSize = 60; // Size of grid cells (pixels)
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Get Box Position relative to Canvas
+            const boxRect = box.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+
+            // Calculate Box Center relative to Canvas top-left
+            const boxX = boxRect.left - canvasRect.left + boxRect.width / 2;
+            const boxY = boxRect.top - canvasRect.top + boxRect.height / 2;
+
+            // Update Position History (for trail)
+            positionHistory.push({ x: boxX, y: boxY });
+            if (positionHistory.length > maxHistoryLength) {
+                positionHistory.shift();
+            }
+
+            // DRAW GRID
+            ctx.lineWidth = 1;
+            const reactionRadius = 250; // Radius of effect
+
+            // 1. Draw Base Grid (Visible everywhere - subtle grey)
+            ctx.strokeStyle = "rgba(100, 100, 100, 0.25)";
+            ctx.beginPath();
+            // Vertical
+            for (let x = 0; x <= width; x += gridSize) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+            }
+            // Horizontal
+            for (let y = 0; y <= height; y += gridSize) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+            }
+            ctx.stroke();
+
+            // 2. Draw Reactive Cells (The "Reaction")
+            // We iterate through cells potentially visible or just all (optimization: viewing frustum)
+
+            // Optimization: Only loop through cells within the reaction radius of the box
+            const startCol = Math.max(0, Math.floor((boxX - reactionRadius) / gridSize));
+            const endCol = Math.min(Math.ceil(width / gridSize), Math.ceil((boxX + reactionRadius) / gridSize));
+            const startRow = Math.max(0, Math.floor((boxY - reactionRadius) / gridSize));
+            const endRow = Math.min(Math.ceil(height / gridSize), Math.ceil((boxY + reactionRadius) / gridSize));
+
+            for (let col = startCol; col < endCol; col++) {
+                for (let row = startRow; row < endRow; row++) {
+                    const cellLeft = col * gridSize;
+                    const cellTop = row * gridSize;
+
+                    // Center of the cell
+                    const cellCenterX = cellLeft + gridSize / 2;
+                    const cellCenterY = cellTop + gridSize / 2;
+
+                    // Distance from Box Center to Cell Center
+                    const dist = Math.sqrt(Math.pow(cellCenterX - boxX, 2) + Math.pow(cellCenterY - boxY, 2));
+
+                    if (dist < reactionRadius) {
+                        // Opacity based on distance (stronger at center)
+                        const opacity = Math.pow(1 - dist / reactionRadius, 2) * 0.4; // Max 0.4 opacity
+
+                        ctx.fillStyle = `rgba(48, 110, 232, ${opacity})`;
+                        ctx.fillRect(cellLeft, cellTop, gridSize, gridSize);
+
+                        // Optional: Highlight border of active cells stronger
+                        ctx.strokeStyle = `rgba(48, 110, 232, ${opacity * 2})`;
+                        ctx.strokeRect(cellLeft, cellTop, gridSize, gridSize);
+                    }
+                }
+            }
+
+            // 3. Draw Simple Trail (line with gradient) - Strictly Outside Circle
+            if (positionHistory.length > 2) {
+                const circleRadius = 35;
+                const currentCenter = positionHistory[positionHistory.length - 1]; // Current box position
+
+                // Find the index of the most recent point that is OUTSIDE the circle
+                let lastValidIndex = -1;
+                for (let i = positionHistory.length - 2; i >= 0; i--) {
+                    const dx = positionHistory[i].x - currentCenter.x;
+                    const dy = positionHistory[i].y - currentCenter.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > circleRadius) {
+                        lastValidIndex = i;
+                        break;
+                    }
+                }
+
+                // If we found a point outside, draw the trail
+                if (lastValidIndex !== -1) {
+                    ctx.lineCap = "round";
+                    ctx.beginPath();
+
+                    // Draw from oldest point up to the last valid point outside
+                    ctx.moveTo(positionHistory[0].x, positionHistory[0].y);
+                    for (let i = 1; i <= lastValidIndex; i++) {
+                        ctx.lineTo(positionHistory[i].x, positionHistory[i].y);
+                    }
+
+                    // Calculate intersection point on the circle edge
+                    const validPoint = positionHistory[lastValidIndex];
+                    const dx = validPoint.x - currentCenter.x;
+                    const dy = validPoint.y - currentCenter.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    // Point on circle edge towards the valid point
+                    // Vector from Center to Point is (dx, dy). 
+                    // Point on edge is Center + normalize(dx, dy) * radius
+                    const edgeX = currentCenter.x + (dx / dist) * circleRadius;
+                    const edgeY = currentCenter.y + (dy / dist) * circleRadius;
+
+                    ctx.lineTo(edgeX, edgeY);
+
+                    // Gradient
+                    const startPos = positionHistory[0];
+                    const gradient = ctx.createLinearGradient(startPos.x, startPos.y, edgeX, edgeY);
+                    gradient.addColorStop(0, "rgba(48, 110, 232, 0)");
+                    gradient.addColorStop(1, "rgba(48, 110, 232, 0.8)");
+
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                }
+            }
+
+            // 4. Draw Circle Around Asterisk (disappears near markers)
+            // Check distance to all markers
+            const markers = document.querySelectorAll('.manifesto-point:not(.initial):not(.ghost) .marker');
+            let nearMarker = false;
+            markers.forEach((marker) => {
+                const markerRect = marker.getBoundingClientRect();
+                const markerCenterX = markerRect.left - canvasRect.left + markerRect.width / 2;
+                const markerCenterY = markerRect.top - canvasRect.top + markerRect.height / 2;
+                const distToMarker = Math.sqrt(Math.pow(markerCenterX - boxX, 2) + Math.pow(markerCenterY - boxY, 2));
+                if (distToMarker < markerRadius + 30) { // 30px buffer
+                    nearMarker = true;
+                }
+            });
+
+            if (!nearMarker) {
+                // Draw thin circle around asterisk
+                ctx.beginPath();
+                ctx.arc(boxX, boxY, 35, 0, Math.PI * 2); // 35px radius circle
+                ctx.strokeStyle = "rgba(48, 110, 232, 0.6)";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+
+            animationFrameId = requestAnimationFrame(render);
+        };
+
+        render();
+
+        return () => {
+            cancelAnimationFrame(animationFrameId);
+        };
+    }, []);
+
     return (
         <div id="manifesto" className="relative bg-black text-white py-20 overflow-hidden min-h-screen">
+            {/* INTERACTIVE GRID BACKGROUND */}
+            <canvas
+                ref={canvasRef}
+                className="absolute inset-0 z-[1] pointer-events-none"
+            />
             {/* Top Gradient: Signature Blue to Black */}
             <div
                 className="absolute top-0 left-0 right-0 h-96 z-0 pointer-events-none"
