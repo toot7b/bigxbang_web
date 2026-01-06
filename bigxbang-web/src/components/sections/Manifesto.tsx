@@ -625,14 +625,31 @@ export default function Manifesto() {
 
                 {/* CTA TEXT - OUTSIDE the manifesto container, so asterisk stays put */}
                 <div className={cn(
-                    "relative z-20 pointer-events-auto flex flex-col items-center p-8 border border-white/10 rounded-3xl bg-white/5 backdrop-blur-md transition-all duration-700 max-w-lg mx-auto text-center gap-6 mt-16",
-                    finalShockwaveActive ? "border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_60px_rgba(48,110,232,0.3)] translate-y-0 opacity-100" : "translate-y-4 opacity-0 border-white/5"
-                )}>
-                    <div className="flex flex-col gap-2">
+                    "relative z-20 pointer-events-auto flex flex-col items-center p-8 border rounded-3xl backdrop-blur-md max-w-lg mx-auto text-center gap-6 mt-16 overflow-hidden",
+                    finalShockwaveActive
+                        ? "border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_60px_rgba(48,110,232,0.3)] scale-100 opacity-100 animate-[scalePulse_0.4s_ease-out]"
+                        : "border-white/5 bg-white/5 scale-95 opacity-0"
+                )} style={{ transition: 'opacity 0.3s, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.5s, background-color 0.5s, box-shadow 0.5s' }}>
+                    {/* Impact Flash Overlay */}
+                    <div className={cn(
+                        "absolute inset-0 bg-white pointer-events-none transition-opacity duration-300",
+                        finalShockwaveActive ? "opacity-0 animate-[flash_0.3s_ease-out]" : "opacity-0"
+                    )} />
+
+                    {/* Title - appears first */}
+                    <div className={cn(
+                        "flex flex-col gap-2 transition-all duration-500",
+                        finalShockwaveActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                    )} style={{ transitionDelay: finalShockwaveActive ? '0.1s' : '0s' }}>
                         <h3 className="font-clash text-2xl font-bold text-white">Prêt au décollage ?</h3>
                         <p className="font-jakarta text-gray-400">Transformons votre vision en système.</p>
                     </div>
-                    <button className="px-8 py-3 bg-[#306EE8] hover:bg-[#205ac8] text-white font-clash font-semibold text-lg rounded-full transition-colors shadow-lg shadow-blue-500/30">
+
+                    {/* Button - appears last with more delay */}
+                    <button className={cn(
+                        "px-8 py-3 bg-[#306EE8] hover:bg-[#205ac8] text-white font-clash font-semibold text-lg rounded-full shadow-lg shadow-blue-500/30 transition-all duration-500",
+                        finalShockwaveActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                    )} style={{ transitionDelay: finalShockwaveActive ? '0.25s' : '0s' }}>
                         Start a Project
                     </button>
                 </div>

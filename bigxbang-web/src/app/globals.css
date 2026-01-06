@@ -137,15 +137,19 @@ body {
   0% {
     transform: rotate(0deg);
   }
+
   25% {
     transform: rotate(95deg);
   }
+
   50% {
     transform: rotate(175deg);
   }
+
   75% {
     transform: rotate(268deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -155,15 +159,19 @@ body {
   0% {
     transform: rotate(0deg);
   }
+
   20% {
     transform: rotate(78deg);
   }
+
   45% {
     transform: rotate(155deg);
   }
+
   70% {
     transform: rotate(260deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -173,15 +181,19 @@ body {
   0% {
     transform: rotate(0deg);
   }
+
   30% {
     transform: rotate(-100deg);
   }
+
   55% {
     transform: rotate(-190deg);
   }
+
   80% {
     transform: rotate(-285deg);
   }
+
   100% {
     transform: rotate(-360deg);
   }
@@ -191,15 +203,19 @@ body {
   0% {
     transform: rotate(0deg);
   }
+
   25% {
     transform: rotate(-85deg);
   }
+
   50% {
     transform: rotate(-185deg);
   }
+
   75% {
     transform: rotate(-272deg);
   }
+
   100% {
     transform: rotate(-360deg);
   }
@@ -265,10 +281,13 @@ body {
 
 /* Quantum Flow Background */
 @keyframes aurora1 {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0%) scaleY(1);
     opacity: 0.35;
   }
+
   50% {
     transform: translateY(-8%) scaleY(1.15);
     opacity: 0.5;
@@ -276,10 +295,13 @@ body {
 }
 
 @keyframes aurora2 {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0%) translateY(0%);
     opacity: 0.25;
   }
+
   50% {
     transform: translateX(8%) translateY(-5%);
     opacity: 0.35;
@@ -287,10 +309,13 @@ body {
 }
 
 @keyframes aurora3 {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0%) translateY(0%);
     opacity: 0.25;
   }
+
   50% {
     transform: translateX(-8%) translateY(-6%);
     opacity: 0.4;
@@ -307,4 +332,29 @@ body {
 
 .animate-aurora3 {
   animation: aurora3 10s ease-in-out infinite;
+}
+
+/* CTA Impact Animations */
+@keyframes scalePulse {
+  0% {
+    transform: scale(0.95);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
