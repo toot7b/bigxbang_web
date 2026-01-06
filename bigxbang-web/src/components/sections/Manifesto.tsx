@@ -120,16 +120,7 @@ export default function Manifesto() {
                         ease: "sine.inOut"
                     }, "<"); // "<" means start at the same time as previous tween
 
-                    // 2. Activate Marker (Just before arrival)
-                    tl.to(marker, {
-                        scale: 1.5,
-                        borderColor: "#306EE8",
-                        boxShadow: "0 0 30px rgba(48,110,232,0.6)",
-                        duration: 0.2,
-                        ease: "back.out(1.7)"
-                    }, "-=0.25");
-
-                    // 3. The "Docking" Pause - Inverse Progressive (Sticky Top -> Fluid Bottom)
+                    // 2. The "Docking" Pause - Inverse Progressive (Sticky Top -> Fluid Bottom)
                     // "Je veux l'inverse" -> Starts very slow/stuck, accelerates (less stuck) at bottom.
                     // "Accentuate on last two" -> Force drop at end.
                     let pauseDuration = 4.5 - (i * 0.6);
@@ -137,15 +128,6 @@ export default function Manifesto() {
                         pauseDuration = 0.8; // Very fluid finish
                     }
                     tl.to({}, { duration: Math.max(0.5, pauseDuration) });
-
-                    // 4. Reduce Marker intensity when leaving (at start of next segment)
-                    // We'll queue this to happen right after the pause
-                    tl.to(marker, {
-                        scale: 1,
-                        borderColor: "rgba(75, 85, 99, 1)", // gray-600
-                        boxShadow: "0 0 15px rgba(0,0,0,0.2)",
-                        duration: 0.3
-                    });
                 });
             };
 
@@ -343,6 +325,36 @@ export default function Manifesto() {
                     closestMarkerDist = dist;
                     closestMarkerAngle = Math.atan2(dy, dx);
                 }
+
+                // Interaction Logic: Highlight Text when close
+                const textContainer = marker.nextElementSibling as HTMLElement;
+                if (textContainer) {
+                    // Trigger later (Closer): 55px threshold (Circle opens at 70px, Text lights up at 55px)
+                    if (dist < 55) {
+                        // Highlight Text
+                        textContainer.style.borderColor = "rgba(48, 110, 232, 1)";
+                        textContainer.style.boxShadow = "0 0 50px rgba(48, 110, 232, 0.4)"; // Stronger glow
+                        textContainer.style.transform = "scale(1.02)"; // Subtle pop
+                        textContainer.style.transition = "all 0.3s ease-out";
+
+                        // Highlight Marker (Synced)
+                        const markerEl = marker as HTMLElement;
+                        markerEl.style.transform = "scale(1.5)";
+                        markerEl.style.borderColor = "#306EE8";
+                        markerEl.style.boxShadow = "0 0 30px rgba(48,110,232,0.6)";
+                    } else {
+                        // Reset Text
+                        textContainer.style.borderColor = "";
+                        textContainer.style.boxShadow = "";
+                        textContainer.style.transform = "";
+
+                        // Reset Marker
+                        const markerEl = marker as HTMLElement;
+                        markerEl.style.transform = "";
+                        markerEl.style.borderColor = "";
+                        markerEl.style.boxShadow = "";
+                    }
+                }
             });
 
             // Calculate dynamic arc with LERP (Smoothing)
@@ -452,11 +464,11 @@ export default function Manifesto() {
                                 // justify-start in row-reverse aligns to the RIGHT
                             )}
                         >
-                            {/* MARKER (Target) - Animated via GSAP (ScrollTrigger) */}
-                            <div className="marker w-16 h-16 flex-shrink-0 rounded-full border-2 border-gray-600 bg-[#0a0a0a] shadow-[0_0_15px_rgba(255,255,255,0.1)] z-10" />
+                            {/* MARKER (Target) - Animated via CSS (Proximity) */}
+                            <div className="marker w-16 h-16 flex-shrink-0 rounded-full border-2 border-gray-600 bg-[#0a0a0a] shadow-[0_0_15px_rgba(255,255,255,0.1)] z-10 transition-all duration-300 ease-out" />
 
                             {/* CONTENT */}
-                            <div className="relative z-30 p-6 md:p-8 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm max-w-md shadow-sm hover:border-[#306EE8]/50 transition-colors">
+                            <div className="relative z-30 p-6 md:p-8 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm max-w-md shadow-sm transition-all duration-300">
                                 <h3 className="font-clash text-xl md:text-2xl font-bold text-white mb-2">{item.title}</h3>
                                 <p className="font-jakarta text-sm md:text-base text-gray-400">{item.desc}</p>
                             </div>
