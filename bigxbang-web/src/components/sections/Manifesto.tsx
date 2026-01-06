@@ -475,10 +475,11 @@ export default function Manifesto() {
                 if (distToLast < 50) {
                     const finalMarker = finalPointEl.querySelector('.marker') as HTMLElement;
                     if (finalMarker) {
-                        finalMarker.style.borderColor = "#306EE8";
-                        finalMarker.style.boxShadow = "0 0 50px rgba(48,110,232,0.9)";
-                        finalMarker.style.backgroundColor = "rgba(48,110,232,0.3)";
-                        finalMarker.style.transform = "scale(1.15)";
+                        // TOOLS REFERENCE: bg-[#306EE8] shadow-[0_0_80px_30px_rgba(48,110,232,0.6)]
+                        finalMarker.style.borderColor = "rgba(255,255,255,0.1)"; // Ring effect
+                        finalMarker.style.boxShadow = "0 0 80px 30px rgba(48,110,232,0.6)"; // Massive Tools-like glow
+                        finalMarker.style.backgroundColor = "#306EE8"; // Solid Blue
+                        finalMarker.style.transform = "scale(1.1)";
                     }
                 } else {
                     // Reset
@@ -552,8 +553,8 @@ export default function Manifesto() {
                                 transform: 'translate(-50%, -50%)'
                             }}
                         >
-                            {/* Visual Match: White Asterisk with Blue Glow to stand out on white bg */}
-                            <Asterisk className="w-full h-full text-white drop-shadow-[0_0_15px_rgba(48,110,232,0.9)]" />
+                            {/* Visual Match: White Asterisk with Subtle White Glow */}
+                            <Asterisk className="w-full h-full text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
                         </div>
                     </div>
 
