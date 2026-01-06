@@ -10,6 +10,7 @@ import Asterisk from "@/components/ui/Asterisk";
 
 // DYNAMIC IMPORTS
 const ToolsOrbitShockwave = dynamic(() => import("@/components/ui/ToolsOrbitShockwave"), { ssr: false, loading: () => null });
+const ManifestoBlastLine = dynamic(() => import("@/components/ui/ManifestoBlastLine").then(mod => mod.ManifestoBlastLine), { ssr: false, loading: () => null });
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
@@ -139,13 +140,13 @@ export default function Manifesto() {
                     // ">-0.2" means "0.2s before the end of the previous tween".
                     if (i === totalPoints - 1) {
                         tl.call(() => {
-                            // Only fire if we are moving forward/down (checked via state or just fire?)
-                            // GSAP scrub calls this whenever playhead crosses.
-                            // We use setFinalShockwaveActive which toggles active prop.
-                            setFinalShockwaveActive(true);
-                            // Auto-reset handled by component or timeout
-                            setTimeout(() => setFinalShockwaveActive(false), 2000);
-                        }, undefined, ">-0.25");
+                            // Only fire once using the ref to prevent re-trigger on scroll up
+                            if (!hasFiredShockwave.current) {
+                                hasFiredShockwave.current = true;
+                                setFinalShockwaveActive(true);
+                                // No timeout - CTA stays visible permanently
+                            }
+                        }, undefined, ">");
                     }
 
                     // 2. The "Docking" Pause - Inverse Progressive (Sticky Top -> Fluid Bottom)
@@ -227,9 +228,31 @@ export default function Manifesto() {
                 positionHistory.shift();
             }
 
+            // CALCULATE DISTANCE TO START (Propulsion + Light Logic)
+            let dStart = 1000; // Default large
+            const startMarker = document.querySelector('.manifesto-start-ring') as HTMLElement;
+            if (startMarker) { // We query this once per frame (could be optimized but fine for now)
+                const smRect = startMarker.getBoundingClientRect();
+                const smX = smRect.left - canvasRect.left + smRect.width / 2;
+                const smY = smRect.top - canvasRect.top + smRect.height / 2;
+                dStart = Math.sqrt(Math.pow(smX - boxX, 2) + Math.pow(smY - boxY, 2));
+            }
+
             // DRAW GRID
             ctx.lineWidth = 1;
-            const reactionRadius = 250; // Radius of effect
+
+            // DYNAMIC LIGHT RADIUS
+            // "Agrandir au dock" -> Large radius at start.
+            // "Rétrécir tout doucement" -> Fade out boost over long distance (e.g., 600px).
+            const baseRadius = 250;
+            const boostRadius = 350; // +350px at start = 600px total
+            const fadeDistance = 600; // Shrinks over 600px of movement
+
+            const boostFactor = Math.max(0, 1 - dStart / fadeDistance);
+            // Smooth easing (Quadratic) for "tout doucement" feel
+            const smoothBoost = boostFactor * boostFactor;
+
+            const reactionRadius = baseRadius + (boostRadius * smoothBoost);
 
             // 1. Draw Base Grid (Visible everywhere - subtle grey)
             ctx.strokeStyle = "rgba(100, 100, 100, 0.25)";
@@ -421,16 +444,8 @@ export default function Manifesto() {
 
             // 5. Handle Start Point "Propulsion" (Launch Pad)
             // When asterisk moves away from start, expand and fade the start ring
-            const startMarker = document.querySelector('.manifesto-start-ring') as HTMLElement;
             if (startMarker) {
-                // Get start marker center
-                const smRect = startMarker.getBoundingClientRect();
-                const smX = smRect.left - canvasRect.left + smRect.width / 2;
-                const smY = smRect.top - canvasRect.top + smRect.height / 2;
-
-                // Distance from box to start
-                const dStart = Math.sqrt(Math.pow(smX - boxX, 2) + Math.pow(smY - boxY, 2));
-
+                // Reuse dStart calculated at top
                 // Animate based on distance (0 to 100px)
                 if (dStart < 150) {
                     // Propulsion effect: As it moves away, scale up and fade out
@@ -512,6 +527,10 @@ export default function Manifesto() {
             <canvas
                 ref={canvasRef}
                 className="absolute inset-0 z-[1] pointer-events-none"
+                style={{
+                    maskImage: 'linear-gradient(to bottom, transparent 0%, black 40%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 40%)'
+                }}
             />
             {/* Top Gradient: Signature Blue to Black */}
             <div
@@ -536,7 +555,7 @@ export default function Manifesto() {
                 </div>
 
                 {/* VISUAL + ITEMS CONTAINER */}
-                <div className="relative flex flex-col gap-64 pb-64">
+                <div className="relative flex flex-col gap-64 pb-32">
 
                     {/* INITIAL CONTAINER (Box starts here) */}
                     <div className="manifesto-point initial relative w-full flex justify-center items-center h-20">
@@ -595,9 +614,27 @@ export default function Manifesto() {
                         <div className="absolute w-[800px] h-[800px] flex items-center justify-center z-50 pointer-events-none">
                             <ToolsOrbitShockwave active={finalShockwaveActive} />
                         </div>
+                        {/* BLAST LINE: Fires from asterisk downward */}
+                        <div className="absolute w-[300px] h-[280px] top-1/2 z-40 pointer-events-none">
+                            <ManifestoBlastLine triggered={finalShockwaveActive} />
+                        </div>
                         {/* Invisible marker for spacing -> Now Visible Docking Ring */}
                         <div className="marker w-16 h-16 rounded-full border-2 border-white/20 bg-white/5 z-10 transition-all duration-300" />
                     </div>
+                </div>
+
+                {/* CTA TEXT - OUTSIDE the manifesto container, so asterisk stays put */}
+                <div className={cn(
+                    "relative z-20 pointer-events-auto flex flex-col items-center p-8 border border-white/10 rounded-3xl bg-white/5 backdrop-blur-md transition-all duration-700 max-w-lg mx-auto text-center gap-6 mt-16",
+                    finalShockwaveActive ? "border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_60px_rgba(48,110,232,0.3)] translate-y-0 opacity-100" : "translate-y-4 opacity-0 border-white/5"
+                )}>
+                    <div className="flex flex-col gap-2">
+                        <h3 className="font-clash text-2xl font-bold text-white">Prêt au décollage ?</h3>
+                        <p className="font-jakarta text-gray-400">Transformons votre vision en système.</p>
+                    </div>
+                    <button className="px-8 py-3 bg-[#306EE8] hover:bg-[#205ac8] text-white font-clash font-semibold text-lg rounded-full transition-colors shadow-lg shadow-blue-500/30">
+                        Start a Project
+                    </button>
                 </div>
 
             </section>
