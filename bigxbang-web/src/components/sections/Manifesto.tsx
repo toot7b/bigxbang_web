@@ -179,6 +179,12 @@ export default function Manifesto() {
         const maxHistoryLength = 8; // Short trail
         const markerRadius = 32; // Radius of the big marker circles (w-16 = 64px / 2)
 
+        // Cache markers to avoid querying DOM every frame
+        const getMarkers = () => Array.from(document.querySelectorAll('.manifesto-point:not(.initial):not(.ghost) .marker'));
+
+        // Initialize LERP state
+        let currentHalfGap = 0;
+
         const render = () => {
             // Update canvas dimensions to match the FULL section (including scrollable area)
             const parentEl = canvas.parentElement;
@@ -319,28 +325,58 @@ export default function Manifesto() {
                 }
             }
 
-            // 4. Draw Circle Around Asterisk (disappears near markers)
-            // Check distance to all markers
-            const markers = document.querySelectorAll('.manifesto-point:not(.initial):not(.ghost) .marker');
-            let nearMarker = false;
+            // 4. Draw Circle Around Asterisk (Reacts to markers: Opens up like a "C")
+            const markers = getMarkers();
+            let closestMarkerDist = Infinity;
+            let closestMarkerAngle = 0;
+
             markers.forEach((marker) => {
                 const markerRect = marker.getBoundingClientRect();
                 const markerCenterX = markerRect.left - canvasRect.left + markerRect.width / 2;
                 const markerCenterY = markerRect.top - canvasRect.top + markerRect.height / 2;
-                const distToMarker = Math.sqrt(Math.pow(markerCenterX - boxX, 2) + Math.pow(markerCenterY - boxY, 2));
-                if (distToMarker < markerRadius + 30) { // 30px buffer
-                    nearMarker = true;
+
+                const dx = markerCenterX - boxX;
+                const dy = markerCenterY - boxY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < closestMarkerDist) {
+                    closestMarkerDist = dist;
+                    closestMarkerAngle = Math.atan2(dy, dx);
                 }
             });
 
-            if (!nearMarker) {
-                // Draw thin circle around asterisk
-                ctx.beginPath();
-                ctx.arc(boxX, boxY, 35, 0, Math.PI * 2); // 35px radius circle
-                ctx.strokeStyle = "rgba(48, 110, 232, 0.6)";
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
+            // Calculate dynamic arc with LERP (Smoothing)
+            const influenceRadius = 70; // Very close range
+            const maxHalfGap = Math.PI / 1.5;
+            let targetHalfGap = 0;
+
+            // Determine Target Gap
+            if (closestMarkerDist < influenceRadius) {
+                const minDist = 50; // Distance of max opening (contact)
+                const progress = Math.max(0, Math.min(1, (closestMarkerDist - minDist) / (influenceRadius - minDist)));
+                targetHalfGap = (1 - progress) * maxHalfGap;
+            } else {
+                targetHalfGap = 0;
             }
+
+            // Smoothly interpolate current gap towards target gap
+            // Factor 0.05 = Very slow smoothing. 
+            currentHalfGap += (targetHalfGap - currentHalfGap) * 0.05;
+
+            // Draw arc
+            let startAngle = 0;
+            let endAngle = Math.PI * 2;
+
+            if (currentHalfGap > 0.01) { // Only calculate angles if there is a visible gap
+                startAngle = closestMarkerAngle + currentHalfGap;
+                endAngle = closestMarkerAngle + Math.PI * 2 - currentHalfGap;
+            }
+
+            ctx.beginPath();
+            ctx.arc(boxX, boxY, 35, startAngle, endAngle);
+            ctx.strokeStyle = "rgba(48, 110, 232, 0.6)";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
 
             animationFrameId = requestAnimationFrame(render);
         };
