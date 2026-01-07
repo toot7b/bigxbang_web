@@ -149,14 +149,10 @@ export default function Manifesto() {
                         }, undefined, ">");
                     }
 
-                    // 2. The "Docking" Pause - Inverse Progressive (Sticky Top -> Fluid Bottom)
-                    // "Je veux l'inverse" -> Starts very slow/stuck, accelerates (less stuck) at bottom.
-                    // "Accentuate on last two" -> Force drop at end.
-                    let pauseDuration = 4.5 - (i * 0.6);
-                    if (i >= totalPoints - 2) {
-                        pauseDuration = 0.8; // Very fluid finish
-                    }
-                    tl.to({}, { duration: Math.max(0.5, pauseDuration) });
+                    // 2. The "Docking" Pause - CONSTANT RHYTHM
+                    // "Met les points à la même distance" -> We strictly standardize the pause.
+                    // 2.0s pause for everyone. No acceleration.
+                    tl.to({}, { duration: 2.0 });
                 });
             };
 
