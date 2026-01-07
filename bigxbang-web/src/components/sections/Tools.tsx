@@ -46,7 +46,6 @@ export default function Tools() {
             <section
                 ref={sectionRef}
                 className="relative z-0 w-full min-h-screen text-white -mt-[60px] pt-40 overflow-hidden"
-                style={{ zIndex: 0 }} // Ensure it doesn't overlap CaseStudies which should be higher
             >
                 <div className="absolute inset-0 z-0">
                     <QuantumFlowBackground />
@@ -71,8 +70,8 @@ export default function Tools() {
                         </h2>
                     </div>
 
-                    {/* Orbit Visual */}
-                    <div className="relative z-10 scale-75 md:scale-100">
+                    {/* Orbit Visual - Added mb-24 for tooltip space */}
+                    <div className="relative z-10 scale-75 md:scale-100 mb-24">
                         {/* Desktop Version */}
                         <div className="hidden md:block">
                             <ToolsOrbit />
