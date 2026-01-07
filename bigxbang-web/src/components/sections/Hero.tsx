@@ -91,6 +91,7 @@ export default function Hero() {
     return (
         <section
             ref={heroRef}
+            data-theme="dark"
             className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] text-white"
         >
             {/* Background Elements */}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { ElectricLine } from './ElectricLine';
 
@@ -14,12 +14,6 @@ import { ElectricLine } from './ElectricLine';
 
 const BlastLineScene = ({ triggered }: { triggered: boolean }) => {
     const { viewport } = useThree();
-    const hasFiredRef = useRef(false);
-
-    // Track if we've fired (to prevent re-trigger on scroll up)
-    if (triggered && !hasFiredRef.current) {
-        hasFiredRef.current = true;
-    }
 
     // Start: From edge of circle (below center, where circle ends)
     const start: [number, number, number] = [0, viewport.height / 2 - 0.5, 0];
@@ -31,7 +25,7 @@ const BlastLineScene = ({ triggered }: { triggered: boolean }) => {
             start={start}
             end={end}
             mode="blast"
-            trigger={hasFiredRef.current}
+            trigger={triggered}
             color="#306EE8"
             fadeEdges={true}
         />

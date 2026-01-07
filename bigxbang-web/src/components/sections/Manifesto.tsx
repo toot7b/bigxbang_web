@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { cn } from "@/lib/utils";
 import Asterisk from "@/components/ui/Asterisk";
+import MinimalFooter from "@/components/ui/MinimalFooter";
 
 // DYNAMIC IMPORTS
 const ToolsOrbitShockwave = dynamic(() => import("@/components/ui/ToolsOrbitShockwave"), { ssr: false, loading: () => null });
@@ -48,9 +49,8 @@ export default function Manifesto() {
     // START POINT VARIABLES
     const startPointRef = useRef<{ active: boolean, scale: number, opacity: number }>({ active: true, scale: 1, opacity: 1 });
 
-    // SHOCKWAVE STATE (WebGL Trigger)
+    // SINGLE TRIGGER STATE - Everything fires together
     const [finalShockwaveActive, setFinalShockwaveActive] = useState(false);
-    // Ref to track if we already fired it to avoid React loop
     const hasFiredShockwave = useRef(false);
 
     useLayoutEffect(() => {
@@ -94,7 +94,16 @@ export default function Manifesto() {
                 // Reset
                 gsap.killTweensOf(box);
 
+                // SIMPLE TRIGGER: Fire when ANIMATION is near completion (respects scrub lag)
                 const tl = gsap.timeline({
+                    // onUpdate fires based on ANIMATION progress, not scroll position
+                    // This ensures the trigger fires when the asterisk VISUALLY arrives
+                    onUpdate: function () {
+                        if (this.progress() > 0.98 && !hasFiredShockwave.current) {
+                            hasFiredShockwave.current = true;
+                            setFinalShockwaveActive(true);
+                        }
+                    },
                     scrollTrigger: {
                         trigger: ".manifesto-point.initial",
                         start: "top center",
@@ -135,24 +144,15 @@ export default function Manifesto() {
                         ease: "sine.inOut"
                     }, "<"); // "<" means start at the same time as previous tween
 
-                    // TRIGGER SHOCKWAVE ON FINAL ARRIVAL
-                    // We add a callback to the timeline right at the end of the movement of the LAST point.
-                    // ">-0.2" means "0.2s before the end of the previous tween".
-                    if (i === totalPoints - 1) {
-                        tl.call(() => {
-                            // Only fire once using the ref to prevent re-trigger on scroll up
-                            if (!hasFiredShockwave.current) {
-                                hasFiredShockwave.current = true;
-                                setFinalShockwaveActive(true);
-                                // No timeout - CTA stays visible permanently
-                            }
-                        }, undefined, ">");
-                    }
+                    // TRIGGER SHOCKWAVE ON FINAL ARRIVAL - REMOVED (Handled by ScrollTrigger above)
 
                     // 2. The "Docking" Pause - CONSTANT RHYTHM
                     // "Met les points à la même distance" -> We strictly standardize the pause.
-                    // 2.0s pause for everyone. No acceleration.
-                    tl.to({}, { duration: 2.0 });
+                    // 2.0s pause for everyone EXCEPT the last one.
+                    // (We want the timeline to end EXACTLY when we arrive at the final point)
+                    if (i < totalPoints - 1) {
+                        tl.to({}, { duration: 2.0 });
+                    }
                 });
             };
 
@@ -480,20 +480,16 @@ export default function Manifesto() {
 
                 const distToLast = Math.sqrt(Math.pow(fpCx - boxCx, 2) + Math.pow(fpCy - boxCy, 2));
 
-                // 2-STAGE TRIGGER FOR PERFECT SYNC
-
-                // Stage 1: Visual Contact (50px) - The "Click"
-                if (distToLast < 50) {
+                // Visual highlight when close (no trigger logic here)
+                if (distToLast < 60) {
                     const finalMarker = finalPointEl.querySelector('.marker') as HTMLElement;
                     if (finalMarker) {
-                        // TOOLS REFERENCE: bg-[#306EE8] shadow-[0_0_80px_30px_rgba(48,110,232,0.6)]
-                        finalMarker.style.borderColor = "rgba(255,255,255,0.1)"; // Ring effect
-                        finalMarker.style.boxShadow = "0 0 80px 30px rgba(48,110,232,0.6)"; // Massive Tools-like glow
-                        finalMarker.style.backgroundColor = "#306EE8"; // Solid Blue
+                        finalMarker.style.borderColor = "rgba(255,255,255,0.1)";
+                        finalMarker.style.boxShadow = "0 0 80px 30px rgba(48,110,232,0.6)";
+                        finalMarker.style.backgroundColor = "#306EE8";
                         finalMarker.style.transform = "scale(1.1)";
                     }
                 } else {
-                    // Reset
                     const finalMarker = finalPointEl.querySelector('.marker') as HTMLElement;
                     if (finalMarker) {
                         finalMarker.style.borderColor = "";
@@ -502,9 +498,6 @@ export default function Manifesto() {
                         finalMarker.style.transform = "";
                     }
                 }
-
-                // Stage 2: REMOVED (Handled by ScrollTrigger for better sync)
-                // The logical pre-fire is now driven by the timeline progress, not the physics loop.
             }
 
             animationFrameId = requestAnimationFrame(render);
@@ -535,7 +528,7 @@ export default function Manifesto() {
                     background: 'linear-gradient(to bottom, rgba(48, 110, 232, 0.2) 0%, rgba(0,0,0,1) 100%)'
                 }}
             />
-            <section ref={sectionRef} className="relative w-full max-w-6xl mx-auto px-4 flex flex-col gap-40">
+            <section ref={sectionRef} data-theme="dark" className="relative w-full max-w-6xl mx-auto px-4 flex flex-col gap-40">
 
                 {/* HEADLINE (Restored style) */}
                 <div className="text-center max-w-4xl px-4 mx-auto">
@@ -651,6 +644,13 @@ export default function Manifesto() {
                 </div>
 
             </section>
+
+            {/* VISUAL FOOTER - SIGNATURE (Outside Pinned Flow) */}
+            <MinimalFooter
+                visible={finalShockwaveActive}
+                className="mt-12 mb-12"
+            />
+
         </div>
     );
 }

@@ -242,6 +242,8 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                     compact ? "-mt-[40px] pt-24 pb-16" : "-mt-[100px] pt-[100px]"
                 )}
             >
+                {/* Theme Trigger - Offset by 50px to fine-tune entry timing */}
+                <div data-theme="light" className="absolute top-[50px] left-0 right-0 bottom-0 pointer-events-none -z-10" />
                 {/* DIMMING OVERLAY */}
                 <div
                     ref={overlayRef}

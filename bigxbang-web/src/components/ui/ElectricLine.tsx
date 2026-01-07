@@ -122,7 +122,7 @@ export const ElectricLine = ({
     const materialRef = useRef<THREE.ShaderMaterial>(null);
     const meshRef = useRef<THREE.Mesh>(null);
     const blastLife = useRef(0.0);
-    const lastTrigger = useRef(trigger);
+    const lastTrigger = useRef(false);
 
     const dist = new THREE.Vector3(...start).distanceTo(new THREE.Vector3(...end));
     const isValid = dist > 0.1;

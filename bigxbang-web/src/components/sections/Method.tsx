@@ -111,6 +111,7 @@ export default function Method() {
         <section
             id="methode"
             ref={containerRef}
+            data-theme="dark"
             className="relative z-0 w-full bg-[#0a0a0a] text-white -mt-1 min-h-[200vh]"
         >
 

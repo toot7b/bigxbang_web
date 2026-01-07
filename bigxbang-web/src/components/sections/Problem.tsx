@@ -277,6 +277,7 @@ export default function Problem() {
         <section
             id="probleme"
             ref={containerRef}
+            data-theme="dark"
             className="relative min-h-screen w-full bg-[#0a0a0a] text-white overflow-hidden flex flex-col items-center justify-start pt-32 pb-20"
         >
             {/* Background Stars Container */}

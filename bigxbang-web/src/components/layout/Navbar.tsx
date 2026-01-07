@@ -1,84 +1,72 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Menu, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import LogoNavbar from "@/components/ui/LogoNavbar";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import NavOverlay from "./NavOverlay";
+import { useSectionTheme } from "@/hooks/useSectionTheme";
 
 export default function Navbar() {
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const theme = useSectionTheme();
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+    const isLight = theme === "light";
+    const textColor = isLight ? "text-black" : "text-white";
+    const bgColor = isLight ? "bg-black" : "bg-white"; // Inverse for some elements if needed
 
     return (
-        <nav
-            className={cn(
-                "fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 w-fit",
-                // Always show pill shape, but enhance it on scroll
-                "bg-white/5 backdrop-blur-md border border-white/10 shadow-lg py-1 px-5 rounded-full"
-            )}
-        >
-            <div className="flex items-center gap-6">
-                {/* Logo */}
-                <Link href="/" className="relative z-50 flex items-center">
-                    <LogoNavbar className="h-8 w-auto" />
-                </Link>
+        <>
+            <header className={`fixed top-0 left-0 right-0 z-[110] px-6 py-6 md:px-12 md:py-8 flex items-center justify-between pointer-events-none transition-colors duration-0 ${textColor}`}>
 
-                {/* Desktop Navigation */}
-                <div className="hidden md:flex items-center gap-6 border-l border-white/10 pl-6 h-5">
-                    {["Méthode", "Cas concrets", "Offres", "Le manifeste"].map((item) => (
-                        <Link
-                            key={item}
-                            href={`#${item.toLowerCase().replace(" ", "-")}`}
-                            className="text-xs font-medium text-gray-400 hover:text-white transition-colors tracking-wide"
-                        >
-                            {item}
-                        </Link>
-                    ))}
+                {/* LEFT: LOGO + BRAND */}
+                <div className="pointer-events-auto flex items-center gap-4">
+                    <div className="w-12 h-12 relative">
+                        {/* Dynamic Logo Color - simplified approach: use CSS filter or separate SVGs if strictly needed. 
+                            For now, assuming logo.svg is white/black capable or we invert it.
+                        */}
+                        <img
+                            src="/logo.svg"
+                            alt="BigxBang"
+                            className={`w-full h-full object-contain transition-all duration-0 ${isLight ? "invert" : ""}`}
+                        />
+                    </div>
+                    <span className="font-clash text-2xl font-medium tracking-wide">Big<span className="text-[17px]">x</span>Bang</span>
                 </div>
 
-                {/* CTA Button */}
-                <div className="hidden md:block border-l border-white/10 pl-6">
-                    <button className="btn-shiny text-xs">
-                        Je contacte
+                {/* RIGHT: CONTROLS */}
+                <div className="pointer-events-auto flex items-center gap-6">
+
+                    {/* Pill Button */}
+                    <a
+                        href="https://calendar.app.google/qk7pa13Mu3fP3ex16"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`hidden md:flex items-center gap-2 h-10 px-5 rounded-full font-medium text-xs transition-colors duration-200 ${isLight ? 'bg-black text-white hover:bg-gray-800' : 'bg-white text-black hover:bg-gray-200'}`}
+                    >
+                        <span>Talk to us</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                    </a>
+
+                    {/* Animated Hamburger / Cross - FIXED SYMMETRY */}
+                    <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="relative z-[110] w-12 h-12 cursor-pointer"
+                    >
+                        {/* Both bars positioned at exact center, only rotation changes */}
+                        <motion.span
+                            animate={isMenuOpen ? { rotate: 45, backgroundColor: "#ffffff" } : { rotate: 0, y: -4, backgroundColor: isLight ? "#000000" : "#ffffff" }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-[2px]"
+                        />
+                        <motion.span
+                            animate={isMenuOpen ? { rotate: -45, backgroundColor: "#ffffff" } : { rotate: 0, y: 4, backgroundColor: isLight ? "#000000" : "#ffffff" }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-[2px]"
+                        />
                     </button>
                 </div>
+            </header>
 
-                {/* Mobile Menu Button */}
-                <button
-                    className="md:hidden relative z-50 text-white"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                >
-                    {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                </button>
-            </div>
-
-            {/* Mobile Menu Overlay */}
-            <div
-                className={cn(
-                    "fixed inset-0 bg-black/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-8 transition-all duration-300 md:hidden",
-                    isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
-                )}
-            >
-                {["Méthode", "Cas concrets", "Offres", "Le manifeste"].map((item) => (
-                    <Link
-                        key={item}
-                        href={`#${item.toLowerCase().replace(" ", "-")}`}
-                        className="text-2xl font-medium text-white hover:text-blue-400 transition-colors"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                        {item}
-                    </Link>
-                ))}
-            </div>
-        </nav>
+            <NavOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+        </>
     );
 }

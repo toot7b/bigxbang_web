@@ -45,6 +45,7 @@ export default function Tools() {
         <div id="tools" className="scroll-mt-[100px]">
             <section
                 ref={sectionRef}
+                data-theme="dark"
                 className="relative z-0 w-full min-h-screen text-white -mt-[60px] pt-40 overflow-hidden"
             >
                 <div className="absolute inset-0 z-0">
