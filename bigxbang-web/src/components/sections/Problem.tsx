@@ -112,7 +112,7 @@ export default function Problem() {
             // Init state: All Hidden
             // Change: Start slightly smaller and blurry for "optical focus" effect (Subtle)
             gsap.set(starsRef.current, { autoAlpha: 0, scale: 0.8, filter: "blur(8px)" });
-            gsap.set(linesRef.current, { opacity: 0, drawSVG: "0%" }); // Requires DrawSVG ideally, but we'll simulate opacity
+            gsap.set(linesRef.current, { opacity: 0 }); // DrawSVG removed - using strokeDashoffset instead
             if (scrollHintRef.current) gsap.set(scrollHintRef.current, { autoAlpha: 0, y: 20 });
 
             // Sequential Reveal: Star -> Line -> Star -> Line

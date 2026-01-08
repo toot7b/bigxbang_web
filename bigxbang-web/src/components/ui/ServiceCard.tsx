@@ -1,11 +1,33 @@
+'use client';
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { TechScanner, ScannerState } from "./TechScanner";
 import { MagneticWebsite } from "@/components/ui/MagneticWebsite";
 import { AutomationNetwork } from "@/components/ui/AutomationNetwork";
 import { DNAHelix } from "@/components/ui/DNAHelix";
 import Asterisk from "./Asterisk";
+
+// Generate sparkle particles data (deterministic structure, random values)
+interface SparkleParticle {
+    width: string;
+    height: string;
+    top: string;
+    left: string;
+    animationDuration: string;
+    animationDelay: string;
+}
+
+const generateSparkles = (count: number): SparkleParticle[] => {
+    return Array.from({ length: count }, () => ({
+        width: Math.random() > 0.5 ? '2px' : '1px',
+        height: Math.random() > 0.5 ? '2px' : '1px',
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 100}%`,
+        animationDuration: `${2 + Math.random() * 3}s`,
+        animationDelay: `${Math.random() * 2}s`
+    }));
+};
 
 
 export interface ServiceCardProps {
@@ -43,6 +65,12 @@ export const ServiceCard = ({
     scannerState,
     onTabChange
 }: ServiceCardProps) => {
+    // Generate sparkles only on client-side to avoid hydration mismatch
+    const [sparkles, setSparkles] = useState<SparkleParticle[]>([]);
+
+    useEffect(() => {
+        setSparkles(generateSparkles(15));
+    }, []);
 
     return (
         <div
@@ -51,29 +79,31 @@ export const ServiceCard = ({
                 className
             )}
         >
-            {/* HOVER PARTICLES (Sparkles) */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                {[...Array(15)].map((_, i) => (
-                    <div
-                        key={i}
-                        className="absolute bg-white rounded-full blur-[0.5px]"
-                        style={{
-                            width: Math.random() > 0.5 ? '2px' : '1px',
-                            height: Math.random() > 0.5 ? '2px' : '1px',
-                            top: `${Math.random() * 100}%`,
-                            left: `${Math.random() * 100}%`,
-                            opacity: 0,
-                            animation: `sparkle ${2 + Math.random() * 3}s ease-in-out infinite`,
-                            animationDelay: `${Math.random() * 2}s`
-                        }}
-                    />
-                ))}
-            </div>
+            {/* HOVER PARTICLES (Sparkles) - Generated client-side only */}
+            {sparkles.length > 0 && (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                    {sparkles.map((sparkle, i) => (
+                        <div
+                            key={i}
+                            className="absolute bg-white rounded-full blur-[0.5px]"
+                            style={{
+                                width: sparkle.width,
+                                height: sparkle.height,
+                                top: sparkle.top,
+                                left: sparkle.left,
+                                opacity: 0,
+                                animation: `sparkle ${sparkle.animationDuration} ease-in-out infinite`,
+                                animationDelay: sparkle.animationDelay
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
             <style>
                 {`
                 @keyframes sparkle {
                     0%, 100% { transform: scale(0) translate(0, 0); opacity: 0; }
-                    50% { transform: scale(1) translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px); opacity: 0.8; }
+                    50% { transform: scale(1) translate(0, 0); opacity: 0.8; }
                 }
                 `}
             </style>

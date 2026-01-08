@@ -1,11 +1,19 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
+interface Star {
+    id: number;
+    cx: number;
+    cy: number;
+    r: number;
+    opacity: number;
+}
+
 // Generate random stars
-const generateStars = (count: number) => {
-    const stars = [];
+const generateStars = (count: number): Star[] => {
+    const stars: Star[] = [];
     for (let i = 0; i < count; i++) {
         stars.push({
             id: i,
@@ -19,7 +27,12 @@ const generateStars = (count: number) => {
 };
 
 export default function QuantumFlowBackground({ className }: { className?: string }) {
-    const stars = useMemo(() => generateStars(150), []);
+    // Generate stars only on client-side to avoid hydration mismatch
+    const [stars, setStars] = useState<Star[]>([]);
+
+    useEffect(() => {
+        setStars(generateStars(150));
+    }, []);
 
     return (
         <div className={`w-full h-full overflow-hidden pointer-events-none ${className}`}>
