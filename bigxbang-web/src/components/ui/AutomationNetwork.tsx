@@ -13,7 +13,7 @@ import { IconAsset4 } from '../icons/IconAsset4';
 import { IconAsset5 } from "../icons/IconAsset5";
 import { IconAsset6 } from "../icons/IconAsset6";
 // import { IconAsset7 } from "../icons/IconAsset7"; - Removed as it's being replaced
-import Logo from "./Logo";
+import Asterisk from "./Asterisk";
 
 const Circle = forwardRef<
     HTMLDivElement,
@@ -190,7 +190,7 @@ export function AutomationNetwork({
                         }}
                         onMouseLeave={() => setHoveredIndex(null)}
                     >
-                        <Logo className="w-full h-full p-2 text-white fill-white" />
+                        <Asterisk className="w-10 h-10 text-white" />
                         <div className={cn("absolute top-full mt-4 left-1/2 -translate-x-1/2 transition-opacity duration-300 pointer-events-none", hoveredIndex === 4 ? "opacity-100" : "opacity-0")}>
                             <span className="text-white font-clash font-semibold text-sm tracking-wide drop-shadow-md whitespace-nowrap block">Notre Solution</span>
                         </div>
