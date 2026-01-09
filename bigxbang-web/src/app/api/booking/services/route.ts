@@ -11,6 +11,12 @@ export async function GET() {
         });
 
         const data = await res.json();
+
+        if (data.response?.status === "failure") {
+            console.error("Zoho Services Error:", data);
+            throw new Error(data.response.message);
+        }
+
         const services = data.response?.returnvalue?.data || [];
         return NextResponse.json(services);
     } catch (error) {

@@ -1,12 +1,19 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+// import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
     try {
         const { name, email, phone, message } = await req.json();
 
+        // MOCKING RESEND FOR NOW TO UNBLOCK DEV
+        console.log("------------------------------------------");
+        console.log("Mock Email Send (Resend disabled):");
+        console.log({ name, email, phone, message });
+        console.log("------------------------------------------");
+
+        /*
         const data = await resend.emails.send({
             from: "Contact Form <onboarding@resend.dev>",
             to: ["thomassarazin@gmail.com"],
@@ -15,6 +22,8 @@ export async function POST(req: Request) {
         });
 
         if (data.error) throw new Error(data.error.message);
+        */
+
         return NextResponse.json({ success: true });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
