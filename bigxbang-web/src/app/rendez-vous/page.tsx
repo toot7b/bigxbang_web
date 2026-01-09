@@ -23,7 +23,7 @@ export default function RendezVousPage() {
                     <p className="font-jakarta text-white/50">Choisissez un créneau ou envoyez-nous un message.</p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
                     <BookingCalendar />
                     {/* ContactForm will check its own height, grid items-start prevents forced stretching if h-full is removed */}
                     <ContactForm />

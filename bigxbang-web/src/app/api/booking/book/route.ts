@@ -7,17 +7,22 @@ export async function POST(req: Request) {
         const accessToken = await getZohoAccessToken();
         const workspaceId = process.env.ZOHO_WORKSPACE_ID;
 
-        // Auto-resolve staff if missing (basic fallback, better to send from front)
+        // Auto-resolve staff if missing (basic fallback)
         const staffId = body.staff_id || "253350000000045014";
+
+        // Construct customer_details as a JSON object
+        const customerDetails = {
+            name: body.customer_name,
+            email: body.customer_email,
+            phone_number: body.customer_phone || ""
+        };
 
         const params = new URLSearchParams({
             workspace_id: workspaceId || "",
             service_id: body.service_id,
             staff_id: staffId,
             from_time: `${body.date} ${body.time}`,
-            customer_name: body.customer_name,
-            customer_email: body.customer_email,
-            customer_phone: body.customer_phone || "",
+            customer_details: JSON.stringify(customerDetails),
             customer_note: body.notes || ""
         });
 
@@ -32,9 +37,11 @@ export async function POST(req: Request) {
         if (data.response?.returnvalue?.status === "success" || data.response?.status === "success") {
             return NextResponse.json({ success: true, data: data.response });
         } else {
-            throw new Error(data.response?.returnvalue?.message || "Booking failed");
+            console.error("Zoho Booking Failed:", data);
+            throw new Error(data.response?.returnvalue?.message || data.response?.message || "Booking failed");
         }
     } catch (error: any) {
+        console.error("Booking Route Error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
