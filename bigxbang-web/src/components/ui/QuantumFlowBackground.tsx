@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { memo } from "react";
 import { motion } from "framer-motion";
 
 interface Star {
@@ -11,7 +11,7 @@ interface Star {
     opacity: number;
 }
 
-// Generate random stars
+// Generate random stars - called ONCE at module load
 const generateStars = (count: number): Star[] => {
     const stars: Star[] = [];
     for (let i = 0; i < count; i++) {
@@ -19,33 +19,27 @@ const generateStars = (count: number): Star[] => {
             id: i,
             cx: Math.random() * 100,
             cy: Math.random() * 100,
-            r: Math.random() * 0.8 + 0.2, // 0.2 to 1px
-            opacity: Math.random() * 0.5 + 0.2, // 0.2 to 0.7
+            r: Math.random() * 0.8 + 0.2,
+            opacity: Math.random() * 0.5 + 0.2,
         });
     }
     return stars;
 };
 
-export default function QuantumFlowBackground({ className }: { className?: string }) {
-    // Generate stars only on client-side to avoid hydration mismatch
-    const [stars, setStars] = useState<Star[]>([]);
+// Pre-generate stars ONCE (not on each render)
+const STATIC_STARS = generateStars(150);
 
-    useEffect(() => {
-        setStars(generateStars(150));
-    }, []);
-
+function QuantumFlowBackgroundComponent({ className }: { className?: string }) {
     return (
         <div className={`w-full h-full overflow-hidden pointer-events-none ${className}`}>
-            {/* Base black */}
             <div className="absolute inset-0 bg-black" />
 
-            {/* Stars SVG */}
             <svg
                 className="absolute inset-0 w-full h-full"
                 xmlns="http://www.w3.org/2000/svg"
                 preserveAspectRatio="none"
             >
-                {stars.map((star) => (
+                {STATIC_STARS.map((star) => (
                     <circle
                         key={star.id}
                         cx={`${star.cx}%`}
@@ -57,7 +51,6 @@ export default function QuantumFlowBackground({ className }: { className?: strin
                 ))}
             </svg>
 
-            {/* Top left glow */}
             <motion.div
                 className="absolute"
                 style={{
@@ -67,19 +60,10 @@ export default function QuantumFlowBackground({ className }: { className?: strin
                     left: '-50%',
                     top: '-50%',
                 }}
-                animate={{
-                    x: [0, 40, 0],
-                    y: [0, 50, 0],
-                    opacity: [0.7, 1, 0.7],
-                }}
-                transition={{
-                    duration: 18,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
+                animate={{ x: [0, 40, 0], y: [0, 50, 0], opacity: [0.7, 1, 0.7] }}
+                transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            {/* Top right glow */}
             <motion.div
                 className="absolute"
                 style={{
@@ -89,19 +73,10 @@ export default function QuantumFlowBackground({ className }: { className?: strin
                     right: '-45%',
                     top: '-45%',
                 }}
-                animate={{
-                    x: [0, -35, 0],
-                    y: [0, 40, 0],
-                    opacity: [0.6, 1, 0.6],
-                }}
-                transition={{
-                    duration: 22,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
+                animate={{ x: [0, -35, 0], y: [0, 40, 0], opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            {/* Bottom left glow */}
             <motion.div
                 className="absolute"
                 style={{
@@ -111,19 +86,10 @@ export default function QuantumFlowBackground({ className }: { className?: strin
                     left: '-55%',
                     bottom: '-55%',
                 }}
-                animate={{
-                    x: [0, 50, 0],
-                    y: [0, -60, 0],
-                    opacity: [0.7, 1, 0.7],
-                }}
-                transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
+                animate={{ x: [0, 50, 0], y: [0, -60, 0], opacity: [0.7, 1, 0.7] }}
+                transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            {/* Bottom right glow */}
             <motion.div
                 className="absolute"
                 style={{
@@ -133,19 +99,10 @@ export default function QuantumFlowBackground({ className }: { className?: strin
                     right: '-50%',
                     bottom: '-50%',
                 }}
-                animate={{
-                    x: [0, -45, 0],
-                    y: [0, -50, 0],
-                    opacity: [0.6, 1, 0.6],
-                }}
-                transition={{
-                    duration: 25,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
+                animate={{ x: [0, -45, 0], y: [0, -50, 0], opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            {/* Center glow */}
             <motion.div
                 className="absolute"
                 style={{
@@ -156,24 +113,16 @@ export default function QuantumFlowBackground({ className }: { className?: strin
                     top: '50%',
                     transform: 'translate(-50%, -50%)',
                 }}
-                animate={{
-                    scale: [1, 1.1, 1],
-                    opacity: [0.5, 0.9, 0.5],
-                }}
-                transition={{
-                    duration: 15,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
+                animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.9, 0.5] }}
+                transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            {/* Soft vignette */}
             <div
                 className="absolute inset-0"
-                style={{
-                    background: 'radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.3) 80%)',
-                }}
+                style={{ background: 'radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.3) 80%)' }}
             />
         </div>
     );
 }
+
+export default memo(QuantumFlowBackgroundComponent);
