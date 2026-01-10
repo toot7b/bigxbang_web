@@ -19,7 +19,7 @@ export default function RendezVousPage() {
 
             <div className="relative z-10 container mx-auto px-4 pt-28 pb-20">
                 <div className="text-center max-w-3xl mx-auto mb-12">
-                    <h1 className="font-clash text-4xl md:text-5xl font-medium text-white mb-4">Prendre rendez-vous</h1>
+                    <h1 className="font-clash text-4xl md:text-5xl font-medium text-white mb-4">Prendre <span className="text-[#306EE8]">rendez-vous</span></h1>
                     <p className="font-jakarta text-white/50">Choisissez un créneau ou envoyez-nous un message.</p>
                 </div>
 
