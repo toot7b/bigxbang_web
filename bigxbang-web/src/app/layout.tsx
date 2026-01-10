@@ -55,18 +55,22 @@ export const metadata: Metadata = {
   description: "Automatisations et solutions logicielles sur mesure.",
 };
 
+import { ViewTransitions } from "next-view-transitions";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body className={cn(jakarta.variable, clash.variable, londrina.variable, londrinaSolid.variable, nunito.variable, space.variable, "antialiased font-sans bg-black text-white")}>
-        <SmoothScroll>
-          {children}
-        </SmoothScroll>
-      </body>
-    </html>
+    <ViewTransitions>
+      <html lang="fr">
+        <body className={cn(jakarta.variable, clash.variable, londrina.variable, londrinaSolid.variable, nunito.variable, space.variable, "antialiased font-sans bg-black text-white")}>
+          <SmoothScroll>
+            {children}
+          </SmoothScroll>
+        </body>
+      </html>
+    </ViewTransitions>
   );
 }

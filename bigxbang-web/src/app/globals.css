@@ -334,6 +334,64 @@ body {
   animation: aurora3 10s ease-in-out infinite;
 }
 
+/* --- View Transitions API Customization --- */
+
+/* 1. FLASH FIX: Set the canvas background to black during transition */
+::view-transition {
+  background-color: #000000;
+}
+
+/* 2. SHARED SETTINGS */
+::view-transition-group(root) {
+  animation-duration: 0.5s;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+  /* Prevent any default white background on the snapshots */
+  background: transparent;
+}
+
+/* 3. ANIMATION: Fade + Lift (Premium) */
+::view-transition-old(root) {
+  animation: fade-out-up 0.5s cubic-bezier(0.87, 0, 0.13, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: fade-in-up 0.5s cubic-bezier(0.87, 0, 0.13, 1) both;
+}
+
+/* Old view fades out and moves UP slightly */
+@keyframes fade-out-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+    filter: blur(4px);
+  }
+}
+
+/* New view fades in and moves UP from bottom */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
 /* CTA Impact Animations */
 @keyframes scalePulse {
   0% {

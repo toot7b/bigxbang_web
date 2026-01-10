@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
+import { Link } from "next-view-transitions";
+
 const NAV_LINKS = [
     { label: "Problème", href: "/#probleme" },
     { label: "Méthode", href: "/#methode" },
@@ -51,9 +53,7 @@ export default function NavOverlay({ isOpen, onClose }: { isOpen: boolean; onClo
                         <nav className="flex flex-col items-center gap-2 md:gap-4">
                             {NAV_LINKS.map((link, i) => (
                                 <div key={link.label} className="overflow-hidden">
-                                    <motion.a
-                                        href={link.href}
-                                        onClick={onClose}
+                                    <motion.div
                                         initial={{ y: "100%" }}
                                         animate={{
                                             y: "0%",
@@ -71,12 +71,17 @@ export default function NavOverlay({ isOpen, onClose }: { isOpen: boolean; onClo
                                                 delay: 0 // No delay on exit, instant response
                                             }
                                         }}
-                                        className="block group relative pointer-events-auto p-4"
                                     >
-                                        <span className="font-clash text-5xl md:text-8xl font-medium text-white transition-colors duration-300 hover:text-[#306EE8]">
-                                            {link.label}
-                                        </span>
-                                    </motion.a>
+                                        <Link
+                                            href={link.href}
+                                            onClick={link.href.startsWith("/#") ? onClose : undefined}
+                                            className="block group relative pointer-events-auto p-4"
+                                        >
+                                            <span className="font-clash text-5xl md:text-8xl font-medium text-white transition-colors duration-300 hover:text-[#306EE8]">
+                                                {link.label}
+                                            </span>
+                                        </Link>
+                                    </motion.div>
                                 </div>
                             ))}
                         </nav>

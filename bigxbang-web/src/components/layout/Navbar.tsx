@@ -1,13 +1,22 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import NavOverlay from "./NavOverlay";
 import { useSectionTheme } from "@/hooks/useSectionTheme";
 
+import { Link } from "next-view-transitions";
+
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const pathname = usePathname();
     const theme = useSectionTheme();
+
+    // Close menu when route changes
+    useEffect(() => {
+        setIsMenuOpen(false);
+    }, [pathname]);
 
     const isLight = theme === "light";
     const textColor = isLight ? "text-black" : "text-white";
@@ -18,7 +27,7 @@ export default function Navbar() {
             <header className={`fixed top-0 left-0 right-0 z-[110] px-6 py-6 md:px-12 md:py-8 flex items-center justify-between pointer-events-none transition-colors duration-0 ${textColor}`}>
 
                 {/* LEFT: LOGO + BRAND */}
-                <div className="pointer-events-auto flex items-center gap-4">
+                <Link href="/" className="pointer-events-auto flex items-center gap-4 cursor-pointer">
                     <div className="w-12 h-12 relative">
                         {/* Dynamic Logo Color - simplified approach: use CSS filter or separate SVGs if strictly needed. 
                             For now, assuming logo.svg is white/black capable or we invert it.
@@ -30,19 +39,19 @@ export default function Navbar() {
                         />
                     </div>
                     <span className="font-clash text-2xl font-medium tracking-wide">Big<span className="text-[17px]">x</span>Bang</span>
-                </div>
+                </Link>
 
                 {/* RIGHT: CONTROLS */}
                 <div className="pointer-events-auto flex items-center gap-6">
 
                     {/* Pill Button */}
-                    <a
+                    <Link
                         href="/rendez-vous"
                         className={`hidden md:flex items-center gap-2 h-10 px-5 rounded-full font-medium text-xs transition-colors duration-200 ${isLight ? 'bg-black text-white hover:bg-gray-800' : 'bg-white text-black hover:bg-gray-200'}`}
                     >
                         <span>Talk to us</span>
                         <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                    </a>
+                    </Link>
 
                     {/* Animated Hamburger / Cross - FIXED SYMMETRY */}
                     <button
