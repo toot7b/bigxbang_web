@@ -25,21 +25,18 @@ export function BookingCalendar({ className }: { className?: string }) {
     const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
     // Form - Split Name fields + Company
-    // Removed phone from state since we don't ask for it
     const [formData, setFormData] = useState({ firstName: "", lastName: "", company: "", email: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Changing isSuccess (bool) to bookingData (object) to store API response
     const [bookingData, setBookingData] = useState<any>(null);
 
     // Helper to convert 12h "02:00 PM" -> 24h "14:00"
     const formatTime = (timeStr: string) => {
         try {
-            // Attempt to parse "hh:mm a" (e.g. 02:30 PM)
             const parsed = parse(timeStr, "hh:mm a", new Date());
             return format(parsed, "HH:mm");
         } catch (e) {
-            return timeStr; // Fallback if format doesn't match
+            return timeStr;
         }
     };
 
@@ -53,8 +50,6 @@ export function BookingCalendar({ className }: { className?: string }) {
         if (!selectedService || !selectedDate) return;
         setIsLoadingSlots(true);
         setSlots([]);
-
-        // When date is selected, switch to slots view automatically
         setView("slots");
 
         const dateStr = format(selectedDate, "dd-MMM-yyyy", { locale: enUS });
@@ -63,7 +58,6 @@ export function BookingCalendar({ className }: { className?: string }) {
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
-                    // Keep 30 min intervals
                     const filteredSlots = data.filter((_, i) => i % 2 === 0);
                     setSlots(filteredSlots);
                 } else {
@@ -73,18 +67,18 @@ export function BookingCalendar({ className }: { className?: string }) {
             .finally(() => setIsLoadingSlots(false));
     }, [selectedDate, selectedService]);
 
+    // Always generate 42 days (6 weeks) for consistent grid height
+    const startDate = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 1 });
     const days = eachDayOfInterval({
-        start: startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 1 }),
-        end: endOfWeek(endOfMonth(currentMonth), { weekStartsOn: 1 }),
+        start: startDate,
+        end: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 41),
     });
 
     const handleBooking = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Concatenate Name for Zoho (it expects 'name')
         const fullName = `${formData.firstName} ${formData.lastName}`.trim();
-        // Append Company to notes if present
         const notes = formData.company ? `Entreprise: ${formData.company}` : "";
 
         try {
@@ -96,7 +90,7 @@ export function BookingCalendar({ className }: { className?: string }) {
                     time: selectedSlot,
                     customer_name: fullName,
                     customer_email: formData.email,
-                    customer_phone: "0600000000", // Soft-coded dummy number to satisfy API Requirement
+                    customer_phone: "0600000000",
                     notes: notes
                 })
             });
@@ -104,19 +98,16 @@ export function BookingCalendar({ className }: { className?: string }) {
             const data = await res.json();
 
             if (data.success) {
-                // Store the response data to display meeting link
                 setBookingData(data.data.returnvalue);
             }
         } catch (e) { console.error(e); } finally { setIsSubmitting(false); }
     };
 
     if (bookingData) {
-        // Extract meeting link from either location (Zoho structure can vary)
         const joinLink = bookingData.meeting_info?.join_link || bookingData.zoho_meeting_info?.join_link;
 
         return (
-            <div className={cn("bg-[#0a0a0a]/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center text-center h-[600px]", className)}>
-                {/* Lottie Animation */}
+            <div className={cn("bg-[#0a0a0a]/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center text-center h-[644px]", className)}>
                 <div className="w-24 h-24 mb-6">
                     <Lottie animationData={successAnimation} loop={false} />
                 </div>
@@ -144,10 +135,10 @@ export function BookingCalendar({ className }: { className?: string }) {
     }
 
     return (
-        <div className={cn("bg-[#0a0a0a]/60 border border-white/10 rounded-2xl shadow-xl relative overflow-hidden group h-[600px] flex flex-col", className)}>
+        <div className={cn("bg-[#0a0a0a]/60 border border-white/10 rounded-2xl shadow-xl relative overflow-hidden group h-[644px] flex flex-col", className)}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#306EE8]/5 blur-[60px] rounded-full -z-10 group-hover:bg-[#306EE8]/10 transition-colors" />
 
-            {/* Content Container with fixed padding */}
+            {/* Content Container */}
             <div className="p-6 relative flex-1 flex flex-col">
                 <AnimatePresence mode="popLayout" initial={false}>
                     {view === "calendar" && (
@@ -158,49 +149,71 @@ export function BookingCalendar({ className }: { className?: string }) {
                             exit={{ x: -100, opacity: 0 }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         >
-                            {/* --- LEVEL 1: Main Title (Clash Display) --- */}
-                            <h3 className="font-clash text-3xl font-medium text-white mb-6">Réserver un créneau</h3>
+                            <h3 className="font-clash text-3xl font-medium text-white mb-6">Planifier un échange</h3>
 
-                            {/* --- LEVEL 2: Navigation (Jakarta) --- */}
-                            <div className="flex items-center justify-between mb-6 px-1">
-                                <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 hover:bg-white/5 rounded-full text-white/60 hover:text-white transition-colors"><ChevronLeft className="w-5 h-5" /></button>
-                                <span className="font-jakarta text-lg text-white capitalize font-medium tracking-wide">{format(currentMonth, "MMMM yyyy", { locale: fr })}</span>
-                                <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 hover:bg-white/5 rounded-full text-white/60 hover:text-white transition-colors"><ChevronRight className="w-5 h-5" /></button>
+                            <div className="flex items-center justify-between mb-6 px-1 h-10">
+                                <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 hover:bg-white/5 rounded-full text-white/60 hover:text-white transition-colors z-10"><ChevronLeft className="w-5 h-5" /></button>
+                                <div className="relative flex-1 flex justify-center overflow-hidden h-full items-center">
+                                    <AnimatePresence mode="popLayout" initial={false}>
+                                        <motion.span
+                                            key={currentMonth.toISOString()}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            transition={{ duration: 0.3, ease: "easeOut" }}
+                                            className="font-jakarta text-lg text-white capitalize font-medium tracking-wide absolute"
+                                        >
+                                            {format(currentMonth, "MMMM yyyy", { locale: fr })}
+                                        </motion.span>
+                                    </AnimatePresence>
+                                </div>
+                                <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 hover:bg-white/5 rounded-full text-white/60 hover:text-white transition-colors z-10"><ChevronRight className="w-5 h-5" /></button>
                             </div>
 
-                            {/* --- LEVEL 3: Grid Headers (Jakarta XS) --- */}
                             <div className="grid grid-cols-7 mb-2 text-center">
-                                {["l", "m", "m", "j", "v", "s", "d"].map(d => (
-                                    <div key={d} className="text-xs text-white/40 font-jakarta uppercase tracking-wider font-medium">{d}</div>
+                                {["l", "m", "m", "j", "v", "s", "d"].map((d, idx) => (
+                                    <div key={idx} className="text-xs text-white/40 font-jakarta uppercase tracking-wider font-medium">{d}</div>
                                 ))}
                             </div>
 
-                            {/* --- LEVEL 4: Grid Content (Jakarta SM) --- */}
-                            <div className="grid grid-cols-7 gap-3 mb-4 content-start flex-1">
-                                {days.map(day => {
-                                    const isCurrent = isSameMonth(day, currentMonth);
-                                    const isPast = isBefore(day, startOfToday());
-                                    const isSelected = selectedDate && isSameDay(day, selectedDate);
+                            <div className="relative flex-1">
+                                <AnimatePresence mode="popLayout" initial={false}>
+                                    <motion.div
+                                        key={currentMonth.toISOString() + "-grid"}
+                                        initial={{ opacity: 0, x: 10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -10 }}
+                                        transition={{ duration: 0.4, ease: "easeInOut" }}
+                                        className="grid grid-cols-7 gap-3 mb-4 content-start w-full"
+                                    >
+                                        {days.map(day => {
+                                            const isCurrent = isSameMonth(day, currentMonth);
+                                            const isPast = isBefore(day, startOfToday());
+                                            const isSelected = selectedDate && isSameDay(day, selectedDate);
+                                            const isTodayDate = isToday(day);
 
-                                    return (
-                                        <button
-                                            key={day.toString()}
-                                            onClick={() => !isPast && setSelectedDate(day)}
-                                            disabled={isPast}
-                                            className={cn(
-                                                "aspect-square rounded-full flex items-center justify-center text-sm font-jakarta transition-all duration-300 relative group/day",
-                                                !isCurrent && "invisible",
-                                                isPast && "text-white/20 line-through decoration-white/20 cursor-not-allowed",
-                                                // Unselected
-                                                !isPast && isCurrent && !isSelected && "text-white/70 hover:bg-white/10 hover:text-white hover:scale-110",
-                                                // Selected
-                                                isSelected && "bg-[#306EE8] text-white shadow-[0_0_20px_rgba(48,110,232,0.4)] scale-110 font-bold z-10"
-                                            )}
-                                        >
-                                            {format(day, "d")}
-                                        </button>
-                                    );
-                                })}
+                                            return (
+                                                <button
+                                                    key={day.toString()}
+                                                    onClick={() => !isPast && isCurrent && setSelectedDate(day)}
+                                                    disabled={isPast || !isCurrent}
+                                                    className={cn(
+                                                        "aspect-square rounded-full flex items-center justify-center text-sm font-jakarta transition-colors transition-transform duration-300 relative group/day",
+                                                        !isCurrent && "text-white/20 cursor-default",
+                                                        isPast && isCurrent && "text-white/20 line-through decoration-white/20 cursor-not-allowed",
+                                                        !isPast && isCurrent && !isSelected && "text-white/70 hover:bg-white/10 hover:text-white hover:scale-110",
+                                                        isSelected && "bg-[#306EE8] text-white shadow-[0_0_20px_rgba(48,110,232,0.4)] scale-110 font-bold z-10"
+                                                    )}
+                                                >
+                                                    {format(day, "d")}
+                                                    {isTodayDate && !isSelected && (
+                                                        <span className="absolute bottom-1.5 w-1 h-1 bg-[#306EE8] rounded-full" />
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </motion.div>
+                                </AnimatePresence>
                             </div>
                         </motion.div>
                     )}
@@ -218,7 +231,6 @@ export function BookingCalendar({ className }: { className?: string }) {
                                 <button onClick={() => setView("calendar")} className="p-2 -ml-2 hover:bg-white/5 rounded-full text-white/60 hover:text-white transition-colors">
                                     <ArrowLeft className="w-5 h-5" />
                                 </button>
-                                {/* Downgraded to Jakarta for consistency in sub-views */}
                                 <h3 className="font-jakarta text-xl font-medium text-white capitalize">
                                     {selectedDate && format(selectedDate, "EEEE d MMMM", { locale: fr })}
                                 </h3>
@@ -243,7 +255,8 @@ export function BookingCalendar({ className }: { className?: string }) {
                                     </div>
                                 ) : (
                                     <div className="flex-1 flex flex-col items-center justify-center text-white/30 text-center gap-4">
-                                        <p className="font-jakarta text-sm">Aucun créneau disponible ce jour.</p>
+                                        <p className="font-jakarta text-sm">Oups, ce jour est complet !</p>
+                                        <p className="font-jakarta text-xs text-white/40">Essayez un autre créneau ou contactez-nous directement.</p>
                                         <button onClick={() => setView("calendar")} className="text-[#306EE8] underline text-sm font-jakarta hover:text-[#306EE8]/80">Choisir une autre date</button>
                                     </div>
                                 )
@@ -265,7 +278,6 @@ export function BookingCalendar({ className }: { className?: string }) {
                                     <ArrowLeft className="w-5 h-5" />
                                 </button>
                                 <div>
-                                    {/* Downgraded to Jakarta for consistency */}
                                     <h3 className="font-jakarta text-xl font-medium text-white">Finaliser</h3>
                                     <p className="text-xs text-[#306EE8] font-jakarta mt-0.5 font-medium">{selectedSlot && formatTime(selectedSlot)} - {selectedDate && format(selectedDate, "d MMMM", { locale: fr })}</p>
                                 </div>

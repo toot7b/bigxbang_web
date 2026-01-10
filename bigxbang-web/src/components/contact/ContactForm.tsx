@@ -24,7 +24,7 @@ export function ContactForm({ className }: { className?: string }) {
     };
 
     if (isSuccess) return (
-        <div className={cn("bg-[#0a0a0a]/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center text-center h-[600px]", className)}>
+        <div className={cn("bg-[#0a0a0a]/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center text-center h-[644px]", className)}>
             <div className="w-24 h-24 mb-6">
                 <Lottie animationData={successAnimation} loop={false} />
             </div>
@@ -42,10 +42,10 @@ export function ContactForm({ className }: { className?: string }) {
     );
 
     return (
-        <div className={cn("bg-[#0a0a0a]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col h-[600px]", className)}>
+        <div className={cn("bg-[#0a0a0a]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col h-[644px]", className)}>
             <h3 className="font-clash text-3xl font-medium text-white mb-6">Nous écrire</h3>
             <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-4">
-                <input required placeholder="Nom & Entreprise" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#306EE8] outline-none text-sm placeholder:text-white/30" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                <input required placeholder="Nom & Entreprise" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#306EE8] focus:bg-[#306EE8]/5 outline-none text-sm placeholder:text-white/30" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                 <div className="grid grid-cols-2 gap-4">
                     <input required type="email" placeholder="Email" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#306EE8] outline-none text-sm placeholder:text-white/30" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
                     <input type="tel" placeholder="Téléphone" className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#306EE8] outline-none text-sm placeholder:text-white/30" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
