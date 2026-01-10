@@ -37,9 +37,7 @@ export default function Navbar() {
 
                     {/* Pill Button */}
                     <a
-                        href="https://calendar.app.google/qk7pa13Mu3fP3ex16"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href="/rendez-vous"
                         className={`hidden md:flex items-center gap-2 h-10 px-5 rounded-full font-medium text-xs transition-colors duration-200 ${isLight ? 'bg-black text-white hover:bg-gray-800' : 'bg-white text-black hover:bg-gray-200'}`}
                     >
                         <span>Talk to us</span>

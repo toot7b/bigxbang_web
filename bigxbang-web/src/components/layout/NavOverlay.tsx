@@ -4,10 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
 const NAV_LINKS = [
-    { label: "Problème", href: "#probleme" },
-    { label: "Méthode", href: "#methode" },
-    { label: "Services", href: "#services" },
-    { label: "Manifesto", href: "#manifesto" },
+    { label: "Problème", href: "/#probleme" },
+    { label: "Méthode", href: "/#methode" },
+    { label: "Services", href: "/#services" },
+    { label: "Manifesto", href: "/#manifesto" },
+    { label: "Contact", href: "/rendez-vous" },
 ];
 
 export default function NavOverlay({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -96,7 +97,7 @@ export default function NavOverlay({ isOpen, onClose }: { isOpen: boolean; onClo
                                 <a href="#" className="hover:text-white transition-colors text-sm uppercase tracking-wider">LinkedIn</a>
                                 <a href="mailto:contact@studio.com" className="hover:text-white transition-colors text-sm uppercase tracking-wider">Mail</a>
                                 <a href="#" className="hover:text-white transition-colors text-sm uppercase tracking-wider">Instagram</a>
-                                <a href="/legal" className="hover:text-white transition-colors text-sm uppercase tracking-wider">Legal</a>
+                                <a href="/legal" onClick={onClose} className="hover:text-white transition-colors text-sm uppercase tracking-wider text-gray-500">Legal</a>
                             </div>
                         </motion.div>
 
