@@ -117,6 +117,12 @@ export default function Method() {
 
             {/* GLOBAL BACKGROUNDS (Fixed) */}
             <div className="absolute inset-0 pointer-events-none z-0">
+                {/* Deep Top Gradient for Section Continuity - Progressive Fade */}
+                <div className="absolute top-0 left-0 w-full h-80 bg-gradient-to-b from-black via-black/60 to-transparent z-20"></div>
+
+                {/* Deep Bottom Gradient for Next Section Continuity */}
+                <div className="absolute bottom-0 left-0 w-full h-80 bg-gradient-to-t from-black via-black/60 to-transparent z-20"></div>
+
                 {/* LINEAR RHYTHM GRADIENT (Blue at steps, Black in between) */}
                 <div
                     className="absolute inset-0 z-0 opacity-40"
@@ -234,11 +240,6 @@ export default function Method() {
 
             </div>
 
-            {/* DEBUG HUD - REMOVE BEFORE PRODUCTION */}
-            <div className="fixed bottom-4 right-4 z-50 bg-black/80 border border-white/20 p-4 rounded-lg font-mono text-xs text-[#306EE8]">
-                <div>SCROLL: {(scrollProgress * 100).toFixed(1)}%</div>
-                <div>STEP: {activeStep + 1}</div>
-            </div>
         </section>
     );
 }
