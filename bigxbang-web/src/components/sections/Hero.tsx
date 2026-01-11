@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import "@/styles/horizon.css";
 import Asterisk from "@/components/ui/Asterisk";
+import { GradientButton } from "@/components/ui/gradient-button";
+import { Link } from "next-view-transitions";
 
 export default function Hero() {
     const heroRef = useRef<HTMLDivElement>(null);
@@ -117,9 +119,9 @@ export default function Hero() {
                     </p>
 
                     <div className="mt-8">
-                        <button className="btn-shiny text-lg">
-                            Je contacte
-                        </button>
+                        <Link href="/rendez-vous">
+                            <GradientButton hoverText="C'est parti">Lancer mon projet</GradientButton>
+                        </Link>
                     </div>
                 </div>
             </div>

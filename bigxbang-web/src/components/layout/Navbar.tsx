@@ -7,6 +7,7 @@ import NavOverlay from "./NavOverlay";
 import { useSectionTheme } from "@/hooks/useSectionTheme";
 
 import { Link } from "next-view-transitions";
+import { GradientButton } from "@/components/ui/gradient-button";
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,12 +46,13 @@ export default function Navbar() {
                 <div className="pointer-events-auto flex items-center gap-6">
 
                     {/* Pill Button */}
-                    <Link
-                        href="/rendez-vous"
-                        className={`hidden md:flex items-center gap-2 h-10 px-5 rounded-full font-medium text-xs transition-colors duration-200 ${isLight ? 'bg-black text-white hover:bg-gray-800' : 'bg-white text-black hover:bg-gray-200'}`}
-                    >
-                        <span>Talk to us</span>
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                    <Link href="/rendez-vous" className="hidden md:block">
+                        <GradientButton
+                            hoverText="C'est parti"
+                            className="px-5 py-2 text-xs h-auto min-h-0"
+                        >
+                            Contact
+                        </GradientButton>
                     </Link>
 
                     {/* Animated Hamburger / Cross - FIXED SYMMETRY */}

@@ -392,6 +392,47 @@ body {
   }
 }
 
+/* --- CTA Button (Modern) --- */
+.cta-button {
+  /* Base: Platinum */
+  background: #F0F0F0;
+  color: #000000;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  border: none;
+  border-radius: 16px;
+  padding: 0.75rem 1.75rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
+}
+
+/* Blue fill layer */
+.cta-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #306EE8;
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: inherit;
+}
+
+/* Hover: Blue fills, text white */
+.cta-button:hover {
+  color: #FFFFFF;
+  box-shadow: 0 8px 30px rgba(48, 110, 232, 0.35);
+  transform: translateY(-2px);
+}
+
+.cta-button:hover::before {
+  transform: scaleX(1);
+}
+
 /* CTA Impact Animations */
 @keyframes scalePulse {
   0% {

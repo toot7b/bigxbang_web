@@ -21,7 +21,7 @@ interface Point {
 // --- Data: The 6 Major Problems ---
 const STARS: Point[] = [
     { id: 1, x: 5, y: 70, label: "Temps Perdu", description: "Des heures gaspillées sur des tâches répétitives." },
-    { id: 2, x: 22, y: 20, label: "Complexité", description: "Une stack technique devenue ingérable." },
+    { id: 2, x: 22, y: 20, label: "Complexité", description: "Une stack technique devenue ingérable.", labelPos: "top" },
     { id: 3, x: 35, y: 55, label: "Déshumanisation", description: "L'humain s'efface derrière les process." },
     { id: 4, x: 58, y: 80, label: "Coûts Cachés", description: "Abonnements et maintenance qui s'accumulent." },
     { id: 5, x: 64, y: 35, label: "Stress", description: "La peur constante que tout casse.", labelPos: "top" },
@@ -42,11 +42,13 @@ export default function Problem() {
     const constellationRef = useRef<HTMLDivElement>(null);
     const starsRef = useRef<(HTMLDivElement | null)[]>([]);
     const linesRef = useRef<(SVGLineElement | null)[]>([]);
+    const shockwavesRef = useRef<(HTMLDivElement | null)[]>([]);
     const bgStarsRef = useRef<HTMLDivElement>(null);
     const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+    const [visitedStars, setVisitedStars] = useState<Set<number>>(new Set());
 
     const hasInteractedRef = useRef(false); // To track first interaction
-    const scrollHintRef = useRef<HTMLDivElement>(null);
+
 
     // --- 1. Background Stars Animation (Organic & Dense) ---
     useEffect(() => {
@@ -94,17 +96,7 @@ export default function Problem() {
                     toggleActions: "play none none reverse"
                 },
                 onComplete: () => {
-                    // Fail-safe: Only trigger hint after timeline is 100% DONE
-                    gsap.delayedCall(2, () => {
-                        if (scrollHintRef.current) {
-                            gsap.to(scrollHintRef.current, {
-                                autoAlpha: 1,
-                                y: 0,
-                                duration: 1,
-                                ease: "power2.out"
-                            });
-                        }
-                    });
+                    // Timeline complete
                 }
             });
 
@@ -113,7 +105,6 @@ export default function Problem() {
             // Change: Start slightly smaller and blurry for "optical focus" effect (Subtle)
             gsap.set(starsRef.current, { autoAlpha: 0, scale: 0.8, filter: "blur(8px)" });
             gsap.set(linesRef.current, { opacity: 0 }); // DrawSVG removed - using strokeDashoffset instead
-            if (scrollHintRef.current) gsap.set(scrollHintRef.current, { autoAlpha: 0, y: 20 });
 
             // Sequential Reveal: Star -> Line -> Star -> Line
             starsRef.current.forEach((star, i) => {
@@ -147,7 +138,7 @@ export default function Problem() {
                 }
             });
 
-            // 3. Scroll Hint (Handled in onComplete above)
+            // 3. Scroll Hint (Handled in onComplete above) -> Removed
 
         }, containerRef);
         return () => ctx.revert();
@@ -159,9 +150,9 @@ export default function Problem() {
             starsRef.current.forEach((star, i) => {
                 if (star) {
                     gsap.to(star, {
-                        y: `random(-15, 15)`,
-                        x: `random(-10, 10)`,
-                        duration: `random(6, 10)`,
+                        y: `random(-10, 10)`,
+                        x: `random(-8, 8)`,
+                        duration: `random(15, 25)`,
                         repeat: -1,
                         yoyo: true,
                         ease: "sine.inOut",
@@ -173,6 +164,7 @@ export default function Problem() {
             const updateLines = () => {
                 if (!constellationRef.current) return;
                 const parentRect = constellationRef.current.getBoundingClientRect();
+                const NODE_RADIUS = 24; // 48px / 2
 
                 CONNECTIONS.forEach((pair, i) => {
                     const line = linesRef.current[i];
@@ -182,15 +174,29 @@ export default function Problem() {
                     if (line && startStar && endStar) {
                         const startRect = startStar.getBoundingClientRect();
                         const endRect = endStar.getBoundingClientRect();
-                        const startX = startRect.left - parentRect.left + startRect.width / 2;
-                        const startY = startRect.top - parentRect.top + startRect.height / 2;
-                        const endX = endRect.left - parentRect.left + endRect.width / 2;
-                        const endY = endRect.top - parentRect.top + endRect.height / 2;
 
-                        line.setAttribute("x1", `${startX}`);
-                        line.setAttribute("y1", `${startY}`);
-                        line.setAttribute("x2", `${endX}`);
-                        line.setAttribute("y2", `${endY}`);
+                        // Centers relative to SVG container
+                        const c1x = startRect.left - parentRect.left + startRect.width / 2;
+                        const c1y = startRect.top - parentRect.top + startRect.height / 2;
+                        const c2x = endRect.left - parentRect.left + endRect.width / 2;
+                        const c2y = endRect.top - parentRect.top + endRect.height / 2;
+
+                        // Calculate Angle
+                        const angle = Math.atan2(c2y - c1y, c2x - c1x);
+
+                        // Offset points to stop at the Radius (Blue Ring)
+                        // Start point moves OUT towards End
+                        const x1 = c1x + Math.cos(angle) * NODE_RADIUS;
+                        const y1 = c1y + Math.sin(angle) * NODE_RADIUS;
+
+                        // End point moves IN towards Start
+                        const x2 = c2x - Math.cos(angle) * NODE_RADIUS;
+                        const y2 = c2y - Math.sin(angle) * NODE_RADIUS;
+
+                        line.setAttribute("x1", `${x1}`);
+                        line.setAttribute("y1", `${y1}`);
+                        line.setAttribute("x2", `${x2}`);
+                        line.setAttribute("y2", `${y2}`);
                     }
                 });
             };
@@ -219,8 +225,9 @@ export default function Problem() {
                 }
             });
 
+            // Only animate geometry/strokeWidth on hover. 
+            // Color is persistent via React state/props loop, but we trigger a width pulse.
             gsap.to(connectedLines, {
-                stroke: "rgba(255, 255, 255, 0.8)",
                 strokeWidth: 2,
                 duration: 0.3,
             });
@@ -247,8 +254,8 @@ export default function Problem() {
         }, containerRef);
 
         return () => {
+            // Revert strokeWidth only; keep color if visited logic handles it
             gsap.to(linesRef.current, {
-                stroke: "rgba(255, 255, 255, 0.2)",
                 strokeWidth: 1,
                 duration: 0.3,
             });
@@ -311,104 +318,117 @@ export default function Problem() {
             </div>
 
             {/* Constellation Container */}
-            <div ref={constellationRef} className="relative w-full max-w-6xl aspect-[16/9] md:aspect-[2.5/1] z-10 -mt-12">
+            <div ref={constellationRef} className="relative w-full max-w-6xl aspect-[16/9] md:aspect-[2.5/1] z-10 mt-0">
 
                 {/* SVG Connections Layer */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
-                    {CONNECTIONS.map(([start, end], i) => (
-                        <line
-                            key={`${start}-${end}`}
-                            ref={(el) => { linesRef.current[i] = el; }}
-                            stroke="rgba(255, 255, 255, 0.2)"
-                            strokeWidth="1"
-                            className="transition-colors duration-300"
-                        />
-                    ))}
+                    {CONNECTIONS.map(([start, end], i) => {
+                        // Check if the source star has been visited. ID = STARS[start].id
+                        const isLineActive = visitedStars.has(STARS[start].id);
+                        return (
+                            <line
+                                key={`${start}-${end}`}
+                                ref={(el) => { linesRef.current[i] = el; }}
+                                stroke={isLineActive ? "rgba(48, 110, 232, 0.8)" : "rgba(255, 255, 255, 0.2)"}
+                                strokeWidth="1"
+                                strokeLinecap="round" // Clean caps
+                                className="transition-colors duration-500"
+                            />
+                        );
+                    })}
                 </svg>
 
                 {/* Stars Nodes */}
-                {STARS.map((star, i) => (
-                    <div
-                        key={star.id}
-                        ref={(el) => { starsRef.current[i] = el; }}
-                        className="absolute group cursor-pointer"
-                        style={{
-                            left: `${star.x}%`,
-                            top: `${star.y}%`,
-                            transform: 'translate(-50%, -50%)'
-                        }}
-                        onMouseEnter={() => {
-                            setHoveredStar(star.id);
-                            if (i === 0) {
-                                // Only set interacted if not already done
-                                if (!hasInteractedRef.current) {
-                                    hasInteractedRef.current = true;
-                                    // Force re-render to remove halo
-                                    setHoveredStar(null);
-                                    setTimeout(() => setHoveredStar(star.id), 0);
+                {STARS.map((star, i) => {
+                    const isVisited = visitedStars.has(star.id);
+                    return (
+                        <div
+                            key={star.id}
+                            ref={(el) => { starsRef.current[i] = el; }}
+                            className="absolute group cursor-pointer"
+                            style={{
+                                left: `${star.x}%`,
+                                top: `${star.y}%`,
+                                transform: 'translate(-50%, -50%)'
+                            }}
+                            onMouseEnter={() => {
+                                setHoveredStar(star.id);
+                                setVisitedStars(prev => new Set(prev).add(star.id));
+                                if (i === 0) {
+                                    // Only set interacted if not already done
+                                    if (!hasInteractedRef.current) {
+                                        hasInteractedRef.current = true;
+                                        // Force re-render to remove halo
+                                        setHoveredStar(null);
+                                        setTimeout(() => setHoveredStar(star.id), 0);
+                                    }
                                 }
-                            }
-                        }}
-                        onMouseLeave={() => setHoveredStar(null)}
-                    >
-                        {/* The Star (Asterisk) */}
-                        <div className="relative flex items-center justify-center">
-                            {/* Glow behind */}
-                            <div className="absolute inset-0 bg-white/20 blur-xl rounded-full scale-0 group-hover:scale-150 transition-transform duration-500"></div>
 
-                            {/* Guidance Glow - First Star Only */}
-                            {i === 0 && !hasInteractedRef.current && (
+                                // Trigger Shockwave Animation (One-off)
+                                const shockwave = shockwavesRef.current[i];
+                                if (shockwave) {
+                                    gsap.fromTo(shockwave,
+                                        { scale: 1, opacity: 0.6, borderColor: "#306EE8" },
+                                        { scale: 2.5, opacity: 0, duration: 1.2, ease: "power2.out" }
+                                    );
+                                }
+                            }}
+                            onMouseLeave={() => setHoveredStar(null)}
+                        >
+                            {/* The Star (Asterisk) - NEW DESIGN: Solid Ring Connector */}
+                            <div className="relative flex items-center justify-center w-12 h-12">
+
+                                {/* 1. Backdrop Glow (Atmosphere) */}
+                                <div className="absolute inset-0 bg-[#306EE8] blur-xl rounded-full scale-50 opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
+
+                                {/* 1.5 SHOCKWAVE RING (Hidden by default, animated by GSAP) */}
                                 <div
-                                    className="absolute inset-0 -z-10 bg-white blur-lg rounded-full scale-150 pointer-events-none"
-                                    style={{
-                                        animation: 'gentle-pulse 3s ease-in-out infinite',
-                                        opacity: 0.08
-                                    }}
+                                    ref={(el) => { shockwavesRef.current[i] = el; }}
+                                    className="absolute inset-0 rounded-full border border-[#306EE8] opacity-0 pointer-events-none"
                                 ></div>
-                            )}
 
-                            {/* The Icon */}
-                            <div className="relative z-10 p-2 transition-transform duration-300 group-hover:scale-110">
-                                <Asterisk className="w-6 h-6 md:w-8 md:h-8 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
-                            </div>
+                                {/* 2. Guidance Glow - First Star Only */}
+                                {i === 0 && !hasInteractedRef.current && (
+                                    <div
+                                        className="absolute inset-0 -z-10 rounded-full border border-white/60 animate-ping pointer-events-none"
+                                        style={{
+                                            animationDuration: '3s',
+                                            opacity: 0.2
+                                        }}
+                                    ></div>
+                                )}
 
-                            {/* Label & Description (Tooltip-like) */}
-                            <div className={cn(
-                                "absolute left-1/2 -translate-x-1/2 mt-4 pt-2 w-48 text-center pointer-events-none transition-all duration-300",
-                                "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0",
-                                (star.labelPos === "top" || star.y > 80) ? "bottom-full mb-4 mt-0" : "top-full"
-                            )}>
-                                <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-xl">
-                                    <h3 className="font-clash text-sm font-medium text-white mb-1">{star.label}</h3>
-                                    <p className="font-jakarta text-xs text-gray-400 leading-tight">{star.description}</p>
+                                {/* 3. THE NODE (Solid Core + Blue Ring) */}
+                                <div className="relative z-10 w-full h-full rounded-full border border-[#306EE8]/30 group-hover:border-[#306EE8] group-hover:bg-[#306EE8] transition-all duration-300 flex items-center justify-center p-2.5">
+                                    <Asterisk className="w-full h-full text-white/60 group-hover:text-white transition-colors duration-300" />
+                                </div>
+
+                                {/* Label & Description (Tooltip-like) */}
+                                <div className={cn(
+                                    "absolute left-1/2 -translate-x-1/2 mt-4 pt-2 w-48 text-center pointer-events-none transition-all duration-300 z-50",
+                                    "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0",
+                                    (star.labelPos === "top" || star.y > 80) ? "bottom-full mb-4 mt-0" : "top-full"
+                                )}>
+                                    <div className="bg-black/80 backdrop-blur-md border border-[#306EE8]/20 rounded-xl p-3 shadow-xl">
+                                        <h3 className="font-clash text-sm font-medium text-white mb-1">{star.label}</h3>
+                                        <p className="font-jakarta text-xs text-gray-400 leading-tight">{star.description}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Static Label (Always visible but subtle) */}
-                        <div className={cn(
-                            "absolute left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap pointer-events-none transition-opacity duration-300",
-                            "opacity-60 group-hover:opacity-0", // Hide when tooltip appears
-                            (star.labelPos === "top" || star.y > 80) ? "bottom-full mb-8" : "top-full mt-8"
-                        )}>
-                            <span className="font-clash text-xs tracking-widest uppercase text-gray-500">{star.label}</span>
+                            {/* Static Label (Always visible but subtle) */}
+                            <div className={cn(
+                                "absolute left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap pointer-events-none transition-opacity duration-300",
+                                "opacity-60 group-hover:opacity-0", // Hide when tooltip appears
+                                (star.labelPos === "top" || star.y > 80) ? "bottom-full mb-8" : "top-full mt-2"
+                            )}>
+                                <span className="font-clash text-xs tracking-widest uppercase text-gray-500">{star.label}</span>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
-            {/* Scroll Hint */}
-            <div
-                ref={scrollHintRef}
-                className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 opacity-0 translate-y-4 invisible"
-            >
-                <div className="flex flex-col items-center gap-2">
-                    <span className="font-jakarta text-[10px] uppercase tracking-widest text-gray-500">Scrollez</span>
-                    <div className="w-4 h-7 border-[1.5px] border-gray-500/30 rounded-full flex items-start justify-center p-1">
-                        <div className="w-0.5 h-1.5 bg-gray-500/50 rounded-full animate-bounce"></div>
-                    </div>
-                </div>
-            </div>
         </section>
     );
 }
