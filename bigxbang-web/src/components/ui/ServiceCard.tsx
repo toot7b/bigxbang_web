@@ -6,6 +6,8 @@ import { TechScanner, ScannerState } from "./TechScanner";
 import { MagneticWebsite } from "@/components/ui/MagneticWebsite";
 import { AutomationNetwork } from "@/components/ui/AutomationNetwork";
 import { DNAHelix } from "@/components/ui/DNAHelix";
+import { GradientButton } from "@/components/ui/gradient-button";
+import { Link } from "next-view-transitions";
 import Asterisk from "./Asterisk";
 
 // Generate sparkle particles data (deterministic structure, random values)
@@ -48,6 +50,7 @@ export interface ServiceCardProps {
     scannerState?: ScannerState;
     // Callbacks
     onTabChange?: (id: number) => void;
+    onDetailsClick?: (id: number) => void;
 }
 
 export const ServiceCard = ({
@@ -63,7 +66,8 @@ export const ServiceCard = ({
     textRef,
     scannerRef,
     scannerState,
-    onTabChange
+    onTabChange,
+    onDetailsClick
 }: ServiceCardProps) => {
     // Generate sparkles only on client-side to avoid hydration mismatch
     const [sparkles, setSparkles] = useState<SparkleParticle[]>([]);
@@ -75,13 +79,13 @@ export const ServiceCard = ({
     return (
         <div
             className={cn(
-                "group relative w-full max-w-6xl flex flex-col rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl transition-all duration-500 shadow-[0_25px_50px_-12px_rgba(0,0,0,1),_0_0_0_1px_rgba(255,255,255,0.15),_30px_0_60px_-10px_rgba(48,110,232,0.2)] hover:shadow-[0_45px_90px_-15px_rgba(0,0,0,1),_0_0_0_1px_rgba(255,255,255,0.3),_0_0_100px_0_rgba(48,110,232,0.25)]",
+                "group/card relative w-full max-w-6xl flex flex-col rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl transition-all duration-500 shadow-[0_25px_50px_-12px_rgba(0,0,0,1),_0_0_0_1px_rgba(255,255,255,0.15),_30px_0_60px_-10px_rgba(48,110,232,0.2)] hover:shadow-[0_45px_90px_-15px_rgba(0,0,0,1),_0_0_0_1px_rgba(255,255,255,0.3),_0_0_100px_0_rgba(48,110,232,0.25)]",
                 className
             )}
         >
             {/* HOVER PARTICLES (Sparkles) - Generated client-side only */}
             {sparkles.length > 0 && (
-                <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-0 group-hover/card:opacity-100 transition-opacity duration-700">
                     {sparkles.map((sparkle, i) => (
                         <div
                             key={i}
@@ -264,12 +268,30 @@ export const ServiceCard = ({
                         </div>
                     )}
 
-                    {/* CTA BUTTON */}
-                    <button className="mt-auto px-6 py-3 bg-[#306EE8] hover:bg-[#4080ff] text-white font-jakarta font-medium text-sm rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_rgba(48,110,232,0.4)]">
-                        En savoir plus
-                    </button>
+                    {/* CTA BUTTONS - Same as Method section */}
+                    <div className="mt-auto flex items-center gap-3">
+                        {/* Primary CTA */}
+                        <Link href="/rendez-vous">
+                            <GradientButton
+                                hoverText="C'est parti"
+                                className="px-5 py-2.5 text-sm min-w-[150px]"
+                            >
+                                Lancer mon projet
+                            </GradientButton>
+                        </Link>
+
+                        {/* Secondary CTA - Opens Service Details Overlay */}
+                        <GradientButton
+                            onClick={() => onDetailsClick?.(id)}
+                            hoverText="C'est parti"
+                            variant="ghost"
+                            className="px-5 py-2.5 text-sm min-w-[150px] bg-[rgba(48,110,232,0.15)]"
+                        >
+                            En savoir plus
+                        </GradientButton>
+                    </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

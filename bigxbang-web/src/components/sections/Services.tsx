@@ -7,6 +7,9 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { ScannerState } from "@/components/ui/TechScanner";
 import { ElectricCircuitOverlay } from "@/components/ui/ElectricCircuitOverlay";
+import { motion, AnimatePresence } from "framer-motion";
+import { useLenis } from "lenis/react";
+import ServiceDetails from "@/components/services/ServiceDetails";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -82,6 +85,10 @@ export default function Services() {
     const [activeData, setActiveData] = useState(SERVICES_DATA[0]);
     // STATE for Scanner Visuals
     const [scannerState, setScannerState] = useState(ScannerState.IDLE);
+    // STATE for Service Details Overlay
+    const [openServiceId, setOpenServiceId] = useState<number | null>(null);
+    // Lenis for scroll lock
+    const lenis = useLenis();
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -232,60 +239,95 @@ export default function Services() {
         });
     };
 
+    // Handle Details Click -> Open Service Overlay
+    const handleDetailsClick = (id: number) => {
+        setOpenServiceId(id);
+    };
+
+    // Lenis scroll lock when overlay is open
+    useEffect(() => {
+        if (openServiceId !== null) {
+            lenis?.stop();
+            document.body.style.overflow = 'hidden';
+        } else {
+            lenis?.start();
+            document.body.style.overflow = '';
+        }
+    }, [openServiceId, lenis]);
+
     return (
-        <section id="services" ref={sectionRef} data-theme="dark" className="relative z-20 w-full bg-black text-white py-20 overflow-hidden rounded-b-[60px]">
-            {/* GRADIENT BACKGROUND */}
-            <div className="absolute inset-0 pointer-events-none z-0">
-                {/* 1. MAIN LIGHT */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_110%_100%_at_bottom_left,_#306EE8_0%,_rgba(48,110,232,0.4)_55%,_#000000_100%)]" />
+        <>
+            <section id="services" ref={sectionRef} data-theme="dark" className="relative z-20 w-full bg-black text-white py-20 overflow-hidden rounded-b-[60px]">
+                {/* GRADIENT BACKGROUND */}
+                <div className="absolute inset-0 pointer-events-none z-0">
+                    {/* 1. MAIN LIGHT */}
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_110%_100%_at_bottom_left,_#306EE8_0%,_rgba(48,110,232,0.4)_55%,_#000000_100%)]" />
 
-                {/* 2. NOISE TEXTURE */}
-                <div className="absolute inset-0 opacity-[0.015] mix-blend-overlay"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-                />
+                    {/* 2. NOISE TEXTURE */}
+                    <div className="absolute inset-0 opacity-[0.015] mix-blend-overlay"
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                    />
 
-                {/* 3. ELECTRIC CIRCUIT OVERLAY */}
-                <ElectricCircuitOverlay className="z-10" />
-            </div>
-
-            {/* Header Area */}
-            <div className="relative z-20 flex flex-col items-center text-center max-w-4xl mx-auto px-4 mb-12 max-h-[15vh]">
-                <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
-                    <span className="font-jakarta text-xs font-medium text-white/80">Nos Artefacts</span>
+                    {/* 3. ELECTRIC CIRCUIT OVERLAY */}
+                    <ElectricCircuitOverlay className="z-10" />
                 </div>
-                <h2 className="font-clash text-3xl md:text-5xl font-medium text-white mb-6 leading-tight">
-                    L'Armurerie <span className="text-[#306EE8]">.</span>
-                </h2>
-                <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                    Une suite d'outils de haute technologie pour propulser votre business dans une nouvelle dimension.
-                    Choisissez votre équipement.
-                </p>
-            </div>
 
-            {/* MAIN TRANSITION AREA */}
-            <div ref={triggerRef} className="relative h-[80vh] w-full flex items-center justify-center">
+                {/* Header Area */}
+                <div className="relative z-20 flex flex-col items-center text-center max-w-4xl mx-auto px-4 mb-12 max-h-[15vh]">
+                    <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
+                        <span className="font-jakarta text-xs font-medium text-white/80">Nos Artefacts</span>
+                    </div>
+                    <h2 className="font-clash text-3xl md:text-5xl font-medium text-white mb-6 leading-tight">
+                        L'Armurerie <span className="text-[#306EE8]">.</span>
+                    </h2>
+                    <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                        Une suite d'outils de haute technologie pour propulser votre business dans une nouvelle dimension.
+                        Choisissez votre équipement.
+                    </p>
+                </div>
 
-                {/* Single Active Card */}
-                <ServiceCard
-                    id={activeData.id}
-                    title={activeData.title}
-                    subtitle={activeData.subtitle}
-                    description={activeData.description}
-                    features={activeData.features}
-                    stats={activeData.stats}
-                    color={activeData.color}
-                    // Ref Forwarding
-                    visualRef={visualRef}
-                    textRef={textRef}
-                    scannerRef={scannerRef}
-                    // State Forwarding
-                    scannerState={scannerState}
-                    // Callbacks
-                    onTabChange={handleTabClick}
-                />
+                {/* MAIN TRANSITION AREA */}
+                <div ref={triggerRef} className="relative h-[80vh] w-full flex items-center justify-center">
 
-            </div>
+                    {/* Single Active Card */}
+                    <ServiceCard
+                        id={activeData.id}
+                        title={activeData.title}
+                        subtitle={activeData.subtitle}
+                        description={activeData.description}
+                        features={activeData.features}
+                        stats={activeData.stats}
+                        color={activeData.color}
+                        // Ref Forwarding
+                        visualRef={visualRef}
+                        textRef={textRef}
+                        scannerRef={scannerRef}
+                        // State Forwarding
+                        scannerState={scannerState}
+                        // Callbacks
+                        onTabChange={handleTabClick}
+                        onDetailsClick={handleDetailsClick}
+                    />
 
-        </section>
+                </div>
+
+            </section>
+
+            {/* SERVICE DETAILS OVERLAY */}
+            <AnimatePresence>
+                {openServiceId !== null && (
+                    <motion.div
+                        initial={{ y: "100%" }}
+                        animate={{ y: "0%" }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        className="fixed inset-0 z-[200] overflow-y-auto bg-black"
+                        data-lenis-prevent
+                    >
+                        <ServiceDetails serviceId={openServiceId} mode="modal" onClose={() => setOpenServiceId(null)} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
     );
 }
