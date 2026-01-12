@@ -3,9 +3,12 @@
 import dynamic from "next/dynamic";
 import { Ripple } from "@/components/ui/Ripple";
 import { TimelineNode } from "@/components/ui/TimelineNode";
+import { GradientButton } from "@/components/ui/gradient-button";
+import { Link } from "next-view-transitions";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 // Dynamic imports for heavy WebGL components (speeds up compilation)
@@ -24,6 +27,8 @@ if (typeof window !== "undefined") {
 
 export default function Method() {
     const containerRef = useRef<HTMLDivElement>(null);
+    const cardRef = useRef<HTMLDivElement>(null);
+    const timelineRef = useRef<HTMLDivElement>(null);
     const [activeStep, setActiveStep] = useState(0);
     const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -101,10 +106,46 @@ export default function Method() {
                     setActiveStep(closestStep);
                 }
             });
+
+            // CTA Reveal Animation
+            if (cardRef.current && timelineRef.current) {
+                gsap.fromTo(cardRef.current,
+                    {
+                        autoAlpha: 0, // Handles opacity + visibility
+                        scale: 0.9,
+                        y: 50
+                    },
+                    {
+                        autoAlpha: 1,
+                        scale: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: "elastic.out(1, 0.75)", // Bouncy pop effect
+                        scrollTrigger: {
+                            trigger: timelineRef.current, // Anchor to the text column
+                            start: "bottom 85%", // Trigger when end of text is in view
+                            end: "bottom center",
+                            toggleActions: "play none none none", // Play once, don't reverse
+                            once: true // Extra safety: kill trigger after firing
+                        }
+                    }
+                );
+            }
         });
 
         return () => ctx.revert();
     }, []);
+
+    const handleShowCases = () => {
+        const casesSection = document.getElementById('case-studies');
+        if (casesSection) {
+            const targetY = casesSection.offsetTop + 870;
+            window.scrollTo({
+                top: targetY,
+                behavior: 'auto'
+            });
+        }
+    };
 
     return (
 
@@ -168,7 +209,7 @@ export default function Method() {
                 </div>
 
                 {/* RIGHT COLUMN: TEXT BLOCKS + TIMELINE */}
-                <div className="w-full md:w-1/2 flex flex-col relative ml-6 md:ml-0">
+                <div ref={timelineRef} className="w-full md:w-1/2 flex flex-col relative ml-6 md:ml-0">
 
                     {/* --- THE TIMELINE RAIL (Absolute Left) --- */}
                     {/* WIDER CONTAINER to allow Bloom/Glow to spill over. Center of beam is at layout x=0 */}
@@ -238,6 +279,34 @@ export default function Method() {
                     ))}
                 </div>
 
+            </div>
+
+            {/* CTA SECTION - Manifesto Blue-Glow Container */}
+            <div className="relative z-20 flex justify-center -mt-[20vh] pb-32 px-4 pointer-events-none">
+                <div
+                    ref={cardRef}
+                    className="pointer-events-auto flex flex-col md:flex-row items-center gap-6 p-4 rounded-3xl border border-[#306EE8]/30 bg-[radial-gradient(ellipse_at_center,rgba(48,110,232,0.15)_0%,rgba(255,255,255,0.05)_100%)] backdrop-blur-md shadow-[0_0_30px_rgba(48,110,232,0.1)] opacity-0"
+                >
+                    {/* Primary CTA */}
+                    <Link href="/rendez-vous">
+                        <GradientButton
+                            hoverText="C'est parti"
+                            className="px-8 py-4 text-base"
+                        >
+                            Lancer mon projet
+                        </GradientButton>
+                    </Link>
+
+                    {/* Secondary CTA - Ghost Variant of GradientButton */}
+                    <GradientButton
+                        onClick={handleShowCases}
+                        hoverText="C'est parti"
+                        variant="ghost"
+                        className="px-8 py-4 text-base"
+                    >
+                        En savoir plus
+                    </GradientButton>
+                </div>
             </div>
 
         </section>

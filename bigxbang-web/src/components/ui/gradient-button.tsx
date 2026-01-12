@@ -10,6 +10,7 @@ export interface GradientButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children: React.ReactNode
     hoverText?: string
+    variant?: "default" | "ghost"
 }
 
 /**
@@ -17,9 +18,10 @@ export interface GradientButtonProps
  * High-Contrast: White Base -> Blue Fill.
  * Text Swap: 'hoverText' scrambles in on hover.
  * centering: Uses "Phantom Spacer" technique for arrow.
+ * Variants: "default" (white bg) or "ghost" (transparent with border).
  */
 const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
-    ({ className, children, hoverText, ...props }, ref) => {
+    ({ className, children, hoverText, variant = "default", ...props }, ref) => {
         const buttonRef = useRef<HTMLButtonElement>(null)
         const [isHovered, setIsHovered] = useState(false)
 
@@ -36,16 +38,21 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
             setIsHovered(true)
         }
 
+        const isGhost = variant === "ghost"
+
         return (
             <motion.button
                 ref={ref || buttonRef}
                 className={cn(
                     "group relative inline-flex items-center justify-center cursor-pointer",
                     "px-6 py-3 rounded-full text-sm font-medium",
-                    "bg-white text-black",
+                    isGhost
+                        ? "bg-transparent border border-white/10 text-white/70"
+                        : "bg-white text-black",
                     "overflow-hidden transition-all duration-300",
-                    "shadow-[0_0_20px_rgba(255,255,255,0.15)]",
-                    "hover:shadow-[0_0_30px_rgba(48,110,232,0.5)]",
+                    isGhost
+                        ? "shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(48,110,232,0.5)]"
+                        : "shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(48,110,232,0.5)]",
                     className
                 )}
                 onMouseMove={updateMousePosition}
@@ -72,7 +79,10 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
                 />
 
                 {/* Content Layer - Uses "Phantom Spacer" logic */}
-                <span className="relative z-10 font-jakarta tracking-wide flex items-center gap-2 transition-all duration-300 translate-x-[12px] group-hover:translate-x-0">
+                <span className={cn(
+                    "relative z-10 font-jakarta tracking-wide flex items-center gap-2 transition-all duration-300",
+                    !isGhost && "translate-x-[12px] group-hover:translate-x-0"
+                )}>
                     {/* Text Container - Relative to hold the absolute text */}
                     <span className="relative flex items-center justify-center">
                         {/* 1. LAYOUT DRIVER (Phantom Spacer) - Invisible but takes up physical space
@@ -92,7 +102,7 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
                             <TextScramble
                                 className={cn(
                                     "font-medium transition-colors duration-200 whitespace-nowrap",
-                                    isHovered ? "text-white delay-100" : "text-black"
+                                    isHovered ? "text-white delay-100" : isGhost ? "text-white/70" : "text-black"
                                 )}
                                 as="span"
                                 trigger={true}
@@ -103,10 +113,12 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
                         </div>
                     </span>
 
-                    {/* Rocket - Phantom Spacer */}
-                    <Rocket
-                        className="w-4 h-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100 text-white"
-                    />
+                    {/* Rocket - Hidden for Ghost variant */}
+                    {!isGhost && (
+                        <Rocket
+                            className="w-4 h-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100 text-white"
+                        />
+                    )}
                 </span>
             </motion.button>
         )
