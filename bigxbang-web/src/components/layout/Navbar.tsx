@@ -50,6 +50,8 @@ export default function Navbar() {
                         <GradientButton
                             hoverText="C'est parti"
                             className="px-5 py-2 text-xs h-auto min-h-0"
+                            theme={theme}
+                            lightStyle="anthracite"
                         >
                             Contact
                         </GradientButton>
