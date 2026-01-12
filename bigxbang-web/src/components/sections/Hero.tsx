@@ -108,17 +108,26 @@ export default function Hero() {
             {/* Content */}
             <div className="relative z-30 text-center px-4 mb-16">
                 <div ref={textRef} className="flex flex-col items-center gap-6">
+                    <div className="flex flex-col items-center justify-center mb-3">
+                        <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] backdrop-blur-[2px]">
+                            <h3 className="font-jakarta text-[10px] md:text-xs font-medium text-white/50 uppercase tracking-[0.2em]">
+                                Sites web • Automatisation • Stratégie de marque
+                            </h3>
+                        </div>
+                    </div>
+
                     <h1 className="font-clash text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight leading-none">
                         Human <span className="text-[#306EE8]">Intelligence</span>
                         <span className="inline-block align-top ml-2 -mt-1 md:-mt-2">
                             <Asterisk className="hero-asterisk w-5 h-5 md:w-8 md:h-8 text-white" />
                         </span>
                     </h1>
-                    <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
-                        L'automatisation et l'IA sans perdre l'humanité.
-                    </p>
 
-                    <div className="mt-8">
+                    <h2 className="font-jakarta text-lg md:text-2xl text-gray-300 mt-6 max-w-4xl mx-auto font-normal leading-relaxed md:whitespace-nowrap">
+                        Façonner votre image, coder votre univers, libérer votre temps.
+                    </h2>
+
+                    <div className="mt-10">
                         <Link href="/rendez-vous">
                             <GradientButton hoverText="C'est parti">Lancer mon projet</GradientButton>
                         </Link>
