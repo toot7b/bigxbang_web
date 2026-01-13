@@ -124,8 +124,8 @@ export const ServiceCard = ({
                 <div className="flex-1 h-full flex items-end justify-center px-4 gap-2">
                     {[
                         { id: 1, label: "01. WEB" },
-                        { id: 2, label: "02. AUTO" },
-                        { id: 3, label: "03. CORE" }
+                        { id: 2, label: "02. TECH" },
+                        { id: 3, label: "03. BRAND" }
                     ].map((tab) => (
                         <div
                             key={tab.id}

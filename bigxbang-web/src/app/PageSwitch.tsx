@@ -47,9 +47,9 @@ const MOBILE_SERVICES = [
     title: "Expérience Web",
     description: "Le web n'est pas du papier. Oubliez les vitrines statiques. Nous concevons des interfaces immersives et réactives, taillées pour marquer les esprits. Pas juste pour afficher de l'information.",
     features: [
-      "Design sur-mesure et unique",
-      "Animations fluides et interactives",
-      "Optimisation SEO et performance"
+      "Design sans template",
+      "Interactions soignées",
+      "Performance & SEO"
     ],
   },
   {
@@ -58,9 +58,9 @@ const MOBILE_SERVICES = [
     title: "Solutions Techniques",
     description: "Les logiciels du marché ne font pas tout. Pour le reste, nous créons la réponse technique à vos contraintes.",
     features: [
-      "Intégration multi-plateformes",
-      "Workflows automatisés 24/7",
-      "Monitoring et alertes en temps réel"
+      "Développement sur-mesure",
+      "Connexions entre outils",
+      "Systèmes autonomes"
     ],
   },
   {
@@ -69,9 +69,9 @@ const MOBILE_SERVICES = [
     title: "Stratégie de Marque",
     description: "On ne code pas le flou. La puissance technique est vaine si le message est brouillé. Nous définissons votre singularité et votre discours pour que chaque interaction serve une intention claire.",
     features: [
-      "Logo et charte graphique",
-      "Univers visuel unique",
-      "Guidelines complètes"
+      "Positionnement marché",
+      "Identité visuelle",
+      "Ton & Discours"
     ],
   }
 ];
@@ -162,7 +162,7 @@ function MobileLanding() {
             Les Services
           </div>
           <h2 className="text-2xl font-clash font-semibold mt-3">
-            Le Triptyque Fondamental.
+            Le Triptyque Fondamental
           </h2>
           <p className="text-sm text-gray-400 mt-2">
             Nous ne sommes pas une agence 360°. Nous sommes spécialistes de trois domaines critiques qui ne devraient jamais être traités séparément.

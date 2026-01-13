@@ -21,9 +21,9 @@ const SERVICES_DATA = [
         description: "Le web n'est pas du papier. Oubliez les vitrines statiques. Nous concevons des interfaces immersives et réactives, taillées pour marquer les esprits. Pas juste pour afficher de l'information.",
         color: "#306EE8",
         features: [
-            "Design sur-mesure et unique",
-            "Animations fluides et interactives",
-            "Optimisation SEO et performance"
+            "Design sans template",
+            "Interactions soignées",
+            "Performance & SEO"
         ],
         stats: [
             { label: "Performance", value: 100 },
@@ -38,9 +38,9 @@ const SERVICES_DATA = [
         description: "Les logiciels du marché ne font pas tout. Pour le reste, nous créons la réponse technique à vos contraintes.",
         color: "#306EE8",
         features: [
-            "Intégration multi-plateformes",
-            "Workflows automatisés 24/7",
-            "Monitoring et alertes en temps réel"
+            "Développement sur-mesure",
+            "Connexions entre outils",
+            "Systèmes autonomes"
         ],
         stats: [
             { label: "Performance", value: 100 },
@@ -55,9 +55,9 @@ const SERVICES_DATA = [
         description: "On ne code pas le flou. La puissance technique est vaine si le message est brouillé. Nous définissons votre singularité et votre discours pour que chaque interaction serve une intention claire.",
         color: "#306EE8",
         features: [
-            "Logo et charte graphique",
-            "Univers visuel unique",
-            "Guidelines complètes"
+            "Positionnement marché",
+            "Identité visuelle",
+            "Ton & Discours"
         ],
         stats: [
             { label: "Performance", value: 80 },
@@ -278,7 +278,7 @@ export default function Services() {
                         <span className="font-jakarta text-xs font-medium text-white/80 uppercase tracking-wider">Les Services</span>
                     </div>
                     <h2 className="font-clash text-3xl md:text-5xl font-medium text-white mb-6 leading-tight">
-                        Le Triptyque <span className="text-[#306EE8]">Fondamental.</span>
+                        Le Triptyque <span className="text-[#306EE8]">Fondamental</span>
                     </h2>
                     <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
                         Nous ne sommes pas une agence 360°. Nous sommes spécialistes de trois domaines critiques qui ne devraient jamais être traités séparément.
