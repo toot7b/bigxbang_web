@@ -49,8 +49,8 @@ export interface ServiceCardProps {
     // Passed from Parent Controller
     scannerState?: ScannerState;
     // Callbacks
+    // Callbacks
     onTabChange?: (id: number) => void;
-    onDetailsClick?: (id: number) => void;
 }
 
 export const ServiceCard = ({
@@ -66,8 +66,7 @@ export const ServiceCard = ({
     textRef,
     scannerRef,
     scannerState,
-    onTabChange,
-    onDetailsClick
+    onTabChange
 }: ServiceCardProps) => {
     // Generate sparkles only on client-side to avoid hydration mismatch
     const [sparkles, setSparkles] = useState<SparkleParticle[]>([]);
@@ -269,26 +268,16 @@ export const ServiceCard = ({
                     )}
 
                     {/* CTA BUTTONS - Same as Method section */}
-                    <div className="mt-auto flex items-center gap-3">
+                    <div className="mt-auto w-full">
                         {/* Primary CTA */}
-                        <Link href="/rendez-vous">
+                        <Link href="/rendez-vous" className="w-full block">
                             <GradientButton
                                 hoverText="C'est parti"
-                                className="px-5 py-2.5 text-sm min-w-[150px]"
+                                className="w-full py-4 text-sm"
                             >
                                 Lancer mon projet
                             </GradientButton>
                         </Link>
-
-                        {/* Secondary CTA - Opens Service Details Overlay */}
-                        <GradientButton
-                            onClick={() => onDetailsClick?.(id)}
-                            hoverText="C'est parti"
-                            variant="ghost"
-                            className="px-5 py-2.5 text-sm min-w-[150px] bg-[rgba(48,110,232,0.15)]"
-                        >
-                            En savoir plus
-                        </GradientButton>
                     </div>
                 </div>
             </div>

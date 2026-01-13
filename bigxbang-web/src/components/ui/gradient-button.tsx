@@ -27,6 +27,8 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
     ({ className, children, hoverText, variant = "default", theme = "dark", lightStyle = "anthracite", ...props }, ref) => {
         const buttonRef = useRef<HTMLButtonElement>(null)
         const [isHovered, setIsHovered] = useState(false)
+        const [scale, setScale] = useState(0) // Start at 0
+        const [duration, setDuration] = useState(500)
 
         const updateMousePosition = (e: React.MouseEvent<HTMLButtonElement>) => {
             const rect = e.currentTarget.getBoundingClientRect()
@@ -38,6 +40,22 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
 
         const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
             updateMousePosition(e)
+
+            // Calculate exact scale needed to cover the button from any point (diagonal)
+            const rect = e.currentTarget.getBoundingClientRect()
+            const diagonal = Math.sqrt(rect.width ** 2 + rect.height ** 2)
+
+            // Diameter needs to be 2 * diagonal to be safe (covering from opposite corner)
+            // Base size is 20px
+            const newScale = (diagonal * 2) / 20
+            setScale(newScale)
+
+            // Calculate duration to maintain consistent visual speed
+            // Base: Scale 20 (~400px) takes 500ms.
+            // Ratio: 25ms per unit of scale.
+            const newDuration = Math.min(1500, Math.max(500, newScale * 25))
+            setDuration(newDuration)
+
             setIsHovered(true)
         }
 
@@ -92,17 +110,16 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
             >
                 {/* Magnetic Blue Fill Layer - Controlled by CSS Variables for instant response */}
                 <span
-                    className={cn(
-                        "absolute bg-[#306EE8] rounded-xl transition-transform duration-500 ease-out z-0 pointer-events-none",
-                        isHovered ? "scale-[20]" : "scale-0"
-                    )}
+                    className="absolute bg-[#306EE8] rounded-xl transition-transform ease-out z-0 pointer-events-none"
                     style={{
                         left: 'var(--x)',
                         top: 'var(--y)',
                         width: '20px',
                         height: '20px',
                         transformOrigin: 'center center',
-                        translate: '-50% -50%', // Centers the element on the coordinates
+                        translate: '-50% -50%',
+                        transform: isHovered ? `scale(${scale})` : 'scale(0)',
+                        transitionDuration: `${duration}ms`,
                     }}
                 />
 

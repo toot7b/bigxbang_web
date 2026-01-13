@@ -7,9 +7,8 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { ScannerState } from "@/components/ui/TechScanner";
 import { ElectricCircuitOverlay } from "@/components/ui/ElectricCircuitOverlay";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useLenis } from "lenis/react";
-import ServiceDetails from "@/components/services/ServiceDetails";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -85,8 +84,6 @@ export default function Services() {
     const [activeData, setActiveData] = useState(SERVICES_DATA[0]);
     // STATE for Scanner Visuals
     const [scannerState, setScannerState] = useState(ScannerState.IDLE);
-    // STATE for Service Details Overlay
-    const [openServiceId, setOpenServiceId] = useState<number | null>(null);
     // Lenis for scroll lock
     const lenis = useLenis();
 
@@ -239,22 +236,6 @@ export default function Services() {
         });
     };
 
-    // Handle Details Click -> Open Service Overlay
-    const handleDetailsClick = (id: number) => {
-        setOpenServiceId(id);
-    };
-
-    // Lenis scroll lock when overlay is open
-    useEffect(() => {
-        if (openServiceId !== null) {
-            lenis?.stop();
-            document.body.style.overflow = 'hidden';
-        } else {
-            lenis?.start();
-            document.body.style.overflow = '';
-        }
-    }, [openServiceId, lenis]);
-
     return (
         <>
             <section id="services" ref={sectionRef} data-theme="dark" className="relative z-20 w-full bg-black text-white py-20 overflow-hidden rounded-b-[60px]">
@@ -305,28 +286,13 @@ export default function Services() {
                         scannerState={scannerState}
                         // Callbacks
                         onTabChange={handleTabClick}
-                        onDetailsClick={handleDetailsClick}
                     />
 
                 </div>
 
             </section>
 
-            {/* SERVICE DETAILS OVERLAY */}
-            <AnimatePresence>
-                {openServiceId !== null && (
-                    <motion.div
-                        initial={{ y: "100%" }}
-                        animate={{ y: "0%" }}
-                        exit={{ y: "100%" }}
-                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
-                        className="fixed inset-0 z-[200] overflow-y-auto bg-black"
-                        data-lenis-prevent
-                    >
-                        <ServiceDetails serviceId={openServiceId} mode="modal" onClose={() => setOpenServiceId(null)} />
-                    </motion.div>
-                )}
-            </AnimatePresence>
+
         </>
     );
 }

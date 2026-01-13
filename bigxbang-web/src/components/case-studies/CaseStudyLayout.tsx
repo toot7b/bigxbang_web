@@ -24,13 +24,15 @@ interface CaseStudyLayoutProps {
     children: React.ReactNode;
     mode?: 'page' | 'modal';
     onClose?: () => void;
+    heroContent?: React.ReactNode;
 }
 
 export const CaseStudyLayout = ({
     meta,
     children,
     mode = 'page',
-    onClose
+    onClose,
+    heroContent
 }: CaseStudyLayoutProps) => {
     const headerRef = useRef<HTMLElement>(null);
     const lenis = useLenis();
@@ -132,6 +134,13 @@ export const CaseStudyLayout = ({
                             {meta.metrics.map((metric, index) => (
                                 <MetricCard key={index} number={metric.number} label={metric.label} />
                             ))}
+                        </div>
+                    )}
+
+                    {/* Custom Hero Content */}
+                    {heroContent && (
+                        <div className="mt-16 max-w-5xl mx-auto relative z-20">
+                            {heroContent}
                         </div>
                     )}
                 </div>
