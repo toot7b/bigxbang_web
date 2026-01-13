@@ -177,7 +177,7 @@ export const ServiceCard = ({
                     </div>
 
                     {/* VISUAL CONTENT WRAPPER */}
-                    <div ref={visualRef} className="relative w-full flex items-center justify-center overflow-hidden rounded-xl bg-[#020202] border border-white/10 shadow-[inner_0_0_40px_rgba(0,0,0,1),_0_0_0_1px_rgba(0,0,0,1)]">
+                    <div ref={visualRef} className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-xl bg-[#020202] border border-white/10 shadow-[inner_0_0_40px_rgba(0,0,0,1),_0_0_0_1px_rgba(0,0,0,1)]">
 
                         {/* --- CRT SCANLINES EFFECT --- */}
                         <style>
@@ -250,7 +250,7 @@ export const ServiceCard = ({
                     </h3>
 
                     {/* DESCRIPTION */}
-                    <p className="font-jakarta text-base text-gray-400 leading-relaxed mb-8 max-w-sm">
+                    <p className="font-jakarta text-base text-gray-400 leading-relaxed mb-4 max-w-sm min-h-[135px]">
                         {description}
                     </p>
 

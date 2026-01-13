@@ -18,7 +18,7 @@ const SERVICES_DATA = [
         id: 1,
         subtitle: "MODULE 01 // WEB",
         title: "Expérience Web",
-        description: "Une interface web immersive qui ne ressemble à rien de connu. Performance maximale, design liquide, impact immédiat.",
+        description: "Le web n'est pas du papier. Oubliez les vitrines statiques. Nous concevons des interfaces immersives et réactives, taillées pour marquer les esprits. Pas juste pour afficher de l'information.",
         color: "#306EE8",
         features: [
             "Design sur-mesure et unique",
@@ -33,9 +33,9 @@ const SERVICES_DATA = [
     },
     {
         id: 2,
-        subtitle: "MODULE 02 // AUTOMATION",
-        title: "Le Réseau",
-        description: "Connectez vos outils. Automatisez les tâches ingrates. Laissez la machine travailler pendant que vous dormez.",
+        subtitle: "MODULE 02 // TECH",
+        title: "Solutions Techniques",
+        description: "Les logiciels du marché ne font pas tout. Pour le reste, nous créons la réponse technique à vos contraintes.",
         color: "#306EE8",
         features: [
             "Intégration multi-plateformes",
@@ -51,8 +51,8 @@ const SERVICES_DATA = [
     {
         id: 3,
         subtitle: "MODULE 03 // BRAND",
-        title: "Identité de Marque",
-        description: "Créez une identité visuelle forte et cohérente. Du logo aux guidelines, tout ce qu'il faut pour marquer les esprits.",
+        title: "Stratégie de Marque",
+        description: "On ne code pas le flou. La puissance technique est vaine si le message est brouillé. Nous définissons votre singularité et votre discours pour que chaque interaction serve une intention claire.",
         color: "#306EE8",
         features: [
             "Logo et charte graphique",
@@ -275,14 +275,13 @@ export default function Services() {
                 {/* Header Area */}
                 <div className="relative z-20 flex flex-col items-center text-center max-w-4xl mx-auto px-4 mb-12 max-h-[15vh]">
                     <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
-                        <span className="font-jakarta text-xs font-medium text-white/80">Nos Artefacts</span>
+                        <span className="font-jakarta text-xs font-medium text-white/80 uppercase tracking-wider">Les Services</span>
                     </div>
                     <h2 className="font-clash text-3xl md:text-5xl font-medium text-white mb-6 leading-tight">
-                        L'Armurerie <span className="text-[#306EE8]">.</span>
+                        Le Triptyque <span className="text-[#306EE8]">Fondamental.</span>
                     </h2>
                     <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        Une suite d'outils de haute technologie pour propulser votre business dans une nouvelle dimension.
-                        Choisissez votre équipement.
+                        Nous ne sommes pas une agence 360°. Nous sommes spécialistes de trois domaines critiques qui ne devraient jamais être traités séparément.
                     </p>
                 </div>
 

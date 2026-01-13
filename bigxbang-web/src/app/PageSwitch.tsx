@@ -17,26 +17,26 @@ import { MobileServicesStack } from "@/components/sections/mobile/MobileServices
 import { MobileManifesto } from "@/components/sections/mobile/MobileManifesto";
 
 const MOBILE_PROBLEMS = [
-  { id: 1, label: "Temps perdu", description: "Des heures gaspillées sur des tâches répétitives." },
-  { id: 2, label: "Complexité", description: "Une stack technique devenue ingérable." },
-  { id: 3, label: "Déshumanisation", description: "L'humain s'efface derrière les process." },
-  { id: 4, label: "Coûts cachés", description: "Abonnements et maintenance qui s'accumulent." },
-  { id: 5, label: "Stress", description: "La peur constante que tout casse." },
-  { id: 6, label: "Stagnation", description: "Votre croissance plafonne malgré vos efforts." },
+  { id: 1, label: "Le Décalage", description: "Une identité visuelle en dessous de la qualité réelle de vos services." },
+  { id: 2, label: "La Surcharge", description: "Votre expertise est noyée sous des tâches répétitives à faible valeur." },
+  { id: 3, label: "L'Invisibilité", description: "Être excellent dans son métier, mais rester le secret le mieux gardé du marché." },
+  { id: 4, label: "La Fragilité", description: "Un business qui repose entièrement sur votre présence et votre mémoire." },
+  { id: 5, label: "La Friction", description: "Des outils et un site qui compliquent l'expérience client au lieu de la fluidifier." },
+  { id: 6, label: "Le Plafond", description: "Une croissance bloquée, non par manque de talent, mais par saturation technique." },
 ];
 
 const MOBILE_STEPS = [
   {
-    title: "Immersion",
-    description: "On prend la température : marque, marché, concurrents, pour comprendre ce qui vous rend unique."
+    title: "Le Diagnostic",
+    description: "Avant de construire, il faut comprendre. Nous disséquons votre activité pour isoler les racines du problème, bien au-delà du simple symptôme visible."
   },
   {
-    title: "Architecture",
-    description: "On structure le parcours pour guider l'utilisateur jusqu'à l'action, sans friction."
+    title: "La Conception",
+    description: "Rien n'est laissé à l'improvisation. Nous dessinons les plans complets de votre système : logiques techniques, parcours utilisateurs et structure de l'information."
   },
   {
-    title: "Exécution",
-    description: "Livraison rapide, code propre, chaque feature sert une conversion ou une automatisation."
+    title: "La Fabrication",
+    description: "La phase de production pure. Un développement sur-mesure, sans dette technique, où chaque détail est testé pour garantir robustesse et fluidité."
   }
 ];
 
@@ -45,31 +45,31 @@ const MOBILE_SERVICES = [
     id: 1,
     subtitle: "MODULE 01 // WEB",
     title: "Expérience Web",
-    description: "Une interface immersive, performante et unique.",
+    description: "Le web n'est pas du papier. Oubliez les vitrines statiques. Nous concevons des interfaces immersives et réactives, taillées pour marquer les esprits. Pas juste pour afficher de l'information.",
     features: [
-      "Design sur-mesure",
-      "Animations fluides",
-      "Optimisation performance & SEO"
+      "Design sur-mesure et unique",
+      "Animations fluides et interactives",
+      "Optimisation SEO et performance"
     ],
   },
   {
     id: 2,
-    subtitle: "MODULE 02 // AUTOMATION",
-    title: "Le Réseau",
-    description: "Connecter vos outils, automatiser et monitorer sans effort.",
+    subtitle: "MODULE 02 // TECH",
+    title: "Solutions Techniques",
+    description: "Les logiciels du marché ne font pas tout. Pour le reste, nous créons la réponse technique à vos contraintes.",
     features: [
-      "Intégrations multi-plateformes",
-      "Workflows 24/7",
-      "Alertes temps réel"
+      "Intégration multi-plateformes",
+      "Workflows automatisés 24/7",
+      "Monitoring et alertes en temps réel"
     ],
   },
   {
     id: 3,
     subtitle: "MODULE 03 // BRAND",
-    title: "Identité de Marque",
-    description: "Un univers visuel cohérent et mémorable, du logo aux guidelines.",
+    title: "Stratégie de Marque",
+    description: "On ne code pas le flou. La puissance technique est vaine si le message est brouillé. Nous définissons votre singularité et votre discours pour que chaque interaction serve une intention claire.",
     features: [
-      "Logo & charte graphique",
+      "Logo et charte graphique",
       "Univers visuel unique",
       "Guidelines complètes"
     ],
@@ -127,13 +127,13 @@ function MobileLanding() {
       <section className="px-4 py-10">
         <div className="mb-6">
           <div className="inline-flex items-center px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[11px] text-white/80 uppercase tracking-wider">
-            Le problème
+            Le Problème
           </div>
           <h2 className="text-2xl font-clash font-semibold mt-3">
-            Tu travailles trop, ton système pas assez.
+            Entre ce que vous valez et ce que vous montrez, il y a un monde.
           </h2>
           <p className="text-sm text-gray-400 mt-2">
-            On repère ce qui bloque, on automatise ce qui se répète, on garde l’humain.
+            C'est là que s'efface l'exceptionnel. Vos outils et votre image doivent être à la hauteur de votre expertise.
           </p>
         </div>
         <MobileProblemList problems={MOBILE_PROBLEMS} />
@@ -143,13 +143,13 @@ function MobileLanding() {
       <section className="px-4 py-10 bg-[#0c0c0c] rounded-t-3xl border-t border-white/5">
         <div className="mb-6 text-center">
           <div className="inline-flex items-center px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[11px] text-white/80 uppercase tracking-wider">
-            Notre méthode
+            La Méthode
           </div>
           <h2 className="text-2xl font-clash font-semibold mt-3">
             L’art de la structure
           </h2>
           <p className="text-sm text-gray-400 mt-2">
-            Trois étapes, zéro friction.
+            On ne décore pas le vide. Chaque pixel et chaque ligne de code ont une fonction précise.
           </p>
         </div>
         <MobileMethodSteps steps={MOBILE_STEPS} />
@@ -159,13 +159,13 @@ function MobileLanding() {
       <section className="relative z-20 px-4 py-10 bg-black rounded-b-[40px]">
         <div className="mb-6 text-center">
           <div className="inline-flex items-center px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[11px] text-white/80 uppercase tracking-wider">
-            Nos artefacts
+            Les Services
           </div>
           <h2 className="text-2xl font-clash font-semibold mt-3">
-            L’armurerie
+            Le Triptyque Fondamental.
           </h2>
           <p className="text-sm text-gray-400 mt-2">
-            Web, automation, brand : on équipe ce qui compte.
+            Nous ne sommes pas une agence 360°. Nous sommes spécialistes de trois domaines critiques qui ne devraient jamais être traités séparément.
           </p>
         </div>
         <MobileServicesStack services={MOBILE_SERVICES} />

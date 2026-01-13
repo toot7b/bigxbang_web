@@ -20,12 +20,12 @@ interface Point {
 
 // --- Data: The 6 Major Problems ---
 const STARS: Point[] = [
-    { id: 1, x: 5, y: 70, label: "Temps Perdu", description: "Des heures gaspillées sur des tâches répétitives." },
-    { id: 2, x: 22, y: 20, label: "Complexité", description: "Une stack technique devenue ingérable.", labelPos: "top" },
-    { id: 3, x: 35, y: 55, label: "Déshumanisation", description: "L'humain s'efface derrière les process." },
-    { id: 4, x: 58, y: 80, label: "Coûts Cachés", description: "Abonnements et maintenance qui s'accumulent." },
-    { id: 5, x: 64, y: 35, label: "Stress", description: "La peur constante que tout casse.", labelPos: "top" },
-    { id: 6, x: 96, y: 65, label: "Stagnation", description: "Votre croissance plafonne malgré vos efforts." },
+    { id: 1, x: 5, y: 70, label: "Le Décalage", description: "Une identité visuelle en dessous de la qualité réelle de vos services." },
+    { id: 2, x: 22, y: 20, label: "La Surcharge", description: "Votre expertise est noyée sous des tâches répétitives à faible valeur.", labelPos: "top" },
+    { id: 3, x: 35, y: 55, label: "L'Invisibilité", description: "Être excellent dans son métier, mais rester le secret le mieux gardé du marché." },
+    { id: 4, x: 58, y: 80, label: "La Fragilité", description: "Un business qui repose entièrement sur votre présence et votre mémoire." },
+    { id: 5, x: 64, y: 35, label: "La Friction", description: "Des outils et un site qui compliquent l'expérience client au lieu de la fluidifier.", labelPos: "top" },
+    { id: 6, x: 96, y: 65, label: "Le Plafond", description: "Une croissance bloquée, non par manque de talent, mais par saturation technique." },
 ];
 
 // Connections between stars (indices) - Sequential chain
@@ -304,16 +304,16 @@ export default function Problem() {
             <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-black via-black/40 to-transparent z-10 pointer-events-none"></div>
 
             {/* Section Header */}
-            <div className="relative z-20 flex flex-col items-center text-center max-w-4xl mx-auto px-4 mb-8">
+            <div className="relative z-20 flex flex-col items-center text-center max-w-7xl mx-auto px-4 mb-8">
                 <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
-                    <span className="font-jakarta text-xs font-medium text-white/80">Le problème</span>
+                    <span className="font-jakarta text-xs font-medium text-white/80 uppercase tracking-wider">Le Problème</span>
                 </div>
                 <h2 className="font-clash text-3xl md:text-5xl font-medium text-white mb-6 leading-tight">
-                    D'un fonctionnement manuel à un <br className="hidden md:block" />
-                    système qui s'exécute <span className="text-[#306EE8]">seul</span>
+                    Entre ce que vous valez et ce que vous montrez, <br className="hidden md:block" />
+                    il y a un <span className="text-[#306EE8]">monde.</span>
                 </h2>
                 <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                    On analyse ce que tu fais. On automatise ce qui se répète. On garde l'humain.
+                    C'est là que s'efface l'exceptionnel. Vos outils et votre image doivent être à la hauteur de votre expertise.
                 </p>
             </div>
 

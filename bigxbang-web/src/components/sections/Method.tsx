@@ -38,16 +38,16 @@ export default function Method() {
 
     const steps = [
         {
-            title: "Immersion",
-            description: "Nous analysons votre marque, votre marché et vos concurrents pour identifier votre positionnement unique."
+            title: "Le Diagnostic",
+            description: "Avant de construire, il faut comprendre. Nous disséquons votre activité pour isoler les racines du problème, bien au-delà du simple symptôme visible."
         },
         {
-            title: "Architecture",
-            description: "Nous structurons votre site pour maximiser la conversion et guider l'utilisateur vers l'action."
+            title: "La Conception",
+            description: "Rien n'est laissé à l'improvisation. Nous dessinons les plans complets de votre système : logiques techniques, parcours utilisateurs et structure de l'information."
         },
         {
-            title: "Exécution",
-            description: "Le code est propre, testé, et livré vite. Chaque ligne a une utilité."
+            title: "La Fabrication",
+            description: "La phase de production pure. Un développement sur-mesure, sans dette technique, où chaque détail est testé pour garantir robustesse et fluidité."
         }
     ];
 
@@ -192,13 +192,13 @@ export default function Method() {
                 {/* --- SECTION HEADER (Centered Top) --- */}
                 <div className="relative z-20 text-center pt-8 md:pt-20 px-4 mb-8">
                     <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
-                        <span className="font-jakarta text-xs font-medium text-white/80 uppercase tracking-wider">Notre Méthode</span>
+                        <span className="font-jakarta text-xs font-medium text-white/80 uppercase tracking-wider">La Méthode</span>
                     </div>
                     <h2 className="font-clash text-4xl md:text-6xl font-medium text-white mb-6 leading-tight">
                         L'Art de la <span className="text-[#306EE8]">Structure</span>
                     </h2>
                     <p className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        Une approche chirurgicale pour transformer le chaos en clarté.
+                        On ne décore pas le vide. Chaque pixel et chaque ligne de code ont une fonction précise.
                     </p>
                 </div>
 

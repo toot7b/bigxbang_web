@@ -67,20 +67,20 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
                 ref={ref || buttonRef}
                 className={cn(
                     "group relative inline-flex items-center justify-center cursor-pointer",
-                    "px-6 py-3 rounded-full text-sm font-medium",
+                    "px-5 py-2 rounded-xl text-xs font-medium",
                     isGhost
                         ? theme === "light"
                             ? "bg-transparent border border-black/20 text-black/70"
                             : "bg-transparent border border-white/10 text-white/70"
                         : theme === "light"
                             ? getLightStyles()
-                            : "bg-white text-black",
+                            : "bg-[#1C1C1C] text-white/90 border border-white/5",
                     "overflow-hidden transition-all duration-300",
                     isGhost
                         ? "shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(48,110,232,0.5)]"
                         : theme === "light" && lightStyle === "glass"
                             ? "shadow-[0_0_30px_rgba(0,0,0,0.1)]"
-                            : "shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(48,110,232,0.5)]",
+                            : "shadow-none hover:shadow-[0_0_30px_rgba(48,110,232,0.5)]",
                     className
                 )}
                 onMouseMove={updateMousePosition}
@@ -93,7 +93,7 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
                 {/* Magnetic Blue Fill Layer - Controlled by CSS Variables for instant response */}
                 <span
                     className={cn(
-                        "absolute bg-[#306EE8] rounded-full transition-transform duration-500 ease-out z-0 pointer-events-none",
+                        "absolute bg-[#306EE8] rounded-xl transition-transform duration-500 ease-out z-0 pointer-events-none",
                         isHovered ? "scale-[20]" : "scale-0"
                     )}
                     style={{
@@ -132,7 +132,7 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
                                     "font-medium transition-colors duration-200 whitespace-nowrap",
                                     isHovered ? "text-white delay-100" : isGhost
                                         ? (theme === "light" ? "text-black/70" : "text-white/70")
-                                        : (theme === "light" && lightStyle === "outline" ? "text-black" : theme === "light" ? "text-white" : "text-black")
+                                        : (theme === "light" && lightStyle === "outline" ? "text-black" : "text-white/90")
                                 )}
                                 as="span"
                                 trigger={true}
