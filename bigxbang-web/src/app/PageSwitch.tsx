@@ -124,34 +124,13 @@ function MobileLanding() {
       <Hero />
 
       {/* PROBLEM */}
-      <section className="px-4 py-10">
-        <div className="mb-6">
-          <div className="inline-flex items-center px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[11px] text-white/80 uppercase tracking-wider">
-            Le Problème
-          </div>
-          <h2 className="text-2xl font-clash font-semibold mt-3">
-            Entre ce que vous valez et ce que vous montrez, il y a un monde.
-          </h2>
-          <p className="text-sm text-gray-400 mt-2">
-            C'est là que s'efface l'exceptionnel. Vos outils et votre image doivent être à la hauteur de votre expertise.
-          </p>
-        </div>
+      {/* PROBLEM */}
+      <section className="px-4 pb-10">
         <MobileProblemList problems={MOBILE_PROBLEMS} />
       </section>
 
       {/* METHOD */}
-      <section className="px-4 py-10 bg-[#0c0c0c] rounded-t-3xl border-t border-white/5">
-        <div className="mb-6 text-center">
-          <div className="inline-flex items-center px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[11px] text-white/80 uppercase tracking-wider">
-            La Méthode
-          </div>
-          <h2 className="text-2xl font-clash font-semibold mt-3">
-            L’art de la structure
-          </h2>
-          <p className="text-sm text-gray-400 mt-2">
-            On ne décore pas le vide. Chaque pixel et chaque ligne de code ont une fonction précise.
-          </p>
-        </div>
+      <section className="w-full">
         <MobileMethodSteps steps={MOBILE_STEPS} />
       </section>
 
