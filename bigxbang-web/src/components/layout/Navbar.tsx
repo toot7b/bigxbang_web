@@ -13,19 +13,35 @@ export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const pathname = usePathname();
     const theme = useSectionTheme();
+    const [isScrolled, setIsScrolled] = useState(false);
 
     // Close menu when route changes
     useEffect(() => {
         setIsMenuOpen(false);
     }, [pathname]);
 
+    // Track scroll for mobile navbar transition
+    useEffect(() => {
+        const handleScroll = () => {
+            // Trigger transition just before the Hero section ends
+            setIsScrolled(window.scrollY > window.innerHeight - 100);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     const isLight = theme === "light";
     const textColor = isLight ? "text-black" : "text-white";
-    const bgColor = isLight ? "bg-black" : "bg-white"; // Inverse for some elements if needed
+
+    // Mobile: Transparent at top, Black + Border when scrolled
+    // Desktop: Always transparent
+    const mobileClasses = isScrolled
+        ? "bg-black border-b-[0.5px] border-white/15"
+        : "bg-transparent border-transparent";
 
     return (
         <>
-            <header className={`fixed top-0 left-0 right-0 z-[110] px-6 py-6 md:px-12 md:py-8 flex items-center justify-between pointer-events-none transition-colors duration-0 ${textColor}`}>
+            <header className={`fixed top-0 left-0 right-0 z-[110] px-6 py-6 md:px-12 md:py-8 flex items-center justify-between pointer-events-none transition-all duration-300 ${mobileClasses} md:bg-transparent md:border-none ${textColor}`}>
 
                 {/* LEFT: LOGO + BRAND */}
                 <Link href="/" className="pointer-events-auto flex items-center gap-4 cursor-pointer">
