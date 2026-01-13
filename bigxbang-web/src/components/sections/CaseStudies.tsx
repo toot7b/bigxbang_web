@@ -131,7 +131,7 @@ const items = [
     },
     {
         title: "MagneticWebsite",
-        description: "Le site qui se construit devant toi. Gamification de l'attention.",
+        description: "Le site qui se construit devant vous. Gamification de l'attention.",
         header: <LottieHeader animationData={WebDesignAnim} />,
         icon: (
             <span className="flex items-center">
@@ -270,13 +270,13 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                     {/* HEADER */}
                     <div className="text-center max-w-4xl px-4 mt-40 mb-16">
                         <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-black/10 bg-black/5 backdrop-blur-sm mb-6">
-                            <span className="font-jakarta text-xs font-medium text-black/80">R&D Lab</span>
+                            <span className="font-jakarta text-xs font-medium text-black/80 uppercase tracking-wider">LE LABO</span>
                         </div>
                         <h1 className="font-clash text-3xl md:text-5xl font-medium text-black mb-4">
-                            Experimental <span className="text-[#306EE8]">Protocols</span>
+                            Protocoles <span className="text-[#306EE8]">Expérimentaux</span>
                         </h1>
                         <h2 className="font-jakarta text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed text-black/80">
-                            Exploration des frontières numériques. Nos expérimentations deviennent vos standards de demain.
+                            Un terrain de jeu pour repousser les limites, éprouver le code et explorer l'IA. Ces prototypes deviendront vos standards de demain.
                         </h2>
                     </div>
 

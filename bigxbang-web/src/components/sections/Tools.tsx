@@ -59,15 +59,15 @@ export default function Tools() {
                     style={{ transform: 'translateY(-50%)' }}
                 >
                     {/* Header */}
-                    <div className="text-center max-w-4xl px-4 mb-16 relative z-30">
+                    <div className="text-center max-w-4xl px-4 mb-32 relative z-30">
                         <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-6">
-                            <span className="font-jakarta text-xs font-medium text-white/80">L'Arsenal</span>
+                            <span className="font-jakarta text-xs font-medium text-white/80 uppercase tracking-wider">L'écosystème</span>
                         </div>
                         <h1 className="font-clash text-3xl md:text-5xl font-medium text-white mb-4">
-                            Cutting-Edge <span className="text-[#306EE8]">Stack</span>
+                            Le socle <span className="text-[#306EE8]">technique</span>
                         </h1>
                         <h2 className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                            On ne joue pas avec des outils obsolètes. On déploie le futur.
+                            On ne gagne pas une course de F1 en Twingo. Une sélection intransigeante des meilleures technologies mondiales pour une performance brute.
                         </h2>
                     </div>
 

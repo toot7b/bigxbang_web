@@ -270,10 +270,10 @@ const UnstableCable = ({ start, dnaRadius, dnaHeight, rotationRef }: { start: TH
 // Zigzag descending: TL -> R -> L -> BR
 // Zigzag descending: TL -> R -> L -> BR
 const SCHEMA_DEFS = [
-    { id: 0, title: "Stratégie", description: "Vision & Plan", side: "left", position: [-3.5, 2.0, 0] },
-    { id: 1, title: "Marketing", description: "Croissance & ROI", side: "right", position: [3.8, 2.8, 0] },
-    { id: 2, title: "Contenu", description: "Story & Brand", side: "left", position: [-3.8, -1.8, 0] },
-    { id: 3, title: "Design", description: "UI & UX", side: "right", position: [3.5, -1.0, 0] },
+    { id: 0, title: "Stratégie", description: "Définir le cap", side: "left", position: [-3.5, 2.0, 0] },
+    { id: 1, title: "Marketing", description: "Créer le lien", side: "right", position: [3.8, 2.8, 0] },
+    { id: 2, title: "Contenu", description: "Porter la voix", side: "left", position: [-3.8, -1.8, 0] },
+    { id: 3, title: "Design", description: "Sublimer la fonction", side: "right", position: [3.5, -1.0, 0] },
 ];
 
 // --- SHADER (Electric DNA Rung) ---
