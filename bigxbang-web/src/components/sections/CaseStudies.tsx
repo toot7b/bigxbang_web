@@ -273,7 +273,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                             <span className="font-jakarta text-xs font-medium text-black/80 uppercase tracking-wider">LE LABO</span>
                         </div>
                         <h1 className="font-clash text-3xl md:text-5xl font-medium text-black mb-4">
-                            Protocoles <span className="text-[#306EE8]">Expérimentaux</span>
+                            Les Protocoles <span className="text-[#306EE8]">Expérimentaux</span>
                         </h1>
                         <h2 className="font-jakarta text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed text-black/80">
                             Un terrain de jeu pour repousser les limites, éprouver le code et explorer l'IA. Ces prototypes deviendront vos standards de demain.

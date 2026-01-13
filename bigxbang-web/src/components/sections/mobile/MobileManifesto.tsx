@@ -33,13 +33,13 @@ export function MobileManifesto() {
             {/* Header */}
             <div className="text-center mb-4">
                 <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-black/10 bg-black/5 mb-6">
-                    <span className="font-jakarta text-xs font-medium text-black/80">Our Vision</span>
+                    <span className="font-jakarta text-xs font-medium text-black/80">MANIFESTO</span>
                 </div>
                 <h2 className="font-clash text-4xl font-medium text-black mb-4">
-                    The <span className="text-[#306EE8]">Manifesto</span>
+                    Le Signal dans le <span className="text-[#306EE8]">Bruit</span>
                 </h2>
                 <p className="font-jakarta text-sm text-gray-600 leading-relaxed max-w-sm mx-auto">
-                    Redefining the digital landscape, one pixel at a time.
+                    L'époque est à la saturation. Pour exister, il ne suffit plus de parler plus fort. Il faut parler plus juste. Voici nos convictions.
                 </p>
             </div>
 

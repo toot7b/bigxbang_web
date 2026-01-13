@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { cn } from "@/lib/utils";
 import Asterisk from "@/components/ui/Asterisk";
+import { GradientButton } from "@/components/ui/gradient-button";
 import MinimalFooter from "@/components/ui/MinimalFooter";
 
 // DYNAMIC IMPORTS
@@ -533,13 +534,13 @@ export default function Manifesto() {
                 {/* HEADLINE (Restored style) */}
                 <div className="text-center max-w-4xl px-4 mx-auto">
                     <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-6">
-                        <span className="font-jakarta text-xs font-medium text-white/80">Our Vision</span>
+                        <span className="font-jakarta text-xs font-medium text-white/80">MANIFESTO</span>
                     </div>
                     <h1 className="font-clash text-3xl md:text-5xl font-medium text-white mb-4">
-                        The <span className="text-[#306EE8]">Manifesto</span>
+                        Le Signal dans le <span className="text-[#306EE8]">Bruit</span>
                     </h1>
                     <h2 className="font-jakarta text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        Redefining the digital landscape, one pixel at a time.
+                        L'époque est à la saturation. Pour exister, il ne suffit plus de parler plus fort. Il faut parler plus juste. Voici nos convictions.
                     </h2>
                 </div>
 
@@ -630,17 +631,24 @@ export default function Manifesto() {
                         "flex flex-col gap-2 transition-all duration-500",
                         finalShockwaveActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                     )} style={{ transitionDelay: finalShockwaveActive ? '0.1s' : '0s' }}>
-                        <h3 className="font-clash text-2xl font-bold text-white">Prêt au décollage ?</h3>
-                        <p className="font-jakarta text-gray-400">Transformons votre vision en système.</p>
+                        <h3 className="font-clash text-2xl font-bold text-white">Assez parlé du futur.</h3>
+                        <p className="font-jakarta text-gray-400">Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.</p>
                     </div>
 
                     {/* Button - appears last with more delay */}
-                    <button className={cn(
-                        "px-8 py-3 bg-[#306EE8] hover:bg-[#205ac8] text-white font-clash font-semibold text-lg rounded-full shadow-lg shadow-blue-500/30 transition-all duration-500",
+                    <div className={cn(
+                        "transition-all duration-500",
                         finalShockwaveActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                     )} style={{ transitionDelay: finalShockwaveActive ? '0.25s' : '0s' }}>
-                        Start a Project
-                    </button>
+                        <a href="https://calendar.app.google/qk7pa13Mu3fP3ex16" target="_blank" rel="noopener noreferrer">
+                            <GradientButton
+                                theme="dark"
+                                hoverText="On y va ?"
+                            >
+                                Lancer mon projet
+                            </GradientButton>
+                        </a>
+                    </div>
                 </div>
 
             </section>
