@@ -16,7 +16,7 @@ export const EmailTemplate = ({
     intro,
     tasks,
     ctaText = "Planifier le kick-off",
-    ctaUrl = "https://calendar.app.google/qk7pa13Mu3fP3ex16",
+    ctaUrl = "/rendez-vous",
     footerItems = ["Guide de démarrage en pièce jointe", "Support disponible 7j/7"],
     signature = "L'équipe bigxbang",
     className = ""

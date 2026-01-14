@@ -162,10 +162,10 @@ function MobileLanding() {
         transition={{ duration: 0.8 }}
       >
         <div className="p-6 rounded-3xl border border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_40px_rgba(48,110,232,0.2)] text-center">
-          <h3 className="text-xl font-clash font-semibold mb-3">
+          <h3 className="text-xl font-clash font-semibold mb-3 text-white">
             Assez parlé du futur.
           </h3>
-          <p className="text-sm text-gray-300 mb-5">
+          <p className="text-sm text-zinc-200 mb-5">
             Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.
           </p>
           <a href="/rendez-vous">

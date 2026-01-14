@@ -315,33 +315,12 @@ drive.mount('/content/drive')
                 </SectionHeader>
 
                 <Paragraph>
-                    Comme on a utilisé plein d'outils Open Source, on voulait rendre la pareille. Le code complet de cette page ainsi que les images et vidéos sont disponibles sur notre GitHub.
+                    Comme on a utilisé plein d'outils Open Source, on voulait rendre la pareille. Le code complet de cette page ainsi que les images et vidéos sont disponibles <a href="https://github.com/toot7b/johnny-le-chat" target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white underline decoration-white/20 hover:decoration-white/50 underline-offset-4 transition-all">directement sur notre GitHub</a>.
                 </Paragraph>
 
                 <Paragraph>
-                    C'est notre façon de boucler la boucle : on a profité du travail de la communauté, alors on redonne à notre tour. Servez-vous, décortiquez, copiez-collez. C'est fait pour.
+                    C'est notre façon de boucler la boucle : on a profité du travail de la communauté, alors on redonne à notre tour. Servez-vous, décortiquez, copiez-collez. C'est fait pour. Vous pouvez également <a href="/johnny-le-chat" target="_blank" className="text-zinc-300 hover:text-white underline decoration-white/20 hover:decoration-white/50 underline-offset-4 transition-all">voir la page en live ici</a>.
                 </Paragraph>
-
-                <div className="flex flex-col md:flex-row justify-center items-center gap-4 mt-8">
-                    <a
-                        href="/johnny-le-chat"
-                        target="_blank"
-                        className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold text-lg transition-transform hover:scale-105 active:scale-95"
-                    >
-                        <span>Voir la page en live</span>
-                        <span className="opacity-60">→</span>
-                    </a>
-
-                    <a
-                        href="https://github.com/toot7b/johnny-le-chat"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative inline-flex items-center gap-3 px-8 py-4 border border-white/20 text-white rounded-full font-bold text-lg transition-all hover:bg-white/10 hover:border-white/40 active:scale-95"
-                    >
-                        <span className="opacity-80">Le code sur Github</span>
-                        <span className="opacity-60">↗</span>
-                    </a>
-                </div>
 
             </Section>
 

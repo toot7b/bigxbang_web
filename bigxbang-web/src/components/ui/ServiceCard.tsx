@@ -78,7 +78,7 @@ export const ServiceCard = ({
     return (
         <div
             className={cn(
-                "group/card relative w-full max-w-6xl flex flex-col rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl transition-all duration-500 shadow-[0_25px_50px_-12px_rgba(0,0,0,1),_0_0_0_1px_rgba(255,255,255,0.15),_30px_0_60px_-10px_rgba(48,110,232,0.2)] hover:shadow-[0_45px_90px_-15px_rgba(0,0,0,1),_0_0_0_1px_rgba(255,255,255,0.3),_0_0_100px_0_rgba(48,110,232,0.25)]",
+                "group/card relative w-full max-w-6xl flex flex-col rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl transition-all duration-500 shadow-[0_25px_50px_-12px_rgba(0,0,0,1),_0_0_0_1px_rgba(255,255,255,0.15),_30px_0_60px_-10px_rgba(48,110,232,0.2)] md:hover:shadow-[0_45px_90px_-15px_rgba(0,0,0,1),_0_0_0_1px_rgba(255,255,255,0.3),_0_0_100px_0_rgba(48,110,232,0.25)] active:brightness-95",
                 className
             )}
         >
@@ -255,7 +255,7 @@ export const ServiceCard = ({
 
                     {/* FEATURES WITH ASTERISKS */}
                     {features.length > 0 && (
-                        <div className="space-y-3 mb-8">
+                        <div className="space-y-3 mb-4">
                             {features.map((feature, i) => (
                                 <div key={i} className="flex items-center gap-3">
                                     <div className="flex items-center justify-center w-5 h-5 rounded-full bg-[#306EE8]/50 border border-[#306EE8] shrink-0">
@@ -268,7 +268,7 @@ export const ServiceCard = ({
                     )}
 
                     {/* CTA BUTTONS - Same as Method section */}
-                    <div className="mt-auto w-full">
+                    <div className="mt-auto w-full -mt-16">
                         {/* Primary CTA */}
                         <Link href="/rendez-vous" className="w-full block">
                             <GradientButton

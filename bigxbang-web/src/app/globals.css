@@ -54,34 +54,24 @@ body {
     z-index: 1;
   }
 
-  /* Hover State: Blue Shiny Gradient */
-  .btn-shiny:hover {
-    /* Text remains black or changes if needed, keeping black for now as requested to not change it */
-    color: white !important;
-    box-shadow: 0px 0px 20px rgba(48, 110, 232, 0.5);
+  /* Hover State: Blue Shiny Gradient - ONLY ON MOUSE DEVICES */
+  @media (hover: hover) {
+    .btn-shiny:hover {
+      color: white !important;
+      box-shadow: 0px 0px 20px rgba(48, 110, 232, 0.5);
+    }
+
+    .btn-shiny:hover::before {
+      opacity: 1;
+      background-position: right top;
+    }
   }
 
-  /* Pseudo-element for the gradient to allow transition */
-  .btn-shiny::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: linear-gradient(325deg,
-        #306EE8 0%,
-        #60a5fa 55%,
-        #306EE8 90%);
-    background-size: 200% auto;
-    opacity: 0;
-    z-index: -1;
-    transition: opacity 0.3s ease-in-out, background-position 0.5s ease;
-  }
-
-  .btn-shiny:hover::before {
-    opacity: 1;
-    background-position: right top;
+  /* Active/Pressed State for Mobile and Desktop */
+  .btn-shiny:active {
+    transform: scale(0.98);
+    background-color: #f0f0f0 !important;
+    filter: brightness(0.9);
   }
 
   @keyframes gentle-pulse {
@@ -422,15 +412,23 @@ body {
   border-radius: inherit;
 }
 
-/* Hover: Blue fills, text white */
-.cta-button:hover {
-  color: #FFFFFF;
-  box-shadow: 0 8px 30px rgba(48, 110, 232, 0.35);
-  transform: translateY(-2px);
+/* Hover: Blue fills, text white - ONLY ON MOUSE DEVICES */
+@media (hover: hover) {
+  .cta-button:hover {
+    color: #FFFFFF;
+    box-shadow: 0 8px 30px rgba(48, 110, 232, 0.35);
+    transform: translateY(-2px);
+  }
+
+  .cta-button:hover::before {
+    transform: scaleX(1);
+  }
 }
 
-.cta-button:hover::before {
-  transform: scaleX(1);
+/* Active/Pressed State */
+.cta-button:active {
+  transform: scale(0.98);
+  filter: brightness(0.9);
 }
 
 /* CTA Impact Animations */

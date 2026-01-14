@@ -6,6 +6,8 @@ import { ArrowLeft, X } from "lucide-react";
 import gsap from "gsap";
 import { MetricCard } from "./index";
 import { useLenis } from "lenis/react";
+import { GradientButton } from "@/components/ui/gradient-button";
+import MinimalFooter from "@/components/ui/MinimalFooter";
 
 /**
  * CaseStudyLayout - Modern wrapper component for all case studies
@@ -82,20 +84,25 @@ export const CaseStudyLayout = ({
             <nav className={`fixed top-0 left-0 w-full z-50 px-6 py-5 ${mode === 'modal' ? 'sticky' : ''}`}>
                 <div className="max-w-6xl mx-auto flex justify-between items-center">
                     {mode === 'modal' ? (
-                        <button
+                        <GradientButton
+                            variant="ghost"
+                            theme="dark"
                             onClick={onClose}
-                            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all duration-300"
+                            className="gap-2 px-6 rounded-full whitespace-nowrap"
                         >
                             <X className="w-4 h-4" />
-                            <span className="text-sm font-medium">Fermer</span>
-                        </button>
+                            <span>Fermer</span>
+                        </GradientButton>
                     ) : (
-                        <Link
-                            href="/"
-                            className="group flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-white/80 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer"
-                        >
-                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
-                            <span className="text-sm font-medium">Retour</span>
+                        <Link href="/" className="cursor-pointer">
+                            <GradientButton
+                                variant="ghost"
+                                theme="dark"
+                                className="gap-3 px-6 rounded-full whitespace-nowrap"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                                <span>Retour</span>
+                            </GradientButton>
                         </Link>
                     )}
 
@@ -152,43 +159,48 @@ export const CaseStudyLayout = ({
             </div>
 
             {/* CTA FOOTER */}
-            <footer className="relative z-10 max-w-4xl mx-auto px-6 py-24 md:py-32 text-center">
-                <div className="inline-flex items-center gap-2 text-sm text-white/40 mb-8">
-                    <span className="w-8 h-px bg-white/20" />
-                    <span>Prêt à automatiser ?</span>
-                    <span className="w-8 h-px bg-white/20" />
+            <footer className="relative z-10 max-w-6xl mx-auto px-6 py-24 md:py-32">
+                <div className="relative z-20 pointer-events-auto flex flex-col items-center p-8 md:p-12 border rounded-[2.5rem] backdrop-blur-md max-w-2xl mx-auto text-center gap-10 overflow-hidden border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_60px_rgba(48,110,232,0.3)]">
+                    <div className="flex flex-col gap-3">
+                        <h3 className="font-clash text-3xl font-bold text-white">Assez parlé du futur.</h3>
+                        <p className="font-jakarta text-gray-400 text-lg">Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.</p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
+                        <a
+                            href="/rendez-vous"
+                        >
+                            <GradientButton
+                                hoverText="On y va ?"
+                                className="px-8 py-4 text-base sm:min-w-[240px]"
+                            >
+                                Je contacte
+                            </GradientButton>
+                        </a>
+                        {mode === 'modal' ? (
+                            <GradientButton
+                                variant="ghost"
+                                theme="dark"
+                                onClick={onClose}
+                                className="px-8 py-4 text-base sm:min-w-[240px]"
+                            >
+                                Fermer
+                            </GradientButton>
+                        ) : (
+                            <Link href="/">
+                                <GradientButton
+                                    variant="ghost"
+                                    theme="dark"
+                                    className="px-8 py-4 text-base sm:min-w-[240px]"
+                                >
+                                    Retour à l&apos;accueil
+                                </GradientButton>
+                            </Link>
+                        )}
+                    </div>
                 </div>
 
-                <p className="text-xl md:text-2xl text-white/70 mb-10 max-w-xl mx-auto leading-relaxed font-light">
-                    On automatise les tâches répétitives pour libérer ce qui fait de toi un humain.
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a
-                        href="https://calendar.app.google/qk7pa13Mu3fP3ex16"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-shiny inline-flex items-center justify-center gap-3 px-8 py-4 text-base"
-                    >
-                        <span>Je contacte</span>
-                        <span className="opacity-60">→</span>
-                    </a>
-                    {mode === 'modal' ? (
-                        <button
-                            onClick={onClose}
-                            className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-transparent text-white/70 border border-white/15 font-medium rounded-full hover:bg-white/5 hover:text-white hover:border-white/25 transition-all duration-300"
-                        >
-                            Fermer
-                        </button>
-                    ) : (
-                        <Link
-                            href="/"
-                            className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-transparent text-white/70 border border-white/15 font-medium rounded-full hover:bg-white/5 hover:text-white hover:border-white/25 transition-all duration-300"
-                        >
-                            Retour à l&apos;accueil
-                        </Link>
-                    )}
-                </div>
+                <MinimalFooter visible={true} className="mt-16" iconClassName="w-6 h-6" />
             </footer>
         </main>
     );

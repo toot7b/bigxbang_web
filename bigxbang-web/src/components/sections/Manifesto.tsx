@@ -107,7 +107,6 @@ export default function Manifesto() {
                     },
                     scrollTrigger: {
                         trigger: ".manifesto-point.initial",
-                        start: "top center",
                         endTrigger: sectionRef.current,
                         end: "bottom bottom",
                         scrub: 1,
@@ -615,7 +614,7 @@ export default function Manifesto() {
 
                 {/* CTA TEXT - OUTSIDE the manifesto container, so asterisk stays put */}
                 <div className={cn(
-                    "relative z-20 pointer-events-auto flex flex-col items-center p-8 border rounded-3xl backdrop-blur-md max-w-lg mx-auto text-center gap-6 mt-16 overflow-hidden",
+                    "relative z-20 pointer-events-auto flex flex-col items-center p-8 md:p-12 border rounded-[2.5rem] backdrop-blur-md max-w-2xl mx-auto text-center gap-10 mt-16 overflow-hidden",
                     finalShockwaveActive
                         ? "border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_60px_rgba(48,110,232,0.3)] scale-100 opacity-100 animate-[scalePulse_0.4s_ease-out]"
                         : "border-white/5 bg-white/5 scale-95 opacity-0"
@@ -628,11 +627,11 @@ export default function Manifesto() {
 
                     {/* Title - appears first */}
                     <div className={cn(
-                        "flex flex-col gap-2 transition-all duration-500",
+                        "flex flex-col gap-3 transition-all duration-500",
                         finalShockwaveActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                     )} style={{ transitionDelay: finalShockwaveActive ? '0.1s' : '0s' }}>
-                        <h3 className="font-clash text-2xl font-bold text-white">Assez parlé du futur.</h3>
-                        <p className="font-jakarta text-gray-400">Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.</p>
+                        <h3 className="font-clash text-3xl font-bold text-white">Assez parlé du futur.</h3>
+                        <p className="font-jakarta text-gray-400 text-lg">Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.</p>
                     </div>
 
                     {/* Button - appears last with more delay */}
@@ -640,10 +639,11 @@ export default function Manifesto() {
                         "transition-all duration-500",
                         finalShockwaveActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                     )} style={{ transitionDelay: finalShockwaveActive ? '0.25s' : '0s' }}>
-                        <a href="https://calendar.app.google/qk7pa13Mu3fP3ex16" target="_blank" rel="noopener noreferrer">
+                        <a href="/rendez-vous">
                             <GradientButton
                                 theme="dark"
                                 hoverText="On y va ?"
+                                className="px-8 py-4 text-base"
                             >
                                 Lancer mon projet
                             </GradientButton>
