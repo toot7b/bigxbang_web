@@ -159,20 +159,21 @@ export const CaseStudyLayout = ({
             </div>
 
             {/* CTA FOOTER */}
-            <footer className="relative z-10 max-w-6xl mx-auto px-6 py-24 md:py-32">
-                <div className="relative z-20 pointer-events-auto flex flex-col items-center p-8 md:p-12 border rounded-[2.5rem] backdrop-blur-md max-w-2xl mx-auto text-center gap-10 overflow-hidden border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_60px_rgba(48,110,232,0.3)]">
+            <footer className="relative z-10 max-w-6xl mx-auto px-6 py-20 md:py-32">
+                <div className="relative z-20 pointer-events-auto flex flex-col items-center p-6 sm:p-10 md:p-12 border rounded-3xl sm:rounded-[2.5rem] backdrop-blur-md max-w-2xl mx-auto text-center gap-8 sm:gap-10 overflow-hidden border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_60px_rgba(48,110,232,0.3)]">
                     <div className="flex flex-col gap-3">
-                        <h3 className="font-clash text-3xl font-bold text-white">Assez parlé du futur.</h3>
-                        <p className="font-jakarta text-gray-400 text-lg">Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.</p>
+                        <h3 className="font-clash text-2xl sm:text-3xl font-bold text-white leading-tight">Assez parlé du futur.</h3>
+                        <p className="font-jakarta text-gray-400 text-base sm:text-lg">Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.</p>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
                         <a
                             href="/rendez-vous"
+                            className="w-full sm:w-auto"
                         >
                             <GradientButton
                                 hoverText="On y va ?"
-                                className="px-8 py-4 text-base sm:min-w-[240px]"
+                                className="w-full px-8 py-4 text-base sm:min-w-[240px]"
                             >
                                 Je contacte
                             </GradientButton>
@@ -182,16 +183,16 @@ export const CaseStudyLayout = ({
                                 variant="ghost"
                                 theme="dark"
                                 onClick={onClose}
-                                className="px-8 py-4 text-base sm:min-w-[240px]"
+                                className="w-full px-8 py-4 text-base sm:min-w-[240px]"
                             >
                                 Fermer
                             </GradientButton>
                         ) : (
-                            <Link href="/">
+                            <Link href="/" className="w-full sm:w-auto">
                                 <GradientButton
                                     variant="ghost"
                                     theme="dark"
-                                    className="px-8 py-4 text-base sm:min-w-[240px]"
+                                    className="w-full px-8 py-4 text-base sm:min-w-[240px]"
                                 >
                                     Retour à l&apos;accueil
                                 </GradientButton>
@@ -200,7 +201,7 @@ export const CaseStudyLayout = ({
                     </div>
                 </div>
 
-                <MinimalFooter visible={true} className="mt-16" iconClassName="w-6 h-6" />
+                <MinimalFooter visible={true} className="mt-12 sm:mt-16" iconClassName="w-6 h-6" />
             </footer>
         </main>
     );

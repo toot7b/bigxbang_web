@@ -108,27 +108,15 @@ export default function Hero() {
             {/* Content */}
             <div className="relative z-30 text-center px-4 mb-16 mt-32 md:mt-0">
                 <div ref={textRef} className="flex flex-col items-center gap-6">
-                    <div className="flex flex-col items-center justify-center mb-3">
-                        <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] backdrop-blur-[2px]">
-                            <h3 className="font-jakarta text-[9px] md:text-xs font-medium text-white/50 uppercase tracking-[0.1em] md:tracking-[0.2em]">
-                                Sites web • Automatisation • Stratégie de marque
-                            </h3>
-                        </div>
-                    </div>
-
-                    <div className="mb-4 md:hidden">
-                        <Asterisk className="hero-asterisk w-12 h-12 text-white" />
-                    </div>
-
-                    <h1 className="font-clash text-[11vw] leading-[1.1] md:text-7xl md:leading-none lg:text-8xl font-medium tracking-tight">
+                    <h1 className="font-clash text-[10vw] sm:text-5xl leading-[1.1] md:text-7xl md:leading-none lg:text-8xl font-medium tracking-tighter whitespace-nowrap">
                         Human <span className="text-[#306EE8]">Intelligence</span>
                         <span className="hidden md:inline-block align-top ml-2 -mt-1 md:-mt-2">
                             <Asterisk className="hero-asterisk w-5 h-5 md:w-8 md:h-8 text-white" />
                         </span>
                     </h1>
 
-                    <h2 className="font-jakarta text-base md:text-2xl leading-normal md:leading-relaxed text-gray-300 mt-6 max-w-4xl mx-auto font-normal md:whitespace-nowrap">
-                        Façonner votre image, coder votre univers, libérer votre temps.
+                    <h2 className="font-jakarta text-base md:text-2xl leading-normal md:leading-relaxed text-gray-300 mt-6 max-w-4xl mx-auto font-normal md:whitespace-nowrap px-4">
+                        Façonner votre image, designer ce qui vous distingue, libérer votre temps.
                     </h2>
 
                     <div className="mt-10">

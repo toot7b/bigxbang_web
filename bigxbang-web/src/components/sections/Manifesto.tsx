@@ -614,7 +614,7 @@ export default function Manifesto() {
 
                 {/* CTA TEXT - OUTSIDE the manifesto container, so asterisk stays put */}
                 <div className={cn(
-                    "relative z-20 pointer-events-auto flex flex-col items-center p-8 md:p-12 border rounded-[2.5rem] backdrop-blur-md max-w-2xl mx-auto text-center gap-10 mt-16 overflow-hidden",
+                    "relative z-20 pointer-events-auto flex flex-col items-center p-6 sm:p-10 md:p-12 border rounded-3xl sm:rounded-[2.5rem] backdrop-blur-md max-w-2xl mx-auto text-center gap-8 sm:gap-10 mt-16 overflow-hidden",
                     finalShockwaveActive
                         ? "border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_60px_rgba(48,110,232,0.3)] scale-100 opacity-100 animate-[scalePulse_0.4s_ease-out]"
                         : "border-white/5 bg-white/5 scale-95 opacity-0"
@@ -630,20 +630,20 @@ export default function Manifesto() {
                         "flex flex-col gap-3 transition-all duration-500",
                         finalShockwaveActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                     )} style={{ transitionDelay: finalShockwaveActive ? '0.1s' : '0s' }}>
-                        <h3 className="font-clash text-3xl font-bold text-white">Assez parlé du futur.</h3>
-                        <p className="font-jakarta text-gray-400 text-lg">Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.</p>
+                        <h3 className="font-clash text-2xl sm:text-3xl font-bold text-white leading-tight">Assez parlé du futur.</h3>
+                        <p className="font-jakarta text-gray-400 text-base sm:text-lg">Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.</p>
                     </div>
 
                     {/* Button - appears last with more delay */}
                     <div className={cn(
-                        "transition-all duration-500",
+                        "transition-all duration-500 w-full sm:w-auto",
                         finalShockwaveActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                     )} style={{ transitionDelay: finalShockwaveActive ? '0.25s' : '0s' }}>
-                        <a href="/rendez-vous">
+                        <a href="/rendez-vous" className="w-full block sm:inline-block sm:w-auto">
                             <GradientButton
                                 theme="dark"
                                 hoverText="On y va ?"
-                                className="px-8 py-4 text-base"
+                                className="w-full px-8 py-4 text-base sm:min-w-[240px]"
                             >
                                 Lancer mon projet
                             </GradientButton>

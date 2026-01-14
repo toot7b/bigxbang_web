@@ -9,7 +9,11 @@ import { useSectionTheme } from "@/hooks/useSectionTheme";
 import { Link } from "next-view-transitions";
 import { GradientButton } from "@/components/ui/gradient-button";
 
-export default function Navbar() {
+interface NavbarProps {
+    forceOpaqueMobile?: boolean;
+}
+
+export default function Navbar({ forceOpaqueMobile = false }: NavbarProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const pathname = usePathname();
     const theme = useSectionTheme();
@@ -35,17 +39,17 @@ export default function Navbar() {
 
     // Mobile: Transparent at top, Black + Border when scrolled
     // Desktop: Always transparent
-    const mobileClasses = isScrolled
+    const mobileClasses = (isScrolled || forceOpaqueMobile)
         ? "bg-black border-b-[0.5px] border-white/15"
         : "bg-transparent border-transparent";
 
     return (
         <>
-            <header className={`fixed top-0 left-0 right-0 z-[110] px-6 py-6 md:px-12 md:py-8 flex items-center justify-between pointer-events-none transition-all duration-300 ${mobileClasses} md:bg-transparent md:border-none ${textColor}`}>
+            <header className={`fixed top-0 left-0 right-0 z-[110] px-6 py-4 md:px-12 md:py-8 flex items-center justify-between pointer-events-none transition-all duration-300 ${mobileClasses} md:bg-transparent md:border-none ${textColor}`}>
 
                 {/* LEFT: LOGO + BRAND */}
-                <Link href="/" className="pointer-events-auto flex items-center gap-4 cursor-pointer">
-                    <div className="w-12 h-12 relative">
+                <Link href="/" className="pointer-events-auto flex items-center gap-3 md:gap-4 cursor-pointer">
+                    <div className="w-10 h-10 md:w-12 md:h-12 relative">
                         {/* Dynamic Logo Color - simplified approach: use CSS filter or separate SVGs if strictly needed. 
                             For now, assuming logo.svg is white/black capable or we invert it.
                         */}
@@ -55,7 +59,7 @@ export default function Navbar() {
                             className={`w-full h-full object-contain transition-all duration-0 ${isLight ? "invert" : ""}`}
                         />
                     </div>
-                    <span className="font-clash text-2xl font-medium tracking-wide">Big<span className="text-[17px]">x</span>Bang</span>
+                    <span className="font-clash text-xl md:text-2xl font-medium tracking-wide">Big<span className="text-sm md:text-[17px]">x</span>Bang</span>
                 </Link>
 
                 {/* RIGHT: CONTROLS */}

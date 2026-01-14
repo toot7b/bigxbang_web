@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import Lottie from "lottie-react";
 import successAnimation from "./success.json";
+import { GradientButton } from "@/components/ui/gradient-button";
 
 interface Service { id: string; name: string; duration: string; }
 
@@ -104,10 +105,11 @@ export function BookingCalendar({ className }: { className?: string }) {
     };
 
     if (bookingData) {
+        // ... success view (keep as is but check height)
         const joinLink = bookingData.meeting_info?.join_link || bookingData.zoho_meeting_info?.join_link;
 
         return (
-            <div className={cn("bg-[#0a0a0a]/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center text-center h-[644px]", className)}>
+            <div className={cn("bg-[#0a0a0a]/60 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center text-center h-auto lg:h-[644px]", className)}>
                 <div className="w-24 h-24 mb-6">
                     <Lottie animationData={successAnimation} loop={false} />
                 </div>
@@ -135,11 +137,11 @@ export function BookingCalendar({ className }: { className?: string }) {
     }
 
     return (
-        <div className={cn("bg-[#0a0a0a]/60 border border-white/10 rounded-2xl shadow-xl relative overflow-hidden group h-[644px] flex flex-col", className)}>
+        <div className={cn("bg-[#0a0a0a]/60 border border-white/10 rounded-2xl shadow-xl relative overflow-hidden group h-auto lg:h-[644px] flex flex-col", className)}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#306EE8]/5 blur-[60px] rounded-full -z-10 group-hover:bg-[#306EE8]/10 transition-colors" />
 
             {/* Content Container */}
-            <div className="p-6 relative flex-1 flex flex-col">
+            <div className="p-2 md:p-6 relative flex-1 flex flex-col">
                 <AnimatePresence mode="popLayout" initial={false}>
                     {view === "calendar" && (
                         <motion.div
@@ -148,10 +150,11 @@ export function BookingCalendar({ className }: { className?: string }) {
                             animate={{ x: 0, opacity: 1 }}
                             exit={{ x: -100, opacity: 0 }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className="flex-1 flex flex-col"
                         >
-                            <h3 className="font-clash text-3xl font-medium text-white mb-6">Planifier un échange</h3>
+                            <h3 className="font-clash text-2xl md:text-3xl font-medium text-white mb-4 md:mb-6 px-2">Planifier un échange</h3>
 
-                            <div className="flex items-center justify-between mb-6 px-1 h-10">
+                            <div className="flex items-center justify-between mb-4 md:mb-6 px-1 h-10">
                                 <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 hover:bg-white/5 rounded-full text-white/60 hover:text-white transition-colors z-10"><ChevronLeft className="w-5 h-5" /></button>
                                 <div className="relative flex-1 flex justify-center overflow-hidden h-full items-center">
                                     <AnimatePresence mode="popLayout" initial={false}>
@@ -161,7 +164,7 @@ export function BookingCalendar({ className }: { className?: string }) {
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -10 }}
                                             transition={{ duration: 0.3, ease: "easeOut" }}
-                                            className="font-jakarta text-lg text-white capitalize font-medium tracking-wide absolute"
+                                            className="font-jakarta text-xl md:text-2xl text-white capitalize font-medium tracking-wide absolute"
                                         >
                                             {format(currentMonth, "MMMM yyyy", { locale: fr })}
                                         </motion.span>
@@ -172,7 +175,7 @@ export function BookingCalendar({ className }: { className?: string }) {
 
                             <div className="grid grid-cols-7 mb-2 text-center">
                                 {["l", "m", "m", "j", "v", "s", "d"].map((d, idx) => (
-                                    <div key={idx} className="text-xs text-white/40 font-jakarta uppercase tracking-wider font-medium">{d}</div>
+                                    <div key={idx} className="text-[10px] md:text-xs text-white/40 font-jakarta uppercase tracking-wider font-medium">{d}</div>
                                 ))}
                             </div>
 
@@ -184,7 +187,7 @@ export function BookingCalendar({ className }: { className?: string }) {
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: -10 }}
                                         transition={{ duration: 0.4, ease: "easeInOut" }}
-                                        className="grid grid-cols-7 gap-3 mb-4 content-start w-full"
+                                        className="grid grid-cols-7 gap-1 md:gap-3 mb-4 content-start w-full"
                                     >
                                         {days.map(day => {
                                             const isCurrent = isSameMonth(day, currentMonth);
@@ -198,11 +201,11 @@ export function BookingCalendar({ className }: { className?: string }) {
                                                     onClick={() => !isPast && isCurrent && setSelectedDate(day)}
                                                     disabled={isPast || !isCurrent}
                                                     className={cn(
-                                                        "aspect-square rounded-full flex items-center justify-center text-sm font-jakarta transition-colors transition-transform duration-300 relative group/day",
+                                                        "aspect-square w-full h-full rounded-xl flex items-center justify-center text-base font-jakarta transition-colors transition-transform duration-300 relative group/day",
                                                         !isCurrent && "text-white/20 cursor-default",
                                                         isPast && isCurrent && "text-white/20 line-through decoration-white/20 cursor-not-allowed",
-                                                        !isPast && isCurrent && !isSelected && "text-white/70 hover:bg-white/10 hover:text-white hover:scale-110",
-                                                        isSelected && "bg-[#306EE8] text-white shadow-[0_0_20px_rgba(48,110,232,0.4)] scale-110 font-bold z-10"
+                                                        !isPast && isCurrent && !isSelected && "text-white hover:bg-white/10 hover:text-white hover:scale-105",
+                                                        isSelected && "bg-[#306EE8] text-white shadow-[0_0_20px_rgba(48,110,232,0.4)] scale-105 font-bold z-10"
                                                     )}
                                                 >
                                                     {format(day, "d")}
@@ -227,11 +230,11 @@ export function BookingCalendar({ className }: { className?: string }) {
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             className="h-full flex flex-col"
                         >
-                            <div className="flex items-center gap-4 mb-6">
+                            <div className="flex items-center gap-4 mb-6 px-2">
                                 <button onClick={() => setView("calendar")} className="p-2 -ml-2 hover:bg-white/5 rounded-full text-white/60 hover:text-white transition-colors">
                                     <ArrowLeft className="w-5 h-5" />
                                 </button>
-                                <h3 className="font-jakarta text-xl font-medium text-white capitalize">
+                                <h3 className="font-jakarta text-lg md:text-xl font-medium text-white capitalize">
                                     {selectedDate && format(selectedDate, "EEEE d MMMM", { locale: fr })}
                                 </h3>
                             </div>
@@ -242,12 +245,12 @@ export function BookingCalendar({ className }: { className?: string }) {
                                         <Loader2 className="animate-spin text-[#306EE8] w-8 h-8" />
                                     </div>
                                 ) : slots.length ? (
-                                    <div className="grid grid-cols-3 gap-3 align-start content-start">
+                                    <div className="grid grid-cols-3 gap-2 md:gap-3 align-start content-start">
                                         {slots.map(slot => (
                                             <button
                                                 key={slot}
                                                 onClick={() => { setSelectedSlot(slot); setView("form"); }}
-                                                className="py-2.5 px-3 rounded-lg bg-white/5 hover:bg-[#306EE8] hover:text-white text-white/80 text-sm font-jakarta font-medium transition-colors border border-white/5 hover:border-[#306EE8] hover:shadow-[0_0_15px_rgba(48,110,232,0.2)]"
+                                                className="py-3 px-2 md:px-3 rounded-lg bg-white/5 hover:bg-[#306EE8] hover:text-white text-white/80 text-sm font-jakarta font-medium transition-colors border border-white/5 hover:border-[#306EE8] hover:shadow-[0_0_15px_rgba(48,110,232,0.2)]"
                                             >
                                                 {formatTime(slot)}
                                             </button>
@@ -291,9 +294,16 @@ export function BookingCalendar({ className }: { className?: string }) {
 
                                 <div className="flex-1 min-h-[20px]" />
 
-                                <button disabled={isSubmitting} className="w-full py-3 bg-[#306EE8] hover:bg-[#205ac6] text-white rounded-lg font-medium shadow-[0_0_20px_rgba(48,110,232,0.3)] hover:shadow-[0_0_30px_rgba(48,110,232,0.5)] mt-auto font-jakarta transition-all flex items-center justify-center">
-                                    {isSubmitting ? <Loader2 className="animate-spin w-5 h-5 text-white" /> : "Confirmer"}
-                                </button>
+                                <div className="mt-auto">
+                                    <GradientButton
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        hoverText="Je réserve"
+                                        className="w-full h-12 text-sm"
+                                    >
+                                        {isSubmitting ? <Loader2 className="animate-spin" /> : "Confirmer"}
+                                    </GradientButton>
+                                </div>
                             </form>
                         </motion.div>
                     )}

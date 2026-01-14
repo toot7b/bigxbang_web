@@ -47,44 +47,45 @@ export default function NavOverlay({ isOpen, onClose }: { isOpen: boolean; onClo
                     </motion.div>
 
                     {/* CONTENT CONTAINER */}
-                    <div className="relative z-10 flex flex-col items-center justify-center w-full h-full pointer-events-none">
-
-                        {/* LINKS LIST */}
-                        <nav className="flex flex-col items-center gap-2 md:gap-4">
-                            {NAV_LINKS.map((link, i) => (
-                                <div key={link.label} className="overflow-hidden">
-                                    <motion.div
-                                        initial={{ y: "100%" }}
-                                        animate={{
-                                            y: "0%",
-                                            transition: {
-                                                duration: 0.5,
-                                                ease: [0.76, 0, 0.24, 1],
-                                                delay: 0.4 + (i * 0.1)
-                                            }
-                                        }}
-                                        exit={{
-                                            y: "100%",
-                                            transition: {
-                                                duration: 0.3,
-                                                ease: [0.76, 0, 0.24, 1],
-                                                delay: 0 // No delay on exit, instant response
-                                            }
-                                        }}
-                                    >
-                                        <Link
-                                            href={link.href}
-                                            onClick={link.href.startsWith("/#") ? onClose : undefined}
-                                            className="block group relative pointer-events-auto p-4"
+                    <div className="relative z-10 w-full h-full pointer-events-none flex flex-col overflow-y-auto">
+                        <div className="flex-1 flex flex-col items-center justify-center py-20 min-h-0">
+                            {/* LINKS LIST */}
+                            <nav className="flex flex-col items-center gap-8 md:gap-4 shrink-0">
+                                {NAV_LINKS.map((link, i) => (
+                                    <div key={link.label} className="overflow-hidden">
+                                        <motion.div
+                                            initial={{ y: "100%" }}
+                                            animate={{
+                                                y: "0%",
+                                                transition: {
+                                                    duration: 0.5,
+                                                    ease: [0.76, 0, 0.24, 1],
+                                                    delay: 0.4 + (i * 0.1)
+                                                }
+                                            }}
+                                            exit={{
+                                                y: "100%",
+                                                transition: {
+                                                    duration: 0.3,
+                                                    ease: [0.76, 0, 0.24, 1],
+                                                    delay: 0 // No delay on exit, instant response
+                                                }
+                                            }}
                                         >
-                                            <span className="font-clash text-5xl md:text-8xl font-medium text-white transition-colors duration-300 hover:text-[#306EE8]">
-                                                {link.label}
-                                            </span>
-                                        </Link>
-                                    </motion.div>
-                                </div>
-                            ))}
-                        </nav>
+                                            <Link
+                                                href={link.href}
+                                                onClick={link.href.startsWith("/#") ? onClose : undefined}
+                                                className="block group relative pointer-events-auto p-2 md:p-4"
+                                            >
+                                                <span className="font-clash text-5xl md:text-7xl font-medium text-white transition-colors duration-300 hover:text-[#306EE8]">
+                                                    {link.label}
+                                                </span>
+                                            </Link>
+                                        </motion.div>
+                                    </div>
+                                ))}
+                            </nav>
+                        </div>
 
                         {/* FOOTER INFO */}
                         <motion.div
@@ -95,17 +96,16 @@ export default function NavOverlay({ isOpen, onClose }: { isOpen: boolean; onClo
                                 transition: { duration: 0.2 } // Instant exit
                             }}
                             transition={{ delay: 0.8, duration: 0.5 }}
-                            className="absolute bottom-12 flex flex-col items-center gap-6 pointer-events-auto"
+                            className="pb-8 pt-4 flex flex-col items-center gap-6 pointer-events-auto shrink-0"
                         >
-                            <div className="flex gap-6 text-gray-500">
-                                <a href="https://github.com/topics/portfolio" target="_blank" className="hover:text-white transition-colors text-sm uppercase tracking-wider">Github</a>
-                                <a href="#" className="hover:text-white transition-colors text-sm uppercase tracking-wider">LinkedIn</a>
-                                <a href="mailto:contact@studio.com" className="hover:text-white transition-colors text-sm uppercase tracking-wider">Mail</a>
-                                <a href="#" className="hover:text-white transition-colors text-sm uppercase tracking-wider">Instagram</a>
-                                <a href="/legal" onClick={onClose} className="hover:text-white transition-colors text-sm uppercase tracking-wider text-gray-500">Legal</a>
+                            <div className="flex flex-wrap justify-center gap-x-6 gap-y-3 px-6 text-gray-500 text-center">
+                                <a href="https://github.com/toot7b" target="_blank" className="hover:text-white transition-colors text-xs md:text-sm uppercase tracking-wider">Github</a>
+                                <a href="https://www.linkedin.com/in/thomas-sarazin-11845a195/" target="_blank" className="hover:text-white transition-colors text-xs md:text-sm uppercase tracking-wider">LinkedIn</a>
+                                <a href="mailto:thomas.sarazin@bigxbang.studio" className="hover:text-white transition-colors text-xs md:text-sm uppercase tracking-wider">Mail</a>
+                                <a href="https://www.instagram.com/bigxbang.exe/" target="_blank" className="hover:text-white transition-colors text-xs md:text-sm uppercase tracking-wider">Instagram</a>
+                                <a href="/mentions-legales" onClick={onClose} className="hover:text-white transition-colors text-xs md:text-sm uppercase tracking-wider text-gray-500">Mentions Légales</a>
                             </div>
                         </motion.div>
-
                     </div>
                 </div>
             )}

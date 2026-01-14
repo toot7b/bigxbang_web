@@ -13,11 +13,11 @@ interface MinimalFooterProps {
 
 export default function MinimalFooter({ visible, className, iconClassName }: MinimalFooterProps) {
     const icons = [
-        { id: "github", icon: Github, href: "https://github.com/topics/portfolio", label: "Open Source" },
-        { id: "linkedin", icon: Linkedin, href: "#", label: "Connect" },
-        { id: "mail", icon: Mail, href: "mailto:contact@studio.com", label: "Contact" },
-        { id: "instagram", icon: Instagram, href: "#", label: "Vibe" },
-        { id: "legal", icon: Scale, href: "/legal", label: "Legal" },
+        { id: "github", icon: Github, href: "https://github.com/toot7b", label: "Open Source" },
+        { id: "linkedin", icon: Linkedin, href: "https://www.linkedin.com/in/thomas-sarazin-11845a195/", label: "Connect" },
+        { id: "mail", icon: Mail, href: "mailto:thomas.sarazin@bigxbang.studio", label: "Contact" },
+        { id: "instagram", icon: Instagram, href: "https://www.instagram.com/bigxbang.exe/", label: "Vibe" },
+        { id: "legal", icon: Scale, href: "/mentions-legales", label: "Mentions Légales" },
     ];
 
     return (
