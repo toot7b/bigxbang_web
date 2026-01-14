@@ -43,7 +43,7 @@ const MOBILE_STEPS = [
 const MOBILE_SERVICES = [
   {
     id: 1,
-    subtitle: "MODULE 01 // WEB",
+    subtitle: "WEB",
     title: "Expérience Web",
     description: "Le web n'est pas du papier. Oubliez les vitrines statiques. Nous concevons des interfaces immersives et réactives, taillées pour marquer les esprits. Pas juste pour afficher de l'information.",
     features: [
@@ -54,7 +54,7 @@ const MOBILE_SERVICES = [
   },
   {
     id: 2,
-    subtitle: "MODULE 02 // TECH",
+    subtitle: "TECH",
     title: "Solutions Techniques",
     description: "Les logiciels du marché ne font pas tout. Pour le reste, nous créons la réponse technique à vos contraintes.",
     features: [
@@ -65,7 +65,7 @@ const MOBILE_SERVICES = [
   },
   {
     id: 3,
-    subtitle: "MODULE 03 // BRAND",
+    subtitle: "BRAND",
     title: "Stratégie de Marque",
     description: "On ne code pas le flou. La puissance technique est vaine si le message est brouillé. Nous définissons votre singularité et votre discours pour que chaque interaction serve une intention claire.",
     features: [
@@ -135,18 +135,8 @@ function MobileLanding() {
       </section>
 
       {/* SERVICES */}
-      <section className="relative z-20 px-4 py-10 bg-black rounded-b-[40px]">
-        <div className="mb-6 text-center">
-          <div className="inline-flex items-center px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[11px] text-white/80 uppercase tracking-wider">
-            Les Services
-          </div>
-          <h2 className="text-2xl font-clash font-semibold mt-3">
-            Le Triptyque Fondamental
-          </h2>
-          <p className="text-sm text-gray-400 mt-2">
-            Nous ne sommes pas une agence 360°. Nous sommes spécialistes de trois domaines critiques qui ne devraient jamais être traités séparément.
-          </p>
-        </div>
+      {/* SERVICES */}
+      <section className="w-full">
         <MobileServicesStack services={MOBILE_SERVICES} />
       </section>
 

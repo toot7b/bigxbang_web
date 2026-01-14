@@ -2,6 +2,8 @@
 
 import React, { useRef } from "react";
 import Asterisk from "@/components/ui/Asterisk";
+import { GradientButton } from "@/components/ui/gradient-button";
+import { Link } from "next-view-transitions";
 import { motion, useScroll, useSpring, useTransform, useVelocity } from "framer-motion";
 
 interface ServiceData {
@@ -34,15 +36,15 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
     <section className="w-full pt-32 pb-32 bg-[#0a0a0a] overflow-hidden">
 
       {/* 1. SECTION HEADER */}
-      <div className="px-6 mb-12">
-        <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-purple-500/30 bg-purple-500/10 backdrop-blur-sm mb-6">
-          <span className="font-mono text-[10px] text-purple-400 uppercase tracking-widest">Offres</span>
+      <div className="relative z-10 flex flex-col items-start mb-20 px-6">
+        <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 backdrop-blur-sm mb-6">
+          <span className="font-mono text-[10px] text-blue-400 uppercase tracking-widest">Les Services</span>
         </div>
-        <h2 className="font-clash text-4xl font-bold text-white mb-4 leading-[1.1]">
-          Codez votre <br /><span className="text-[#306EE8]">Univers</span>
+        <h2 className="font-clash text-4xl font-bold text-white mb-6 leading-[1.1]">
+          Le Triptyque <br /><span className="text-[#306EE8]">Fondamental</span>
         </h2>
         <p className="font-jakarta text-base text-zinc-400 leading-relaxed max-w-sm">
-          Des solutions calibrées pour chaque étape de votre croissance.
+          Nous ne sommes pas une agence 360°. Nous sommes spécialistes de trois domaines critiques qui ne devraient jamais être traités séparément.
         </p>
       </div>
 
@@ -85,7 +87,9 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
                       </div>
                       <div className="p-3 space-y-2">
                         <div className="flex gap-2">
-                          <div className="w-8 h-8 rounded bg-white/10 animate-pulse" />
+                          <div className="w-8 h-8 rounded bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.2)] flex items-center justify-center">
+                            <Asterisk className="w-5 h-5 text-white" />
+                          </div>
                           <div className="flex-1 space-y-1.5 py-1">
                             <div className="h-2 bg-white/20 rounded w-full" />
                             <div className="h-2 bg-white/10 rounded w-2/3" />
@@ -108,24 +112,73 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
                   {/* SCÈNE 2: LE PROCESSEUR (Complex Circuitry) */}
                   {index === 1 && (
                     <div className="relative w-40 h-40 flex items-center justify-center">
-                      {/* SVG Circuit Traces */}
-                      <svg className="absolute inset-0 w-full h-full opacity-40" viewBox="0 0 160 160">
-                        <path d="M20,80 L60,80 M140,80 L100,80 M80,20 L80,60 M80,140 L80,100" stroke="#306EE8" strokeWidth="1" fill="none" />
-                        <path d="M30,30 L65,65 M130,130 L95,95 M30,130 L65,95 M130,30 L95,65" stroke="#306EE8" strokeWidth="0.5" fill="none" />
-                        {/* Animated signal dots */}
-                        <circle r="1.5" fill="#306EE8">
-                          <animateMotion dur="3s" repeatCount="indefinite" path="M20,80 L60,80" />
+                      {/* SVG Circuit Traces - PCB Style (matching desktop ElectricCircuitOverlay) */}
+                      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 160 160">
+                        {/* Glow filter */}
+                        <defs>
+                          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                            <feMerge>
+                              <feMergeNode in="coloredBlur" />
+                              <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                          </filter>
+                        </defs>
+
+                        {/* LEFT traces - VARIED elbow positions */}
+                        <path d="M0,45 L10,45 L10,55 L40,55" stroke="#306EE8" strokeWidth="1.5" fill="none" opacity="0.5" filter="url(#glow)" />
+                        <path d="M0,80 L30,80 L30,75 L40,75" stroke="#306EE8" strokeWidth="1.5" fill="none" opacity="0.5" filter="url(#glow)" />
+                        <path d="M0,115 L22,115 L22,105 L40,105" stroke="#306EE8" strokeWidth="1.5" fill="none" opacity="0.5" filter="url(#glow)" />
+
+                        {/* RIGHT traces - VARIED elbow positions (asymmetric from left) */}
+                        <path d="M160,50 L145,50 L145,60 L120,60" stroke="#306EE8" strokeWidth="1.5" fill="none" opacity="0.5" filter="url(#glow)" />
+                        <path d="M160,78 L130,78 L130,85 L120,85" stroke="#306EE8" strokeWidth="1.5" fill="none" opacity="0.5" filter="url(#glow)" />
+                        <path d="M160,120 L138,120 L138,100 L120,100" stroke="#306EE8" strokeWidth="1.5" fill="none" opacity="0.5" filter="url(#glow)" />
+
+
+                        {/* Connection nodes at chip edges */}
+                        <circle cx="40" cy="55" r="2" fill="#306EE8" opacity="0.6" />
+                        <circle cx="40" cy="75" r="2" fill="#306EE8" opacity="0.6" />
+                        <circle cx="40" cy="105" r="2" fill="#306EE8" opacity="0.6" />
+                        <circle cx="120" cy="60" r="2" fill="#306EE8" opacity="0.6" />
+                        <circle cx="120" cy="85" r="2" fill="#306EE8" opacity="0.6" />
+                        <circle cx="120" cy="100" r="2" fill="#306EE8" opacity="0.6" />
+
+                        {/* Animated pulses - staggered starts for smooth continuous flow */}
+                        <circle r="2" fill="white" opacity="0.8">
+                          <animateMotion dur="7.3s" begin="0s" repeatCount="indefinite" path="M0,45 L10,45 L10,55 L40,55" />
                         </circle>
-                        <circle r="1.5" fill="white">
-                          <animateMotion dur="2.5s" repeatCount="indefinite" path="M80,20 L80,60" />
+                        <circle r="2" fill="white" opacity="0.8">
+                          <animateMotion dur="9.1s" begin="1.5s" repeatCount="indefinite" path="M0,80 L30,80 L30,75 L40,75" />
+                        </circle>
+                        <circle r="2" fill="white" opacity="0.8">
+                          <animateMotion dur="6.2s" begin="3.2s" repeatCount="indefinite" path="M0,115 L22,115 L22,105 L40,105" />
+                        </circle>
+                        <circle r="2" fill="white" opacity="0.8">
+                          <animateMotion dur="8.4s" begin="0.8s" repeatCount="indefinite" path="M160,50 L145,50 L145,60 L120,60" />
+                        </circle>
+                        <circle r="2" fill="white" opacity="0.8">
+                          <animateMotion dur="5.7s" begin="2.4s" repeatCount="indefinite" path="M160,78 L130,78 L130,85 L120,85" />
+                        </circle>
+                        <circle r="2" fill="white" opacity="0.8">
+                          <animateMotion dur="10.3s" begin="4.1s" repeatCount="indefinite" path="M160,120 L138,120 L138,100 L120,100" />
                         </circle>
                       </svg>
 
                       {/* The Main Chip */}
                       <div className="relative z-10 w-20 h-20 bg-gradient-to-br from-zinc-800 to-black border-2 border-white/20 rounded shadow-[0_0_40px_rgba(48,110,232,0.3)] flex items-center justify-center">
                         <div className="absolute inset-0 border border-white/10 m-1" />
-                        <div className="w-10 h-10 border border-[#306EE8]/50 bg-[#306EE8]/5 flex items-center justify-center">
-                          <Asterisk className="w-6 h-6 text-[#306EE8] animate-pulse" />
+                        <div className="relative w-10 h-10 border border-[#306EE8]/50 bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.2)] flex items-center justify-center overflow-hidden">
+                          <Asterisk className="w-6 h-6 text-white relative z-10" />
+                          {/* Scroll-driven shine overlay */}
+                          <motion.div
+                            className="absolute inset-0 z-20 pointer-events-none"
+                            style={{
+                              background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.4) 45%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.4) 55%, transparent 60%)',
+                              backgroundSize: '300% 100%',
+                              backgroundPositionX: useTransform(scrollX, [0, 500], ['200%', '-200%']),
+                            }}
+                          />
                         </div>
                         {/* Hardware labels */}
                         <div className="absolute bottom-1 right-2 text-[6px] font-mono text-white/20">V.2.0</div>
@@ -162,10 +215,9 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
                   )}
                 </div>
 
-                {/* Badge Tech */}
-                <div className="absolute top-4 left-4 px-2 py-1 rounded bg-black/40 border border-white/10 backdrop-blur-md z-10">
+                <div className="absolute top-4 left-4 inline-flex w-auto px-2 py-1 rounded bg-black/40 border border-white/10 backdrop-blur-md z-10">
                   <span className="font-mono text-[10px] text-white/60 tracking-wider uppercase">
-                    PACK 0{index + 1}
+                    {service.subtitle}
                   </span>
                 </div>
               </div>
@@ -183,7 +235,7 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
                 <div className="space-y-4 mt-auto">
                   {service.features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <div className="mt-1 flex items-center justify-center w-5 h-5 rounded-full bg-[#306EE8]/20 border border-[#306EE8]/50 shrink-0">
+                      <div className="flex items-center justify-center w-5 h-5 rounded-full bg-[#306EE8]/20 border border-[#306EE8]/50 shrink-0">
                         <Asterisk className="w-2.5 h-2.5 text-white" />
                       </div>
                       <span className="font-jakarta text-sm text-gray-200 leading-snug">
@@ -193,11 +245,13 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
                   ))}
                 </div>
 
-                {/* Button Placeholder */}
+                {/* Button Standard */}
                 <div className="mt-8 pt-6 border-t border-white/5">
-                  <div className="text-center font-mono text-xs text-zinc-500 uppercase tracking-widest group-active:text-white transition-colors">
-                    Sélectionner
-                  </div>
+                  <Link href="/rendez-vous" className="w-full block">
+                    <GradientButton className="w-full h-[52px] text-base" theme="dark">
+                      En discuter
+                    </GradientButton>
+                  </Link>
                 </div>
               </div>
             </div>
