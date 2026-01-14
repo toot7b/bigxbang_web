@@ -14,6 +14,7 @@ import { useIsDesktop } from "@/lib/useIsDesktop";
 import { MobileProblemList } from "@/components/sections/mobile/MobileProblemList";
 import { motion } from "framer-motion";
 import MinimalFooter from "@/components/ui/MinimalFooter";
+import { GradientButton } from "@/components/ui/gradient-button";
 import { MobileMethodSteps } from "@/components/sections/mobile/MobileMethodSteps";
 import { MobileServicesStack } from "@/components/sections/mobile/MobileServicesStack";
 import { MobileManifesto } from "@/components/sections/mobile/MobileManifesto";
@@ -151,8 +152,7 @@ function MobileLanding() {
       {/* MANIFESTO Mobile */}
       <MobileManifesto />
 
-      {/* CTA */}
-      {/* CTA */}
+      {/* CTA - Desktop Style */}
       <motion.section
         id="contact"
         className="px-4 py-12 mt-0"
@@ -161,18 +161,17 @@ function MobileLanding() {
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8 }}
       >
-        <div className="p-6 rounded-2xl border border-white/10 bg-white/5 text-center">
+        <div className="p-6 rounded-3xl border border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_40px_rgba(48,110,232,0.2)] text-center">
           <h3 className="text-xl font-clash font-semibold mb-3">
             Assez parlé du futur.
           </h3>
           <p className="text-sm text-gray-300 mb-5">
             Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.
           </p>
-          <a
-            className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-white text-black font-semibold text-sm"
-            href="/rendez-vous"
-          >
-            Lancer mon projet
+          <a href="/rendez-vous">
+            <GradientButton theme="dark" hoverText="On y va ?">
+              Lancer mon projet
+            </GradientButton>
           </a>
         </div>
       </motion.section>

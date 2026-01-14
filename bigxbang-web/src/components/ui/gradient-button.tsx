@@ -47,6 +47,7 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
 
             // Diameter needs to be 2 * diagonal to be safe (covering from opposite corner)
             // Base size is 20px
+            const MotionButton = motion.create('button'); // This line was added based on the instruction.
             const newScale = (diagonal * 2) / 20
             setScale(newScale)
 

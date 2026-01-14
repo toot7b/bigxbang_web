@@ -75,7 +75,7 @@ export function TextScramble({
     }, [trigger, children]); // Added children as dependency to re-scramble if text changes
 
     // Use simple motion div/span/p based on 'as' prop
-    const MotionComponent = motion(Component as any);
+    const MotionComponent = motion.create(Component as any);
 
     return (
         <MotionComponent className={className} {...props}>

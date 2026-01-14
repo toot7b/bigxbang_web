@@ -100,10 +100,42 @@ export function MobileManifesto() {
     return (
         <section className="relative w-full bg-black overflow-hidden py-20 px-6">
 
-            {/* Background Ambience */}
+            {/* Background Ambience - Grid */}
             <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-[#306EE8]/10 to-transparent" />
-                <div className="absolute inset-0 opacity-10 [background-image:radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent [background-size:20px_20px]" />
+                {/* Dual Side Gradients - Matching QuantumFlowBackground */}
+                <div
+                    className="absolute top-0 left-0 w-[70%] h-[500px]"
+                    style={{
+                        background: 'radial-gradient(ellipse at 0% -10%, rgba(48, 110, 232, 0.35) 0%, transparent 65%)'
+                    }}
+                />
+                <div
+                    className="absolute top-0 right-0 w-[70%] h-[500px]"
+                    style={{
+                        background: 'radial-gradient(ellipse at 100% -10%, rgba(48, 110, 232, 0.35) 0%, transparent 65%)'
+                    }}
+                />
+                {/* Center Vignette (darker) */}
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        background: 'radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0, 0, 0, 0.4) 80%)'
+                    }}
+                />
+
+                {/* CSS Grid Pattern (Matching Desktop) */}
+                <div
+                    className="absolute inset-0 opacity-50"
+                    style={{
+                        backgroundImage: `
+                            linear-gradient(to right, rgba(120, 120, 120, 0.4) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(120, 120, 120, 0.4) 1px, transparent 1px)
+                        `,
+                        backgroundSize: '40px 40px',
+                        maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)'
+                    }}
+                />
             </div>
 
             {/* Header */}

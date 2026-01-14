@@ -203,6 +203,7 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
                               cy={15 + i * 15} r="3" fill="#306EE8"
                             />
                             <motion.line
+                              initial={{ x1: 20, x2: 80 }}
                               animate={{ x1: [20, 80, 20], x2: [80, 20, 80] }}
                               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: i * 0.2 }}
                               y1={15 + i * 15} y2={15 + i * 15}
