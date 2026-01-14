@@ -239,7 +239,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                 ref={sectionRef}
                 className={cn(
                     "relative z-10 w-full min-h-screen bg-white text-black overflow-hidden rounded-b-[60px]",
-                    compact ? "-mt-[40px] pt-24 pb-16" : "-mt-[100px] pt-[100px]"
+                    compact ? "-mt-[60px] pt-40 pb-16" : "-mt-[100px] pt-[100px]"
                 )}
             >
                 {/* Theme Trigger - Offset by 50px to fine-tune entry timing */}
@@ -268,14 +268,14 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                     </div>
 
                     {/* HEADER */}
-                    <div className="text-center max-w-4xl px-4 mt-40 mb-16">
-                        <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-black/10 bg-black/5 backdrop-blur-sm mb-6">
-                            <span className="font-jakarta text-xs font-medium text-black/80 uppercase tracking-wider">LE LABO</span>
+                    <div className="text-center md:text-center max-w-4xl px-4 md:px-4 mt-40 mb-16 flex flex-col items-start md:items-center px-6 md:px-0">
+                        <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 backdrop-blur-sm mb-6">
+                            <span className="font-mono text-[10px] text-blue-600 uppercase tracking-widest">LE LABO</span>
                         </div>
-                        <h1 className="font-clash text-3xl md:text-5xl font-medium text-black mb-4">
+                        <h1 className="font-clash text-4xl md:text-5xl font-medium text-black mb-6 leading-[1.1] text-left md:text-center">
                             Les Protocoles <span className="text-[#306EE8]">Expérimentaux</span>
                         </h1>
-                        <h2 className="font-jakarta text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed text-black/80">
+                        <h2 className="font-jakarta text-base md:text-lg text-zinc-600 max-w-sm md:max-w-2xl mx-auto leading-relaxed text-left md:text-center text-black/80">
                             Un terrain de jeu pour repousser les limites, éprouver le code et explorer l'IA. Ces prototypes deviendront vos standards de demain.
                         </h2>
                     </div>

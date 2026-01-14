@@ -8,9 +8,10 @@ import { motion } from "framer-motion";
 interface MinimalFooterProps {
     visible: boolean;
     className?: string;
+    iconClassName?: string;
 }
 
-export default function MinimalFooter({ visible, className }: MinimalFooterProps) {
+export default function MinimalFooter({ visible, className, iconClassName }: MinimalFooterProps) {
     const icons = [
         { id: "github", icon: Github, href: "https://github.com/topics/portfolio", label: "Open Source" },
         { id: "linkedin", icon: Linkedin, href: "#", label: "Connect" },
@@ -30,7 +31,7 @@ export default function MinimalFooter({ visible, className }: MinimalFooterProps
             <div className="flex items-center gap-8">
                 {icons.map((item, index) => (
                     <FooterIcon key={item.id} href={item.href} visible={visible} index={index}>
-                        <item.icon className="w-5 h-5 transition-all duration-300" />
+                        <item.icon className={cn("transition-all duration-300", iconClassName ? iconClassName : "w-5 h-5")} />
                     </FooterIcon>
                 ))}
             </div>

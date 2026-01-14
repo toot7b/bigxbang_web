@@ -33,7 +33,7 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
   const tilt = useTransform(smoothVelocity, [-1500, 1500], [-25, 25]);
 
   return (
-    <section className="w-full pt-32 pb-32 bg-[#0a0a0a] overflow-hidden">
+    <section className="w-full pt-32 pb-16 bg-[#0a0a0a] overflow-hidden rounded-b-[60px] relative z-20 md:rounded-none md:z-auto">
 
       {/* 1. SECTION HEADER */}
       <div className="relative z-10 flex flex-col items-start mb-20 px-6">
@@ -262,12 +262,6 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
         <div className="w-1 shrink-0" />
       </div>
 
-      {/* Scroll Hint */}
-      <div className="text-center mt-6">
-        <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-[0.2em] animate-pulse">
-          Swipe pour découvrir &rarr;
-        </span>
-      </div>
 
     </section>
   );

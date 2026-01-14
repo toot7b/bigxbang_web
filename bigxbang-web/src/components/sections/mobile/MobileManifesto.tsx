@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { cn } from "@/lib/utils";
+import { motion, useScroll, useTransform } from "framer-motion";
+import Asterisk from "@/components/ui/Asterisk";
 
 const MANIFESTO_ITEMS = [
     {
@@ -26,47 +28,110 @@ const MANIFESTO_ITEMS = [
     },
 ];
 
+const TimelineItem = ({ item, isLast }: { item: typeof MANIFESTO_ITEMS[0], index: number, isLast: boolean }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Scroll-Linked Animation - démarre bien avant le viewport
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start 1.5", "end 0.2"] // Démarre 50% avant le viewport
+    });
+
+    // Le wire se dessine de 25% à 55%
+    const clipPath = useTransform(
+        scrollYProgress,
+        [0.25, 0.55],
+        ["inset(0 0 100% 0)", "inset(0 0 0% 0)"]
+    );
+
+    // Le texte apparaît de 18% à 28%
+    const textOpacity = useTransform(scrollYProgress, [0.18, 0.28], [0, 1]);
+    const textX = useTransform(scrollYProgress, [0.18, 0.28], [-10, 0]);
+
+    return (
+        <div
+            ref={containerRef}
+            className={cn("flex gap-6 relative", isLast ? "min-h-[150px] pb-0" : "min-h-[400px]")}
+        >
+
+            {/* LEFT: TIMELINE COLUMN */}
+            <div className="flex flex-col items-center w-12 shrink-0">
+
+                {/* 1. THE NODE (Standard Reveal) */}
+                <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    transition={{ duration: 0.4, ease: "backOut" }}
+                    className="relative z-20 w-12 h-12 rounded-full border border-[#306EE8] bg-black flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(48,110,232,0.3)]"
+                >
+                    <Asterisk className="w-5 h-5 text-white" />
+                </motion.div>
+
+                {/* 2. THE WIRE (Scroll Linked) */}
+                {!isLast && (
+                    <div className="flex-1 w-[2px] bg-zinc-900 relative mt-[-1px] mb-[-1px]">
+                        <motion.div
+                            style={{ clipPath }}
+                            className="absolute top-0 left-0 w-full h-full bg-[#306EE8] shadow-[0_0_10px_rgba(48,110,232,0.5)]"
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* RIGHT: TEXT CONTENT (Scroll Linked) */}
+            <motion.div
+                style={{ opacity: textOpacity, x: textX }}
+                className="flex flex-col pt-1 pb-16"
+            >
+                <h3 className="font-clash text-2xl font-bold text-white mb-4 leading-tight">
+                    {item.title}
+                </h3>
+                <p className="font-jakarta text-zinc-300 text-base leading-relaxed max-w-sm">
+                    {item.desc}
+                </p>
+            </motion.div>
+
+        </div>
+    );
+};
+
 export function MobileManifesto() {
     return (
-        <section className="relative w-full px-6 py-20 flex flex-col gap-16 bg-white overflow-hidden">
+        <section className="relative w-full bg-black overflow-hidden py-20 px-6">
+
+            {/* Background Ambience */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <div className="absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-[#306EE8]/10 to-transparent" />
+                <div className="absolute inset-0 opacity-10 [background-image:radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent [background-size:20px_20px]" />
+            </div>
 
             {/* Header */}
-            <div className="text-center mb-4">
-                <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-black/10 bg-black/5 mb-6">
-                    <span className="font-jakarta text-xs font-medium text-black/80">MANIFESTO</span>
+            <div className="flex flex-col items-start relative z-10 mb-16">
+                <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 backdrop-blur-sm mb-6">
+                    <span className="font-mono text-[10px] text-blue-400 uppercase tracking-widest">MANIFESTO</span>
                 </div>
-                <h2 className="font-clash text-4xl font-medium text-black mb-4">
-                    Le Signal dans le <span className="text-[#306EE8]">Bruit</span>
-                </h2>
-                <p className="font-jakarta text-sm text-gray-600 leading-relaxed max-w-sm mx-auto">
+                <h1 className="font-clash text-4xl font-bold text-white mb-6 leading-[1.1]">
+                    Le Signal dans <br /><span className="text-[#306EE8]">le Bruit</span>
+                </h1>
+
+                <p className="font-jakarta text-base text-zinc-400 leading-relaxed max-w-sm">
                     L'époque est à la saturation. Pour exister, il ne suffit plus de parler plus fort. Il faut parler plus juste. Voici nos convictions.
                 </p>
             </div>
 
-            {/* Simpler Vertical Stack for Mobile */}
-            <div className="relative flex flex-col gap-12">
-                {/* Connecting Line */}
-                <div className="absolute left-4 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-[#306EE8]/20 to-transparent" />
-
+            {/* The Timeline Stack */}
+            <div className="flex flex-col relative z-10">
                 {MANIFESTO_ITEMS.map((item, i) => (
-                    <div key={i} className="relative flex items-start gap-6">
-                        {/* Dot Marker - Visual Match: Solid Gray Border */}
-                        <div className="relative z-10 flex-shrink-0 mt-1">
-                            <div className="w-14 h-14 rounded-full border-2 border-gray-600 bg-[#0a0a0a] shadow-[0_0_15px_rgba(0,0,0,0.2)] transition-all duration-500 active:scale-110 active:border-[#306EE8] active:shadow-[0_0_30px_rgba(48,110,232,0.6)]" />
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 pt-1">
-                            <h3 className="font-clash text-xl font-bold mb-2 text-black">{item.title}</h3>
-                            <p className="font-jakarta text-sm text-gray-600 leading-relaxed border-l-2 border-black/5 pl-4 ml-0">
-                                {item.desc}
-                            </p>
-                        </div>
-                    </div>
+                    <TimelineItem
+                        key={i}
+                        item={item}
+                        index={i}
+                        isLast={i === MANIFESTO_ITEMS.length - 1}
+                    />
                 ))}
             </div>
 
-            <div className="h-10" /> {/* Spacer */}
         </section>
     );
 }

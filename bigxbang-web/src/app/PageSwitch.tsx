@@ -12,6 +12,8 @@ import Manifesto from "@/components/sections/Manifesto";
 import ScrollHandler from "@/components/ui/ScrollHandler";
 import { useIsDesktop } from "@/lib/useIsDesktop";
 import { MobileProblemList } from "@/components/sections/mobile/MobileProblemList";
+import { motion } from "framer-motion";
+import MinimalFooter from "@/components/ui/MinimalFooter";
 import { MobileMethodSteps } from "@/components/sections/mobile/MobileMethodSteps";
 import { MobileServicesStack } from "@/components/sections/mobile/MobileServicesStack";
 import { MobileManifesto } from "@/components/sections/mobile/MobileManifesto";
@@ -150,24 +152,33 @@ function MobileLanding() {
       <MobileManifesto />
 
       {/* CTA */}
-      <section id="contact" className="px-4 py-12">
+      {/* CTA */}
+      <motion.section
+        id="contact"
+        className="px-4 py-12 mt-0"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="p-6 rounded-2xl border border-white/10 bg-white/5 text-center">
           <h3 className="text-xl font-clash font-semibold mb-3">
-            On automatise pour toi ?
+            Assez parlé du futur.
           </h3>
           <p className="text-sm text-gray-300 mb-5">
-            Un call de 20 minutes pour voir ce qui débloque le plus vite.
+            Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.
           </p>
           <a
             className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-white text-black font-semibold text-sm"
-            href="https://calendar.app.google/qk7pa13Mu3fP3ex16"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/rendez-vous"
           >
-            Book un créneau
+            Lancer mon projet
           </a>
         </div>
-      </section>
+      </motion.section>
+
+      {/* FOOTER */}
+      <MinimalFooter visible={true} iconClassName="w-6 h-6" className="pb-12" />
     </main>
   );
 }
