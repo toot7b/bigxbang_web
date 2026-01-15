@@ -25,7 +25,7 @@
 
 Ce dépôt contient le code source du site vitrine de **BigXBang Studio**, une agence digitale spécialisée dans :
 - 🚀 **Expériences web immersives** 
-- ⚙️ **Automatisation de processus**
+- ⚙️ **Automatisation et développement**
 - 🎨 **Stratégie de marque**
 
 ---
