@@ -6,18 +6,18 @@ import { useEffect, useState } from "react";
 import NavOverlay from "./NavOverlay";
 import { useSectionTheme } from "@/hooks/useSectionTheme";
 
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { GradientButton } from "@/components/ui/gradient-button";
 
-interface NavbarProps {
-    forceOpaqueMobile?: boolean;
-}
-
-export default function Navbar({ forceOpaqueMobile = false }: NavbarProps) {
+export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const pathname = usePathname();
     const theme = useSectionTheme();
     const [isScrolled, setIsScrolled] = useState(false);
+
+    // Page-specific behaviors
+    const isLegalPage = pathname === "/mentions-legales";
+    const isRendezVous = pathname === "/rendez-vous";
 
     // Close menu when route changes
     useEffect(() => {
@@ -39,9 +39,12 @@ export default function Navbar({ forceOpaqueMobile = false }: NavbarProps) {
 
     // Mobile: Transparent at top, Black + Border when scrolled
     // Desktop: Always transparent
-    const mobileClasses = (isScrolled || forceOpaqueMobile)
+    const mobileClasses = (isScrolled || isRendezVous)
         ? "bg-black border-b-[0.5px] border-white/15"
         : "bg-transparent border-transparent";
+
+    // Skip rendering if on legal page
+    if (isLegalPage) return null;
 
     return (
         <>

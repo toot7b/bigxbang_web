@@ -1,7 +1,12 @@
-
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { GradientButton } from '@/components/ui/gradient-button';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Mentions Légales',
+    description: 'Informations légales, protection des données (RGPD) et crédits du site BigxBang Studio.',
+};
 
 export default function MentionsLegales() {
     return (
@@ -73,7 +78,7 @@ export default function MentionsLegales() {
                             </a>
                         </p>
                         <p>
-                            Toute reproduction, représentation, modification, publication ou adaptation des contenus éditoriaux (textes, images, marque BigXBang, logo) sans autorisation écrite préalable reste strictement interdite.<br />
+                            Toute reproduction, représentation, modification, publication ou adaptation des contenus éditoriaux (textes, images, marque BigxBang, logo) sans autorisation écrite préalable reste strictement interdite.<br />
                             Toute exploitation non autorisée des contenus éditoriaux constitue une contrefaçon susceptible d'engager la responsabilité de son auteur (articles L.335-2 et suivants du Code de la propriété intellectuelle).
                         </p>
                     </section>
@@ -202,7 +207,7 @@ export default function MentionsLegales() {
                             <div>
                                 <p className="mb-1"><strong>Ressources graphiques :</strong></p>
                                 <ul className="list-disc pl-5 text-white/80 text-sm">
-                                    <li>Illustrations originales : BigXBang Studio</li>
+                                    <li>Illustrations originales : BigxBang Studio</li>
                                     <li>Icônes : Lucide React</li>
                                     <li>Animations : LottieFiles & GSAP</li>
                                 </ul>

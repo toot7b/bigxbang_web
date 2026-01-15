@@ -4,6 +4,7 @@ import React from "react";
 import { Github, Linkedin, Mail, Instagram, Scale } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 interface MinimalFooterProps {
     visible: boolean;
@@ -40,25 +41,10 @@ export default function MinimalFooter({ visible, className, iconClassName }: Min
 }
 
 function FooterIcon({ children, href, visible, index }: { children: React.ReactNode, href: string, visible: boolean, index: number }) {
-    return (
-        <motion.a
-            href={href}
-            target={href.startsWith('http') ? "_blank" : "_self"}
-            rel="noopener noreferrer"
-            // CSS: Only transition colors/bg options. NO transform/all transitions.
-            className="group relative p-3 rounded-full transition-colors duration-300 hover:bg-white/5"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{
-                opacity: visible ? 1 : 0,
-                y: visible ? 0 : 20
-            }}
-            whileHover={{ scale: 1.1 }}
-            transition={{
-                duration: 0.5,
-                delay: visible ? 0.3 + (index * 0.1) : 0,
-                ease: "easeOut"
-            }}
-        >
+    const isInternal = !href.startsWith('http') && !href.startsWith('mailto');
+
+    const content = (
+        <>
             {/* HOVER GLOW - The "Sympa" Glow */}
             <div className="absolute inset-0 rounded-full bg-[#306EE8] blur-md opacity-0 group-hover:opacity-40 transition-opacity duration-300 scale-125" />
 
@@ -66,6 +52,42 @@ function FooterIcon({ children, href, visible, index }: { children: React.ReactN
             <div className="relative z-10 text-white/40 group-hover:text-[#306EE8] group-hover:drop-shadow-[0_0_8px_rgba(48,110,232,0.8)] transition-colors duration-300">
                 {children}
             </div>
+        </>
+    );
+
+    const commonProps: any = {
+        className: "group relative p-3 rounded-full transition-colors duration-300 hover:bg-white/5",
+        initial: { opacity: 0, y: 20 },
+        animate: {
+            opacity: visible ? 1 : 0,
+            y: visible ? 0 : 20
+        },
+        whileHover: { scale: 1.1 },
+        transition: {
+            duration: 0.5,
+            delay: visible ? 0.3 + (index * 0.1) : 0,
+            ease: "easeOut"
+        }
+    };
+
+    if (isInternal) {
+        return (
+            <motion.div {...commonProps}>
+                <Link href={href}>
+                    {content}
+                </Link>
+            </motion.div>
+        );
+    }
+
+    return (
+        <motion.a
+            href={href}
+            target={href.startsWith('http') ? "_blank" : "_self"}
+            rel="noopener noreferrer"
+            {...commonProps}
+        >
+            {content}
         </motion.a>
     );
 }

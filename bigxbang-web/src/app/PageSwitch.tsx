@@ -1,7 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
-import Navbar from "@/components/layout/Navbar";
+import { Suspense, useState, useEffect } from "react";
 import Hero from "@/components/sections/Hero";
 import Problem from "@/components/sections/Problem";
 import Method from "@/components/sections/Method";
@@ -18,6 +17,7 @@ import { GradientButton } from "@/components/ui/gradient-button";
 import { MobileMethodSteps } from "@/components/sections/mobile/MobileMethodSteps";
 import { MobileServicesStack } from "@/components/sections/mobile/MobileServicesStack";
 import { MobileManifesto } from "@/components/sections/mobile/MobileManifesto";
+import Link from "next/link";
 
 const MOBILE_PROBLEMS = [
   { id: 1, label: "Le Décalage", description: "Une identité visuelle en dessous de la qualité réelle de vos services." },
@@ -108,7 +108,6 @@ function DesktopLanding() {
       <Suspense fallback={null}>
         <ScrollHandler />
       </Suspense>
-      <Navbar />
       <Hero />
       <Problem />
       <Method />
@@ -123,34 +122,38 @@ function DesktopLanding() {
 function MobileLanding() {
   return (
     <main className="bg-black text-white min-h-screen">
-      <Navbar />
+      <Suspense fallback={null}>
+        <ScrollHandler />
+      </Suspense>
       <Hero />
 
       {/* PROBLEM */}
-      {/* PROBLEM */}
-      <section className="px-4 pb-10">
+      <section id="probleme" className="px-4 pb-10">
         <MobileProblemList problems={MOBILE_PROBLEMS} />
       </section>
 
       {/* METHOD */}
-      <section className="w-full">
+      <section id="methode" className="w-full">
         <MobileMethodSteps steps={MOBILE_STEPS} />
       </section>
 
       {/* SERVICES */}
-      {/* SERVICES */}
-      <section className="w-full">
+      <section id="services" className="w-full">
         <MobileServicesStack services={MOBILE_SERVICES} />
       </section>
 
       {/* CASE STUDIES (Bento d'origine) */}
-      <CaseStudies compact />
+      <section id="case-studies">
+        <CaseStudies compact />
+      </section>
 
       {/* TOOLS */}
       <Tools />
 
       {/* MANIFESTO Mobile */}
-      <MobileManifesto />
+      <section id="manifesto">
+        <MobileManifesto />
+      </section>
 
       {/* CTA - Desktop Style */}
       <motion.section
@@ -168,11 +171,11 @@ function MobileLanding() {
           <p className="text-sm text-zinc-200 mb-5">
             Vous avez la vision. Nous avons l'arsenal. Il est temps de connecter les deux.
           </p>
-          <a href="/rendez-vous">
+          <Link href="/rendez-vous">
             <GradientButton theme="dark" hoverText="On y va ?">
               Lancer mon projet
             </GradientButton>
-          </a>
+          </Link>
         </div>
       </motion.section>
 
@@ -183,6 +186,16 @@ function MobileLanding() {
 }
 
 export default function PageSwitch() {
+  const [mounted, setMounted] = useState(false);
   const isDesktop = useIsDesktop(1024, true);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="bg-black min-h-screen" />;
+  }
+
   return isDesktop ? <DesktopLanding /> : <MobileLanding />;
 }

@@ -5,7 +5,7 @@ import gsap from "gsap";
 import "@/styles/horizon.css";
 import Asterisk from "@/components/ui/Asterisk";
 import { GradientButton } from "@/components/ui/gradient-button";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 
 export default function Hero() {
     const heroRef = useRef<HTMLDivElement>(null);
@@ -101,8 +101,8 @@ export default function Hero() {
                 {/* Particles Container */}
                 <div id="particles-container" className="absolute inset-0 overflow-hidden"></div>
 
-                {/* Restored Static Ambience (Subtle) */}
-                <div className="hero-glow absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[120%] h-[50%] bg-[#306EE8]/5 blur-[100px] rounded-full pointer-events-none"></div>
+                {/* Restored Static Ambience (Subtle) - Optimized for Mobile */}
+                <div className="hero-glow absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[120%] h-[50%] bg-[#306EE8]/5 blur-[60px] md:blur-[100px] rounded-full pointer-events-none"></div>
             </div>
 
             {/* Content */}

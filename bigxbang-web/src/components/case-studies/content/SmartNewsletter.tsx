@@ -151,7 +151,7 @@ export default function SmartNewsletter({ mode = 'page', onClose }: SmartNewslet
                 </InfoBox>
 
                 <InfoBox title="C'est quoi l'open source ?">
-                    <Strong>Open source</Strong> signifie que le code du logiciel est public et modifiable par tout le monde. C&apos;est l&apos;opposé des logiciels propriétaires (comme ceux de Google ou OpenAI) où le code est secret. Chez BigXBang, on préfère l&apos;open source parce que ça nous donne <Strong>l&apos;autonomie</Strong> : on ne dépend pas d&apos;une entreprise qui peut changer ses prix ou ses conditions du jour au lendemain.
+                    <Strong>Open source</Strong> signifie que le code du logiciel est public et modifiable par tout le monde. C&apos;est l&apos;opposé des logiciels propriétaires (comme ceux de Google ou OpenAI) où le code est secret. Chez BigxBang, on préfère l&apos;open source parce que ça nous donne <Strong>l&apos;autonomie</Strong> : on ne dépend pas d&apos;une entreprise qui peut changer ses prix ou ses conditions du jour au lendemain.
                 </InfoBox>
 
                 <Paragraph>
@@ -188,17 +188,17 @@ export default function SmartNewsletter({ mode = 'page', onClose }: SmartNewslet
                 ]} />
 
                 <Paragraph>
-                    Le rapport est envoyé par email à BigXBang via un service d&apos;envoi d&apos;emails (SendGrid). <Strong>Zéro intervention manuelle.</Strong>
+                    Le rapport est envoyé par email à BigxBang via un service d&apos;envoi d&apos;emails (SendGrid). <Strong>Zéro intervention manuelle.</Strong>
                 </Paragraph>
 
                 <SectionTitle>Exemple de rapport reçu</SectionTitle>
                 <Paragraph>
-                    Voici à quoi ressemble le rapport que BigXBang reçoit chaque jeudi matin :
+                    Voici à quoi ressemble le rapport que BigxBang reçoit chaque jeudi matin :
                 </Paragraph>
 
                 <EmailTemplate
                     title="📋 Veille juridique - Semaine 2025-W05"
-                    greeting="Bonjour BigXBang,"
+                    greeting="Bonjour BigxBang,"
                     intro="8 textes pertinents cette semaine pour Bogati Avocats. Voici la sélection triée par pertinence."
                     tasks={[
                         {
@@ -217,7 +217,7 @@ export default function SmartNewsletter({ mode = 'page', onClose }: SmartNewslet
                     ctaText="Voir tous les textes sur Légifrance"
                     ctaUrl="https://www.legifrance.gouv.fr/jorf/jo"
                     footerItems={["Rapport généré automatiquement", "5 autres textes en annexe"]}
-                    signature="Le système de veille BigXBang"
+                    signature="Le système de veille BigxBang"
                 />
             </Section>
 
@@ -240,7 +240,7 @@ export default function SmartNewsletter({ mode = 'page', onClose }: SmartNewslet
                 ]} />
 
                 <Paragraph>
-                    Ces guidelines sont définies une fois, au départ. Ensuite, chaque semaine, BigXBang reçoit le rapport et rédige la newsletter en suivant ces règles.
+                    Ces guidelines sont définies une fois, au départ. Ensuite, chaque semaine, BigxBang reçoit le rapport et rédige la newsletter en suivant ces règles.
                 </Paragraph>
 
                 <SectionTitle>Ce que l&apos;IA ne sait pas faire</SectionTitle>

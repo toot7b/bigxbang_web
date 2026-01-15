@@ -11,7 +11,7 @@ const META = {
     slug: "notre-methode",
     title: "Notre Méthode",
     subtitle: "Une approche chirurgicale pour transformer le chaos en clarté. Trois étapes, zéro bullshit.",
-    badge: "La Méthode BigXBang",
+    badge: "La Méthode BigxBang",
 };
 
 interface MethodDetailsProps {

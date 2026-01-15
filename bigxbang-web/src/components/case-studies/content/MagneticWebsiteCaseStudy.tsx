@@ -352,12 +352,12 @@ void main() {
             {/* POURQUOI ON FAIT ÇA */}
             <Section>
                 <SectionHeader icon={<IconBox animation={BrainIcon} />}>
-                    Pourquoi on kiffe faire ça chez BigXBang
+                    Pourquoi on kiffe faire ça chez BigxBang
                 </SectionHeader>
 
                 <SectionTitle>1. On croit que le web peut être mieux</SectionTitle>
                 <Paragraph>
-                    99% des sites web sont des brochures numériques. On scroll, on lit, on part. Chez BigXBang, on pense que le web peut être <Strong>une expérience</Strong>. Quelque chose qu&apos;on vit, pas qu&apos;on subit.
+                    99% des sites web sont des brochures numériques. On scroll, on lit, on part. Chez BigxBang, on pense que le web peut être <Strong>une expérience</Strong>. Quelque chose qu&apos;on vit, pas qu&apos;on subit.
                 </Paragraph>
 
                 <SectionTitle>2. La technique au service du business</SectionTitle>

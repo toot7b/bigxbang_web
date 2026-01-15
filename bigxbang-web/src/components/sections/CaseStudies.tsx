@@ -35,6 +35,9 @@ const LottieHeader = ({ animationData }: { animationData: object }) => {
 
     // Use MutationObserver to detect when parent card is hovered (via group-hover class)
     React.useEffect(() => {
+        // Disable animation triggers on mobile/tablet to keep them "frozen" as requested
+        if (window.innerWidth < 1024) return;
+
         const container = containerRef.current;
         if (!container) return;
 
@@ -78,6 +81,9 @@ const SkeletonCore = () => {
     const containerRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
+        // Disable animation triggers on mobile/tablet to keep them "frozen" as requested
+        if (window.innerWidth < 1024) return;
+
         const container = containerRef.current;
         if (!container) return;
 
@@ -187,8 +193,7 @@ const items = [
 
 export default function CaseStudies({ compact = false }: { compact?: boolean } = {}) {
     const sectionRef = useRef<HTMLElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
-    const overlayRef = useRef<HTMLDivElement>(null);
+    const [bentoVisible, setBentoVisible] = useState(false);
     const [openStudy, setOpenStudy] = useState<string | null>(null);
     const lenis = useLenis();
 
@@ -202,62 +207,29 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
         }
     }, [openStudy, lenis]);
 
-    const [bentoVisible, setBentoVisible] = useState(false);
-
     useEffect(() => {
-        const ctx = gsap.context(() => {
-            if (!sectionRef.current || !contentRef.current || !overlayRef.current) return;
-
-            // PARALLAX + REVEAL ANIMATION
-            ScrollTrigger.create({
-                trigger: sectionRef.current,
-                start: "top bottom",
-                end: "top top",
-                scrub: true,
-                onUpdate: (self) => {
-                    const progress = self.progress;
-                    const yPercent = -50 + (50 * progress);
-                    contentRef.current!.style.transform = `translateY(${yPercent}%)`;
-                    overlayRef.current!.style.opacity = `${1 - progress}`;
-
-                    // Trigger Bento animation when overlay is fully gone
-                    if (progress > 0.98 && !bentoVisible) {
-                        setBentoVisible(true);
-                    }
-                }
-            });
-
-
-        }, sectionRef);
-
-        return () => ctx.revert();
-    }, [bentoVisible]);
+        // Simple mount trigger for bento animation
+        setBentoVisible(true);
+    }, []);
 
     return (
         <div id="case-studies" className="scroll-mt-[100px]">
             <section
                 ref={sectionRef}
                 className={cn(
-                    "relative z-10 w-full min-h-screen bg-white text-black overflow-hidden rounded-b-[60px]",
-                    compact ? "-mt-[60px] pt-40 pb-16" : "-mt-[100px] pt-[100px]"
+                    "relative z-10 w-full min-h-screen bg-white text-black overflow-hidden",
+                    compact ? "pt-24 pb-16" : "pt-24 pb-20"
                 )}
             >
-                {/* Theme Trigger - Offset by 50px to fine-tune entry timing */}
-                <div data-theme="light" className="absolute top-[50px] left-0 right-0 bottom-0 pointer-events-none -z-10" />
-                {/* DIMMING OVERLAY */}
-                <div
-                    ref={overlayRef}
-                    className="absolute inset-0 bg-black z-20 pointer-events-none"
-                />
+                {/* Theme Trigger */}
+                <div data-theme="light" className="absolute inset-0 pointer-events-none -z-10" />
 
                 {/* CONTENT CONTAINER */}
                 <div
-                    ref={contentRef}
                     className="relative z-10 w-full min-h-screen flex flex-col justify-center items-center p-4 md:p-8"
-                    style={{ transform: 'translateY(-50%)' }}
                 >
-                    {/* SUBTLE DOT BACKGROUND - Increased visibility */}
-                    <div className="absolute top-64 -bottom-32 left-1/2 -translate-x-1/2 w-[140vw] z-[-1] pointer-events-none">
+                    {/* SUBTLE DOT BACKGROUND */}
+                    <div className="absolute inset-0 z-[-1] pointer-events-none">
                         <div className={cn(
                             "absolute inset-0 h-full w-full",
                             "[background-size:20px_20px]",
@@ -268,7 +240,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                     </div>
 
                     {/* HEADER */}
-                    <div className="text-center md:text-center max-w-4xl px-4 md:px-4 mt-40 mb-16 flex flex-col items-start md:items-center px-6 md:px-0">
+                    <div className="text-center md:text-center max-w-4xl px-4 md:px-4 mt-0 mb-16 flex flex-col items-start md:items-center px-6 md:px-0">
                         {/* Unified Badge - Standard matte style adapted for light bg */}
                         <div className="inline-flex items-center justify-center px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-blue-500/30 md:border-black/10 bg-blue-500/10 md:bg-black/5 backdrop-blur-sm mb-6 transition-colors duration-300">
                             <span className="font-mono md:font-jakarta text-[10px] md:text-xs text-blue-400 md:font-medium md:text-black/80 uppercase tracking-widest md:tracking-normal">LE LABO</span>
@@ -370,7 +342,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                         initial={{ y: "100%" }}
                         animate={{ y: "0%" }}
                         exit={{ y: "100%" }}
-                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                         className="fixed inset-0 z-[200] overflow-y-auto bg-black"
                         data-lenis-prevent
                     >
@@ -382,7 +354,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                         initial={{ y: "100%" }}
                         animate={{ y: "0%" }}
                         exit={{ y: "100%" }}
-                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                         className="fixed inset-0 z-[200] overflow-y-auto bg-black"
                         data-lenis-prevent
                     >
@@ -394,7 +366,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                         initial={{ y: "100%" }}
                         animate={{ y: "0%" }}
                         exit={{ y: "100%" }}
-                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                         className="fixed inset-0 z-[200] overflow-y-auto bg-black"
                         data-lenis-prevent
                     >
@@ -406,7 +378,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                         initial={{ y: "100%" }}
                         animate={{ y: "0%" }}
                         exit={{ y: "100%" }}
-                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                         className="fixed inset-0 z-[200] overflow-y-auto bg-black"
                         data-lenis-prevent
                     >
@@ -418,7 +390,7 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
                         initial={{ y: "100%" }}
                         animate={{ y: "0%" }}
                         exit={{ y: "100%" }}
-                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                         className="fixed inset-0 z-[200] overflow-y-auto bg-black"
                         data-lenis-prevent
                     >

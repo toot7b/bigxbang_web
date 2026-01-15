@@ -17,36 +17,12 @@ export default function Tools() {
     const sectionRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            if (!sectionRef.current || !contentRef.current) return;
-
-            // PARALLAX + REVEAL ANIMATION (Identical to CaseStudies but White Overlay -> Black BG)
-            ScrollTrigger.create({
-                trigger: sectionRef.current,
-                start: "top bottom",
-                end: "top top",
-                scrub: true,
-                onUpdate: (self) => {
-                    const progress = self.progress;
-                    const yPercent = -50 + (50 * progress);
-
-                    // Slide content up from -50% to 0%
-                    contentRef.current!.style.transform = `translateY(${yPercent}%)`;
-                }
-            });
-
-        }, sectionRef);
-
-        return () => ctx.revert();
-    }, []);
-
     return (
         <div id="tools" className="scroll-mt-[100px]">
             <section
                 ref={sectionRef}
                 data-theme="dark"
-                className="relative z-0 w-full min-h-screen text-white -mt-[60px] pt-40 overflow-hidden"
+                className="relative z-0 w-full min-h-screen text-white pt-24 pb-20 overflow-hidden"
             >
                 <div className="absolute inset-0 z-0">
                     <QuantumFlowBackground />
@@ -56,7 +32,6 @@ export default function Tools() {
                 <div
                     ref={contentRef}
                     className="relative z-10 w-full min-h-screen flex flex-col justify-center items-center p-4 md:p-8"
-                    style={{ transform: 'translateY(-50%)' }}
                 >
                     {/* Header */}
                     <div className="text-center md:text-center max-w-4xl px-4 md:px-4 mb-32 md:mb-32 relative z-30 flex flex-col items-start md:items-center px-6 md:px-0">

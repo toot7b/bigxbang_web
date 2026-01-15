@@ -1,6 +1,5 @@
 "use client";
 
-import Navbar from "@/components/layout/Navbar";
 import { BookingCalendar } from "@/components/booking/BookingCalendar";
 import { ContactForm } from "@/components/contact/ContactForm";
 import dynamic from "next/dynamic";
@@ -10,7 +9,6 @@ const QuantumFlowBackground = dynamic(() => import("@/components/ui/QuantumFlowB
 export default function RendezVousPage() {
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
-            <Navbar forceOpaqueMobile={true} />
 
             {/* FIX: Use 'fixed' instead of 'absolute' for stable background */}
             <div className="fixed inset-0 z-0 pointer-events-none">

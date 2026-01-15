@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Link } from "next-view-transitions";
 import Image from "next/image";
 
 // Layout
@@ -304,7 +305,7 @@ drive.mount('/content/drive')
                 </div>
 
                 <InfoBox title="La leçon business">
-                    La technique (IA, code, cloud) n'est qu'un levier. Ce qui compte, c'est l'émotion qu'on crée. On a produit un asset de valeur (une mascotte animée) sans les contraintes habituelles (temps, argent). C'est ça, l'agilité BigXBang.
+                    La technique (IA, code, cloud) n'est qu'un levier. Ce qui compte, c'est l'émotion qu'on crée. On a produit un asset de valeur (une mascotte animée) sans les contraintes habituelles (temps, argent). C'est ça, l'agilité BigxBang.
                 </InfoBox>
             </Section>
 
@@ -319,7 +320,7 @@ drive.mount('/content/drive')
                 </Paragraph>
 
                 <Paragraph>
-                    C'est notre façon de boucler la boucle : on a profité du travail de la communauté, alors on redonne à notre tour. Servez-vous, décortiquez, copiez-collez. C'est fait pour. Vous pouvez également <a href="/johnny-le-chat" target="_blank" className="text-zinc-300 hover:text-white underline decoration-white/20 hover:decoration-white/50 underline-offset-4 transition-all">voir la page en live ici</a>.
+                    C'est notre façon de boucler la boucle : on a profité du travail de la communauté, alors on redonne à notre tour. Servez-vous, décortiquez, copiez-collez. C'est fait pour. Vous pouvez également <Link href="/johnny-le-chat" target="_blank" className="text-zinc-300 hover:text-white underline decoration-white/20 hover:decoration-white/50 underline-offset-4 transition-all">voir la page en live ici</Link>.
                 </Paragraph>
 
             </Section>

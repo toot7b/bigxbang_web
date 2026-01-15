@@ -51,12 +51,46 @@ const clash = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "BigXBang Studio",
-  description: "Automatisations et solutions logicielles sur mesure.",
+  metadataBase: new URL("https://bigxbang.studio"),
+  title: {
+    default: "BigxBang Studio — Expérience Web, Solutions Techniques & Stratégie",
+    template: "%s | BigxBang Studio"
+  },
+  description: "Studio de création digitale spécialisé en expériences web immersives, architectures de systèmes et stratégie de marque. Nous transformons votre expertise en arsenal digital.",
+  keywords: [
+    "développement web sur-mesure",
+    "automatisation de processus",
+    "stratégie de marque",
+    "design immersif",
+    "Next.js",
+    "branding premium",
+    "BigxBang Studio"
+  ],
+  authors: [{ name: "Thomas Sarazin", url: "https://bigxbang.studio" }],
+  creator: "Thomas Sarazin",
+  openGraph: {
+    title: "BigxBang Studio — Le Web n'est plus du papier.",
+    description: "Studio spécialisé en expériences web immersives, solutions techniques sur-mesure et stratégie de marque. Oubliez les vitrines statiques.",
+    url: "https://bigxbang.studio",
+    siteName: "BigxBang Studio",
+    locale: "fr_FR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BigxBang Studio",
+    description: "Expérience Web, Solutions Techniques & Stratégie.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 import ClientLayout from "@/components/layout/ClientLayout";
 import { ViewTransitions } from "next-view-transitions";
+import Navbar from "@/components/layout/Navbar";
+import Script from "next/script";
 
 export default function RootLayout({
   children,
@@ -66,8 +100,24 @@ export default function RootLayout({
   return (
     <ViewTransitions>
       <html lang="fr">
+        <head>
+          <Script
+            src="https://www.googletagmanager.com/gtag/js?id=G-BFD8HWC88N"
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-BFD8HWC88N');
+            `}
+          </Script>
+        </head>
         <body className={cn(jakarta.variable, clash.variable, londrina.variable, londrinaSolid.variable, nunito.variable, space.variable, "antialiased font-sans bg-black text-white")}>
           <ClientLayout>
+            <Navbar />
             <SmoothScroll>
               {children}
             </SmoothScroll>

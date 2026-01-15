@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import Asterisk from "@/components/ui/Asterisk";
 import { GradientButton } from "@/components/ui/gradient-button";
 import MinimalFooter from "@/components/ui/MinimalFooter";
+import { Link } from "next-view-transitions";
 
 // DYNAMIC IMPORTS
 const ToolsOrbitShockwave = dynamic(() => import("@/components/ui/ToolsOrbitShockwave"), { ssr: false, loading: () => null });
@@ -639,7 +640,7 @@ export default function Manifesto() {
                         "transition-all duration-500 w-full sm:w-auto",
                         finalShockwaveActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                     )} style={{ transitionDelay: finalShockwaveActive ? '0.25s' : '0s' }}>
-                        <a href="/rendez-vous" className="w-full block sm:inline-block sm:w-auto">
+                        <Link href="/rendez-vous" className="w-full block sm:inline-block sm:w-auto">
                             <GradientButton
                                 theme="dark"
                                 hoverText="On y va ?"
@@ -647,7 +648,7 @@ export default function Manifesto() {
                             >
                                 Lancer mon projet
                             </GradientButton>
-                        </a>
+                        </Link>
                     </div>
                 </div>
 

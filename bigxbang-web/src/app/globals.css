@@ -15,13 +15,20 @@
 
 /* Custom base styles */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 0 0% 3.9%;
+  --background: 0 0% 3.9%;
+  /* Black Background by default */
+  --foreground: 0 0% 98%;
+  /* White Text by default */
 }
 
 .dark {
   --background: 0 0% 3.9%;
   --foreground: 0 0% 98%;
+}
+
+.light {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
 }
 
 body {
@@ -343,42 +350,36 @@ body {
   background: transparent;
 }
 
-/* 3. ANIMATION: Fade + Lift (Premium) */
+/* 3. ANIMATION: Subtle Zoom + Fade (More Premium, less "jumpy") */
 ::view-transition-old(root) {
-  animation: fade-out-up 0.5s cubic-bezier(0.87, 0, 0.13, 1) both;
+  animation: fade-out 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 ::view-transition-new(root) {
-  animation: fade-in-up 0.5s cubic-bezier(0.87, 0, 0.13, 1) both;
+  animation: scale-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Old view fades out and moves UP slightly */
-@keyframes fade-out-up {
+/* Old view just fades out */
+@keyframes fade-out {
   from {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0px);
   }
 
   to {
     opacity: 0;
-    transform: translateY(-20px);
-    filter: blur(4px);
   }
 }
 
-/* New view fades in and moves UP from bottom */
-@keyframes fade-in-up {
+/* New view fades in + subtle zoom for depth */
+@keyframes scale-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
-    filter: blur(4px);
+    transform: scale(0.98);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0px);
+    transform: scale(1);
   }
 }
 

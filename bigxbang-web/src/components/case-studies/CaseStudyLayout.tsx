@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { ArrowLeft, X } from "lucide-react";
 import gsap from "gsap";
 import { MetricCard } from "./index";
@@ -167,7 +167,7 @@ export const CaseStudyLayout = ({
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
-                        <a
+                        <Link
                             href="/rendez-vous"
                             className="w-full sm:w-auto"
                         >
@@ -177,7 +177,7 @@ export const CaseStudyLayout = ({
                             >
                                 Je contacte
                             </GradientButton>
-                        </a>
+                        </Link>
                         {mode === 'modal' ? (
                             <GradientButton
                                 variant="ghost"
