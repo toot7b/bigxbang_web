@@ -128,22 +128,22 @@ function MobileLanding() {
       <Hero />
 
       {/* PROBLEM */}
-      <section id="probleme" className="px-4 pb-10">
+      <section id="probleme" className="px-4 pb-10 scroll-mt-[90px]">
         <MobileProblemList problems={MOBILE_PROBLEMS} />
       </section>
 
       {/* METHOD */}
-      <section id="methode" className="w-full">
+      <section id="methode" className="w-full scroll-mt-[90px]">
         <MobileMethodSteps steps={MOBILE_STEPS} />
       </section>
 
       {/* SERVICES */}
-      <section id="services" className="w-full">
+      <section id="services" className="w-full scroll-mt-[90px]">
         <MobileServicesStack services={MOBILE_SERVICES} />
       </section>
 
       {/* CASE STUDIES (Bento d'origine) */}
-      <section id="case-studies">
+      <section id="case-studies" className="scroll-mt-[90px]">
         <CaseStudies compact />
       </section>
 
@@ -151,7 +151,7 @@ function MobileLanding() {
       <Tools />
 
       {/* MANIFESTO Mobile */}
-      <section id="manifesto">
+      <section id="manifesto" className="scroll-mt-[90px]">
         <MobileManifesto />
       </section>
 

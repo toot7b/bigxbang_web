@@ -8,10 +8,7 @@ import { Link } from "next-view-transitions";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useLenis } from "lenis/react";
-import MethodDetails from "@/components/method/MethodDetails";
 
 // Dynamic imports for heavy WebGL components (speeds up compilation)
 const UnifiedMethodVisual = dynamic(
@@ -32,8 +29,6 @@ export default function Method() {
     const timelineRef = useRef<HTMLDivElement>(null);
     const [activeStep, setActiveStep] = useState(0);
     const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
-    const [isMethodOpen, setIsMethodOpen] = useState(false);
-    const lenis = useLenis();
 
     const steps = [
         {
@@ -117,16 +112,7 @@ export default function Method() {
         return () => ctx.revert();
     }, []);
 
-    // Lenis scroll lock when overlay is open
-    useEffect(() => {
-        if (isMethodOpen) {
-            lenis?.stop();
-            document.body.style.overflow = 'hidden';
-        } else {
-            lenis?.start();
-            document.body.style.overflow = '';
-        }
-    }, [isMethodOpen, lenis]);
+
 
     return (
         <section
@@ -262,33 +248,10 @@ export default function Method() {
 
                 </div>
 
-                {/* VER BIEN PLUS BUTTON */}
-                <div className="relative z-10 w-full py-20 flex justify-center mt-20 md:mt-0">
-                    <GradientButton
-                        onClick={() => setIsMethodOpen(true)}
-                        className="px-8 py-4 text-base"
-                        hoverText="Envie d'en savoir plus ?"
-                    >
-                        Comprendre les coulisses
-                    </GradientButton>
-                </div>
+
             </div>
 
-            {/* METHOD DETAILS OVERLAY */}
-            <AnimatePresence>
-                {isMethodOpen && (
-                    <motion.div
-                        initial={{ y: "100%" }}
-                        animate={{ y: "0%" }}
-                        exit={{ y: "100%" }}
-                        transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
-                        className="fixed inset-0 z-[200] overflow-y-auto bg-black"
-                        data-lenis-prevent
-                    >
-                        <MethodDetails mode="modal" onClose={() => setIsMethodOpen(false)} />
-                    </motion.div>
-                )}
-            </AnimatePresence>
+
         </section>
     );
 }

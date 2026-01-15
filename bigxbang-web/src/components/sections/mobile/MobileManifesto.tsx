@@ -98,7 +98,7 @@ const TimelineItem = ({ item, isLast }: { item: typeof MANIFESTO_ITEMS[0], index
 
 export function MobileManifesto() {
     return (
-        <section className="relative w-full bg-black overflow-hidden py-20 px-6">
+        <section className="relative w-full bg-black overflow-hidden pt-10 pb-20 px-6">
 
             {/* Background Ambience - Grid */}
             <div className="absolute inset-0 z-0 pointer-events-none">

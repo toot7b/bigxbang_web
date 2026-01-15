@@ -17,7 +17,7 @@ export default function MentionsLegales() {
                         <GradientButton
                             variant="ghost"
                             theme="dark"
-                            className="gap-3 px-6 rounded-full whitespace-nowrap"
+                            className="gap-3 px-6 whitespace-nowrap"
                         >
                             <ArrowLeft className="w-4 h-4" />
                             <span>Retour à l&apos;accueil</span>

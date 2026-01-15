@@ -124,8 +124,7 @@ export default function JohnnyLeChatPage() {
                         </svg>
                     </span>
                     <a href="https://github.com/toot7b/johnny-le-chat" target="_blank" rel="noopener noreferrer" className="pointer-events-auto hover:text-black transition-colors">Github</a>
-                    <span>Croquettes</span>
-                    <span className="border-b-2 border-black/20">Contact</span>
+                    <a href="https://www.la-spa.fr/agir-avec-la-spa/soutenir-la-spa/donner-a-la-spa/faire-un-don-ponctuel-a-la-spa/" target="_blank" rel="noopener noreferrer" className="pointer-events-auto hover:text-black transition-colors border-b-2 border-black/20">Croquettes</a>
                 </div>
                 <div className="flex gap-3 md:hidden text-[10px]">
                     <span className="relative">
@@ -135,8 +134,7 @@ export default function JohnnyLeChatPage() {
                         </svg>
                     </span>
                     <a href="https://github.com/toot7b/johnny-le-chat" target="_blank" rel="noopener noreferrer" className="pointer-events-auto hover:text-black transition-colors">Github</a>
-                    <span>Croquettes</span>
-                    <span>Contact</span>
+                    <a href="https://www.la-spa.fr/agir-avec-la-spa/soutenir-la-spa/donner-a-la-spa/faire-un-don-ponctuel-a-la-spa/" target="_blank" rel="noopener noreferrer" className="pointer-events-auto hover:text-black transition-colors border-b-2 border-black/20">Croquettes</a>
                 </div>
             </nav>
 
@@ -151,7 +149,7 @@ export default function JohnnyLeChatPage() {
                             JOHNNY
                         </textPath>
                     </text>
-                    <text fill="#8b7355" fontSize="72" fontFamily="'Londrina Outline', cursive" fontWeight="400" letterSpacing="4">
+                    <text fill="#8b7355" fontSize="72" fontFamily="'Londrina Outline', cursive" fontWeight="600" letterSpacing="4">
                         <textPath href="#textArc" startOffset="52%">
                             LE CHAT
                         </textPath>

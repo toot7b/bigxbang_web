@@ -19,7 +19,7 @@ interface MobileProblemListProps {
 
 export const MobileProblemList = ({ problems }: MobileProblemListProps) => {
   return (
-    <div className="w-full px-6 pt-32 pb-32 flex flex-col min-h-dvh">
+    <div className="w-full px-6 pt-10 pb-32 flex flex-col min-h-dvh">
 
       {/* 1. SECTION HEADER */}
       <div className="relative z-10 flex flex-col items-start mb-20">

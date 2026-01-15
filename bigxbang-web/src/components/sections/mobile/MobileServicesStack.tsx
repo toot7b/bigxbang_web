@@ -33,7 +33,7 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
   const tilt = useTransform(smoothVelocity, [-1500, 1500], [-25, 25]);
 
   return (
-    <section className="w-full pt-32 pb-16 bg-[#0a0a0a] overflow-hidden rounded-b-[60px] relative z-20 md:rounded-none md:z-auto">
+    <section className="w-full pt-10 pb-16 bg-[#0a0a0a] overflow-hidden rounded-b-[60px] relative z-20 md:rounded-none md:z-auto">
 
       {/* 1. SECTION HEADER */}
       <div className="relative z-10 flex flex-col items-start mb-20 px-6">
@@ -264,7 +264,7 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
       </div>
 
       {/* 3. PAGINATION DOTS */}
-      <div className="relative mt-8 flex justify-center gap-3">
+      <div className="relative mt-3 flex justify-center gap-3">
         {services.map((_, i) => (
           <DotIndicator
             key={i}

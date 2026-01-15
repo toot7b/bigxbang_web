@@ -42,7 +42,7 @@ export default function Navbar() {
     // 1. Always on light sections (to ensure contrast)
     // 2. Always on Rendez-vous page
     // 3. On mobile when scrolled
-    const showGlass = isLight || isRendezVous || (isMobile && isScrolled);
+    const showGlass = isLight || (isMobile && isScrolled);
 
     const navBackground = showGlass
         ? "bg-black/95 backdrop-blur-xl border-b-[0.5px] border-white/10"
@@ -54,14 +54,14 @@ export default function Navbar() {
     const isTextBlack = isLight && !showGlass;
     const textColor = isTextBlack ? "text-black" : "text-white";
 
-    // Skip rendering if on legal page
-    if (isLegalPage) return null;
+    // Skip rendering if on legal or Johnny page
+    if (isLegalPage || pathname === "/johnny-le-chat") return null;
 
     return (
         <>
             <header className={cn(
                 "fixed top-0 left-0 right-0 z-[110] transition-all duration-500 ease-in-out pointer-events-none",
-                isScrolled ? "py-3 md:py-4" : "py-4 md:py-8",
+                (isScrolled || isRendezVous) ? "py-6 md:py-4" : "py-6 md:py-8",
                 navBackground,
                 textColor
             )}>

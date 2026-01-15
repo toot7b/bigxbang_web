@@ -108,6 +108,7 @@ export default function Manifesto() {
                     },
                     scrollTrigger: {
                         trigger: ".manifesto-point.initial",
+                        start: "top center",
                         endTrigger: sectionRef.current,
                         end: "bottom bottom",
                         scrub: 1,
