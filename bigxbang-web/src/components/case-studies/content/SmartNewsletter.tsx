@@ -88,7 +88,7 @@ export default function SmartNewsletter({ mode = 'page', onClose }: SmartNewslet
                         height={1080}
                         className="w-full h-auto"
                     />
-                    <p className="text-center text-zinc-400 text-sm italic mt-4">Le Journal Officiel : des centaines de textes par semaine. Lequel te concerne ?</p>
+                    <p className="text-center text-zinc-400 text-sm italic mt-4">Le Journal Officiel : des centaines de textes par semaine. Lequel vous concerne ?</p>
                 </div>
             </Section>
 
@@ -134,7 +134,7 @@ export default function SmartNewsletter({ mode = 'page', onClose }: SmartNewslet
                 </Paragraph>
 
                 <InfoBox title="C'est quoi MongoDB ?">
-                    <Strong>MongoDB</Strong> est une base de données. Imagine un immense classeur numérique où tu peux ranger des fiches (ici, les textes de loi). Chaque fiche contient le titre, le contenu, la date, etc. L&apos;avantage de MongoDB : on peut chercher très vite parmi des milliers de fiches, et on garde un historique complet de tout ce qui a été stocké.
+                    <Strong>MongoDB</Strong> est une base de données. Imaginez un immense classeur numérique où l&apos;on peut ranger des fiches (ici, les textes de loi). Chaque fiche contient le titre, le contenu, la date, etc. L&apos;avantage de MongoDB : on peut chercher très vite parmi des milliers de fiches, et on garde un historique complet de tout ce qui a été stocké.
                 </InfoBox>
 
                 <Paragraph>
@@ -147,7 +147,7 @@ export default function SmartNewsletter({ mode = 'page', onClose }: SmartNewslet
                 </Paragraph>
 
                 <InfoBox title="C'est quoi DeepInfra ?">
-                    <Strong>DeepInfra</Strong> est une plateforme qui permet d&apos;utiliser des modèles d&apos;intelligence artificielle sans avoir à les installer sur son propre ordinateur. C&apos;est comme un service de location de cerveau artificiel : tu envoies une question, le modèle réfléchit, et tu reçois la réponse. Le gros avantage : on peut choisir parmi plein de modèles différents (Llama, Mistral, DeepSeek...) et payer uniquement ce qu&apos;on utilise.
+                    <Strong>DeepInfra</Strong> est une plateforme qui permet d&apos;utiliser des modèles d&apos;intelligence artificielle sans avoir à les installer sur son propre ordinateur. C&apos;est comme un service de location de cerveau artificiel : on envoie une question, le modèle réfléchit, et on reçoit la réponse. Le gros avantage : on peut choisir parmi plein de modèles différents (Llama, Mistral, DeepSeek...) et payer uniquement ce qu&apos;on utilise.
                 </InfoBox>
 
                 <InfoBox title="C'est quoi l'open source ?">
@@ -235,7 +235,7 @@ export default function SmartNewsletter({ mode = 'page', onClose }: SmartNewslet
                 <BulletList items={[
                     <><Strong>Qui sont les clients ?</Strong> Dirigeants de PME, DAF, DG de startups</>,
                     <><Strong>Quel ton ?</Strong> Accessible mais expert. Pas de jargon inutile.</>,
-                    <><Strong>Quelle valeur ajoutée ?</Strong> Pas juste &quot;voici les lois&quot;, mais &quot;voici ce que ça change pour toi&quot;</>,
+                    <><Strong>Quelle valeur ajoutée ?</Strong> Pas juste &quot;voici les lois&quot;, mais &quot;voici ce que ça change pour vous&quot;</>,
                     <><Strong>Quelle personnalité ?</Strong> Le cabinet qui rend le droit compréhensible</>,
                 ]} />
 
@@ -248,7 +248,7 @@ export default function SmartNewsletter({ mode = 'page', onClose }: SmartNewslet
                     "Comprendre l'ADN de marque d'un cabinet (son histoire, son positionnement)",
                     "Adapter le ton selon l'audience (un DG vs un DAF, ce n'est pas le même langage)",
                     "Créer un angle éditorial qui capte l'attention",
-                    "Contextualiser un texte de loi : \"Cette réforme fiscale, ça veut dire X pour ton entreprise\"",
+                    "Contextualiser un texte de loi : \"Cette réforme fiscale, ça veut dire X pour votre entreprise\"",
                 ]} />
 
                 <InfoBox title="Notre conviction">

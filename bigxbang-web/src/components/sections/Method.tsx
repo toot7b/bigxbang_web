@@ -129,15 +129,19 @@ export default function Method() {
     }, [isMethodOpen, lenis]);
 
     return (
-        <div id="methode">
-            <section
-                ref={containerRef}
-                data-theme="dark"
-                className="relative z-0 w-full bg-[#0a0a0a] text-white -mt-1 min-h-[200vh]"
-            >
-
+        <section
+            id="methode"
+            className="scroll-mt-[100px]"
+            data-theme="dark"
+        >
+            <div ref={containerRef} className="relative z-0 w-full bg-[#0a0a0a] text-white -mt-1 min-h-[200vh]">
                 {/* GLOBAL BACKGROUNDS (Fixed) */}
                 <div className="absolute inset-0 pointer-events-none z-0">
+                    {/* Background Ripple */}
+                    <div className="absolute inset-0 z-0 opacity-60">
+                        <Ripple />
+                    </div>
+
                     {/* Deep Top Gradient for Section Continuity - Progressive Fade */}
                     <div className="absolute top-0 left-0 w-full h-80 bg-gradient-to-b from-black via-black/60 to-transparent z-20"></div>
 
@@ -160,7 +164,7 @@ export default function Method() {
                         }}
                     />
 
-                    {/* Ripple Grid (Full Height) */}
+                    {/* Ripple Grid (Full Height sticky) */}
                     <div className="sticky top-0 h-screen w-full [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] opacity-60">
                         <Ripple />
                     </div>
@@ -221,10 +225,7 @@ export default function Method() {
                             <div
                                 key={index}
                                 ref={el => { stepRefs.current[index] = el; }}
-                                className={cn(
-                                    "flex flex-col justify-center px-8 md:pl-20 relative h-screen",
-                                    // removed manual margins and variable heights to enforce equidistance
-                                )}
+                                className="flex flex-col justify-center px-8 md:pl-20 relative h-screen"
                             >
 
 
@@ -261,9 +262,17 @@ export default function Method() {
 
                 </div>
 
-
-
-            </section>
+                {/* VER BIEN PLUS BUTTON */}
+                <div className="relative z-10 w-full py-20 flex justify-center mt-20 md:mt-0">
+                    <GradientButton
+                        onClick={() => setIsMethodOpen(true)}
+                        className="px-8 py-4 text-base"
+                        hoverText="Envie d'en savoir plus ?"
+                    >
+                        Comprendre les coulisses
+                    </GradientButton>
+                </div>
+            </div>
 
             {/* METHOD DETAILS OVERLAY */}
             <AnimatePresence>
@@ -280,6 +289,6 @@ export default function Method() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </section>
     );
 }

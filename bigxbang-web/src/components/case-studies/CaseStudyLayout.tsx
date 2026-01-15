@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "next-view-transitions";
 import { ArrowLeft, X } from "lucide-react";
 import gsap from "gsap";
 import { MetricCard } from "./index";
-import { useLenis } from "lenis/react";
 import { GradientButton } from "@/components/ui/gradient-button";
 import MinimalFooter from "@/components/ui/MinimalFooter";
 
@@ -36,12 +35,28 @@ export const CaseStudyLayout = ({
     onClose,
     heroContent
 }: CaseStudyLayoutProps) => {
+    const footerCtaRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLElement>(null);
-    const lenis = useLenis();
+    const [showTopCta, setShowTopCta] = useState(true);
 
     useEffect(() => {
+        // 1. CTA Observer
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setShowTopCta(!entry.isIntersecting);
+            },
+            {
+                threshold: 0,
+                rootMargin: '0px 0px -10% 0px' // Trigger slightly before the footer appears
+            }
+        );
+
+        if (footerCtaRef.current) {
+            observer.observe(footerCtaRef.current);
+        }
+
+        // 2. Header Parallax
         const ctx = gsap.context(() => {
-            // Header parallax on scroll - only if not in modal or handled within modal scroll container
             const handleScroll = () => {
                 const scrollY = window.scrollY;
                 if (headerRef.current && scrollY < 500) {
@@ -50,7 +65,6 @@ export const CaseStudyLayout = ({
                 }
             };
 
-            // If in modal, we might need to attach this to the modal container scroll instead of window
             if (mode === 'page') {
                 window.addEventListener("scroll", handleScroll);
             }
@@ -60,7 +74,11 @@ export const CaseStudyLayout = ({
                 }
             };
         });
-        return () => ctx.revert();
+
+        return () => {
+            observer.disconnect();
+            ctx.revert();
+        };
     }, [mode]);
 
     return (
@@ -81,36 +99,63 @@ export const CaseStudyLayout = ({
             </div>
 
             {/* NAVIGATION - Floating */}
-            <nav className={`fixed top-0 left-0 w-full z-50 px-6 py-5 ${mode === 'modal' ? 'sticky' : ''}`}>
-                <div className="max-w-6xl mx-auto flex justify-between items-center">
-                    {mode === 'modal' ? (
-                        <GradientButton
-                            variant="ghost"
-                            theme="dark"
-                            onClick={onClose}
-                            className="gap-2 px-6 rounded-full whitespace-nowrap"
-                        >
-                            <X className="w-4 h-4" />
-                            <span>Fermer</span>
-                        </GradientButton>
-                    ) : (
-                        <Link href="/" className="cursor-pointer">
+            <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 md:px-12 md:py-8 pointer-events-none">
+                <div className="flex justify-between items-center pointer-events-auto">
+                    {/* LEFT: BACK / CLOSE */}
+                    <div className="flex items-center">
+                        {mode === 'modal' ? (
                             <GradientButton
                                 variant="ghost"
                                 theme="dark"
-                                className="gap-3 px-6 rounded-full whitespace-nowrap"
+                                onClick={onClose}
+                                className="gap-2 px-4 md:px-6 py-2.5 rounded-full whitespace-nowrap"
                             >
-                                <ArrowLeft className="w-4 h-4" />
-                                <span>Retour</span>
+                                <X className="w-4 h-4" />
+                                <span className="hidden md:block text-sm font-medium">Fermer</span>
                             </GradientButton>
-                        </Link>
-                    )}
+                        ) : (
+                            <Link href="/">
+                                <GradientButton
+                                    variant="ghost"
+                                    theme="dark"
+                                    className="gap-2 md:gap-3 px-4 md:px-6 py-2.5 rounded-full whitespace-nowrap"
+                                >
+                                    <ArrowLeft className="w-4 h-4" />
+                                    <span className="hidden md:block text-sm font-medium">Retour</span>
+                                </GradientButton>
+                            </Link>
+                        )}
+                    </div>
 
-                    <div className="text-xs font-mono text-white/40 tracking-wider uppercase">
-                        {meta.slug.replace(/-/g, " ")}
+                    {/* RIGHT: CTA (Desktop Only) */}
+                    <div className="hidden md:flex items-center">
+                        {/* Sticky CTA */}
+                        <div className={`transition-all duration-500 transform ${showTopCta ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0 pointer-events-none'}`}>
+                            <Link href="/rendez-vous">
+                                <GradientButton
+                                    hoverText="On y va ?"
+                                    className="px-5 py-2 text-xs h-auto min-h-0 rounded-xl font-bold shadow-lg hover:shadow-[0_0_30px_rgba(48,110,232,0.4)]"
+                                >
+                                    Je veux la même chose
+                                </GradientButton>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </nav>
+
+            {/* MOBILE BOTTOM BAR */}
+            <div className={`fixed bottom-0 left-0 right-0 z-50 p-4 pb-8 md:hidden transition-all duration-500 transform ${showTopCta ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'}`}>
+                <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-2xl">
+                    <Link href="/rendez-vous">
+                        <GradientButton
+                            className="w-full py-4 text-sm rounded-xl font-bold shadow-lg shadow-blue-500/20"
+                        >
+                            Je veux la même chose
+                        </GradientButton>
+                    </Link>
+                </div>
+            </div>
 
             {/* HEADER */}
             <header ref={headerRef} className="relative z-10 pt-32 md:pt-44 pb-20 md:pb-28 text-center px-6">
@@ -159,7 +204,7 @@ export const CaseStudyLayout = ({
             </div>
 
             {/* CTA FOOTER */}
-            <footer className="relative z-10 max-w-6xl mx-auto px-6 py-20 md:py-32">
+            <footer ref={footerCtaRef} className="relative z-10 max-w-6xl mx-auto px-6 py-20 md:py-32">
                 <div className="relative z-20 pointer-events-auto flex flex-col items-center p-6 sm:p-10 md:p-12 border rounded-3xl sm:rounded-[2.5rem] backdrop-blur-md max-w-2xl mx-auto text-center gap-8 sm:gap-10 overflow-hidden border-[#306EE8] bg-[#306EE8]/10 shadow-[0_0_60px_rgba(48,110,232,0.3)]">
                     <div className="flex flex-col gap-3">
                         <h3 className="font-clash text-2xl sm:text-3xl font-bold text-white leading-tight">Assez parlé du futur.</h3>

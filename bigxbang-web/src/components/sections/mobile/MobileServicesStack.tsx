@@ -20,7 +20,7 @@ interface MobileServicesStackProps {
 
 export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
   const scrollRef = useRef(null);
-  const { scrollX } = useScroll({ container: scrollRef });
+  const { scrollX, scrollXProgress } = useScroll({ container: scrollRef });
   const scrollXVelocity = useVelocity(scrollX);
 
   // Cartoon Physics: Bouncy Spring
@@ -53,13 +53,13 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
         {services.map((service, index) => (
           <div
             key={service.id}
-            className="relative flex-none w-[85vw] md:w-[400px] snap-center flex flex-col"
+            className="relative flex-none w-[80vw] md:w-[400px] snap-center flex flex-col"
           >
             {/* CARD CONTAINER */}
             <div className="relative h-full bg-zinc-900/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
 
               {/* Visual Top (Abstract Tech Art + CSS Totem) */}
-              <div className="relative h-48 bg-gradient-to-b from-[#0f0f0f] to-[#0f0f0f] border-b border-white/5 overflow-hidden group">
+              <div className="relative h-40 bg-gradient-to-b from-[#0f0f0f] to-[#0f0f0f] border-b border-white/5 overflow-hidden group">
 
                 {/* 1. Background Grid & Glow */}
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px]" />
@@ -77,33 +77,33 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
                         y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
                         rotateX: { duration: 4, repeat: Infinity, ease: "easeInOut" }
                       }}
-                      className="relative w-36 h-28 bg-zinc-900 border border-white/20 rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden"
+                      className="relative w-28 h-20 bg-zinc-900 border border-white/20 rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden"
                     >
-                      <div className="h-6 bg-zinc-800 border-b border-white/10 flex items-center px-2 gap-1.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-red-500/50" />
-                        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/50" />
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-500/50" />
-                        <div className="ml-auto w-12 h-1 bg-white/5 rounded-full" />
+                      <div className="h-4 bg-zinc-800 border-b border-white/10 flex items-center px-1.5 gap-1">
+                        <div className="w-1 h-1 rounded-full bg-red-500/50" />
+                        <div className="w-1 h-1 rounded-full bg-yellow-500/50" />
+                        <div className="w-1 h-1 rounded-full bg-green-500/50" />
+                        <div className="ml-auto w-8 h-0.5 bg-white/5 rounded-full" />
                       </div>
-                      <div className="p-3 space-y-2">
-                        <div className="flex gap-2">
-                          <div className="w-8 h-8 rounded bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.2)] flex items-center justify-center">
-                            <Asterisk className="w-5 h-5 text-white" />
+                      <div className="p-2 space-y-1.5">
+                        <div className="flex gap-1.5">
+                          <div className="w-5 h-5 rounded bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.2)] flex items-center justify-center">
+                            <Asterisk className="w-3 h-3 text-white" />
                           </div>
-                          <div className="flex-1 space-y-1.5 py-1">
-                            <div className="h-2 bg-white/20 rounded w-full" />
-                            <div className="h-2 bg-white/10 rounded w-2/3" />
+                          <div className="flex-1 space-y-1 py-0.5">
+                            <div className="h-1.5 bg-white/20 rounded w-full" />
+                            <div className="h-1.5 bg-white/10 rounded w-2/3" />
                           </div>
                         </div>
-                        <div className="h-16 bg-[#306EE8]/5 rounded border border-[#306EE8]/20 mt-2 flex flex-col items-center justify-center gap-1 overflow-hidden">
-                          <div className="w-3/4 h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-10 bg-[#306EE8]/5 rounded border border-[#306EE8]/20 mt-1 flex flex-col items-center justify-center gap-0.5 overflow-hidden">
+                          <div className="w-3/4 h-0.5 bg-white/10 rounded-full overflow-hidden">
                             <motion.div
                               animate={{ x: ["-100%", "100%"] }}
                               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                               className="w-1/2 h-full bg-[#306EE8]"
                             />
                           </div>
-                          <div className="text-[8px] font-mono text-[#306EE8]/60 uppercase tracking-tighter">Optimizing...</div>
+                          <div className="text-[6px] font-mono text-[#306EE8]/60 uppercase tracking-tighter">Running...</div>
                         </div>
                       </div>
                     </motion.div>
@@ -189,7 +189,7 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
                   {/* SCÈNE 3: L'ADN (Strategy) */}
                   {index >= 2 && (
                     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-                      <svg className="w-32 h-40" viewBox="0 0 100 120">
+                      <svg className="w-24 h-32" viewBox="0 0 100 120">
                         {[...Array(8)].map((_, i) => (
                           <g key={i}>
                             <motion.circle
@@ -224,16 +224,16 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
               </div>
 
               {/* Content Bottom */}
-              <div className="p-6 flex flex-col flex-1 bg-[#0f0f0f]">
-                <h3 className="font-clash text-2xl font-bold text-white mb-3">
+              <div className="p-5 flex flex-col flex-1 bg-[#0f0f0f]">
+                <h3 className="font-clash text-2xl font-bold text-white mb-2">
                   {service.title}
                 </h3>
-                <p className="font-jakarta text-sm text-zinc-400 leading-relaxed mb-8 min-h-[60px]">
+                <p className="font-jakarta text-sm text-zinc-400 leading-relaxed mb-4 min-h-[40px]">
                   {service.description}
                 </p>
 
                 {/* Features List */}
-                <div className="space-y-4 mt-auto">
+                <div className="space-y-3 mt-auto">
                   {service.features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
                       <div className="flex items-center justify-center w-5 h-5 rounded-full bg-[#306EE8]/20 border border-[#306EE8]/50 shrink-0">
@@ -247,9 +247,9 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
                 </div>
 
                 {/* Button Standard */}
-                <div className="mt-8 pt-6 border-t border-white/5">
+                <div className="mt-5 pt-5 border-t border-white/5">
                   <Link href="/rendez-vous" className="w-full block">
-                    <GradientButton className="w-full h-[52px] text-base" theme="dark">
+                    <GradientButton className="w-full h-[48px] text-base" theme="dark">
                       En discuter
                     </GradientButton>
                   </Link>
@@ -263,7 +263,36 @@ export const MobileServicesStack = ({ services }: MobileServicesStackProps) => {
         <div className="w-1 shrink-0" />
       </div>
 
+      {/* 3. PAGINATION DOTS */}
+      <div className="relative mt-8 flex justify-center gap-3">
+        {services.map((_, i) => (
+          <DotIndicator
+            key={i}
+            index={i}
+            total={services.length}
+            scrollXProgress={scrollXProgress}
+          />
+        ))}
+      </div>
+
 
     </section>
+  );
+};
+
+const DotIndicator = ({ index, total, scrollXProgress }: { index: number, total: number, scrollXProgress: any }) => {
+  const step = 1 / (total - 1);
+  const start = index * step - step / 2;
+  const target = index * step;
+  const end = index * step + step / 2;
+
+  const width = useTransform(scrollXProgress, [start, target, end], [6, 20, 6]);
+  const opacity = useTransform(scrollXProgress, [start, target, end], [0.3, 1, 0.3]);
+
+  return (
+    <motion.div
+      className="h-1.5 rounded-full bg-white"
+      style={{ width, opacity }}
+    />
   );
 };

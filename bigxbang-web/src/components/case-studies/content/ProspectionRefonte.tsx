@@ -53,7 +53,7 @@ export default function ProspectionRefonte({ mode = 'page', onClose }: Prospecti
                 </Paragraph>
 
                 <InfoBox title="L'automatisation révèle l'absurdité">
-                    Quand on automatise, on voit enfin ce qui, dans notre travail, n&apos;était plus vraiment du travail. Juste de la répétition. L&apos;IA ne fait qu&apos;amplifier la logique qu&apos;on lui donne : si tu lui donnes du chaos, elle reproduit le chaos. Si tu lui donnes de la clarté, elle libère du temps.
+                    Quand on automatise, on voit enfin ce qui, dans notre travail, n&apos;était plus vraiment du travail. Juste de la répétition. L&apos;IA ne fait qu&apos;amplifier la logique qu&apos;on lui donne : si on lui donne du chaos, elle reproduit le chaos. Si on lui donne de la clarté, elle libère du temps.
                 </InfoBox>
 
                 <SectionTitle>Le problème concret</SectionTitle>
@@ -245,15 +245,15 @@ export default function ProspectionRefonte({ mode = 'page', onClose }: Prospecti
 
                 <SectionTitle>3. L&apos;enrichissement intelligent : respecter les outils</SectionTitle>
                 <Paragraph>
-                    Dropcontact vérifie et enrichit les emails. Mais leur API utilise un système de <Strong>polling</Strong> : tu envoies une requête, tu attends qu&apos;elle soit traitée, tu récupères le résultat.
+                    Dropcontact vérifie et enrichit les emails. Mais leur API utilise un système de <Strong>polling</Strong> : on envoie une requête, on attend qu&apos;elle soit traitée, on récupère le résultat.
                 </Paragraph>
 
                 <InfoBox title="Le polling, c'est quoi ?">
-                    Le polling, c&apos;est comme attendre un colis : tu envoies ta commande, puis tu reviens régulièrement voir si c&apos;est prêt. L&apos;API Dropcontact ne te répond pas immédiatement : elle te donne un numéro de suivi, et tu dois revenir vérifier si le traitement est terminé.
+                    Le polling, c&apos;est comme attendre un colis : on envoie sa commande, puis on revient régulièrement voir si c&apos;est prêt. L&apos;API Dropcontact ne répond pas immédiatement : elle donne un numéro de suivi, et on doit revenir vérifier si le traitement est terminé.
                 </InfoBox>
 
                 <Paragraph>
-                    <Strong>Le problème :</Strong> Si tu demandes trop vite (&quot;C&apos;est prêt ? C&apos;est prêt ? C&apos;est prêt ?&quot;), tu surcharges l&apos;API et elle te bloque. Si tu attends trop longtemps, tu perds du temps.
+                    <Strong>Le problème :</Strong> Si on demande trop vite (&quot;C&apos;est prêt ? C&apos;est prêt ? C&apos;est prêt ?&quot;), on surcharge l&apos;API et elle bloque. Si on attend trop longtemps, on perd du temps.
                 </Paragraph>
 
                 <Paragraph>
@@ -345,7 +345,7 @@ export default function ProspectionRefonte({ mode = 'page', onClose }: Prospecti
                 ]} />
 
                 <InfoBox title="Le but : libérer le temps humain">
-                    On n&apos;automatise pas pour remplacer les gens. On automatise pour leur rendre leur capacité à penser, créer, décider. Une bonne automation se fait oublier : elle tourne en silence pendant que tu te concentres sur ce qui compte vraiment.
+                    On n&apos;automatise pas pour remplacer les gens. On automatise pour leur rendre leur capacité à penser, créer, décider. Une bonne automation se fait oublier : elle tourne en silence pendant que vous vous concentrez sur ce qui compte vraiment.
                 </InfoBox>
             </Section>
 
@@ -391,7 +391,7 @@ except Exception as e:
                 </Paragraph>
 
                 <InfoBox title="Transparence > perfection">
-                    On te montre les erreurs, les choix, le réel. Pas de bullshit marketing. Le code n&apos;est pas parfait, le système peut crasher. Mais il est résilient, et il libère du temps humain. C&apos;est ça qui compte.
+                    On vous montre les erreurs, les choix, le réel. Pas de bullshit marketing. Le code n&apos;est pas parfait, le système peut crasher. Mais il est résilient, et il libère du temps humain. C&apos;est ça qui compte.
                 </InfoBox>
             </Section>
 

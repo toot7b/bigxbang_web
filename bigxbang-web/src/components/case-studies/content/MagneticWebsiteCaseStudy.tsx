@@ -18,7 +18,7 @@ import RocketIcon from "@/../public/icons/Rocket.json";
 const META = {
     slug: "magnetic-website",
     title: "MagneticWebsite : quand un site web devient une expérience",
-    subtitle: "Comment on transforme un visiteur passif en explorateur actif. Et pourquoi ça change tout pour ton business.",
+    subtitle: "Comment on transforme un visiteur passif en explorateur actif. Et pourquoi ça change tout pour votre business.",
     metrics: [
         { number: "4x", label: "Temps passé sur la page" },
         { number: "+65%", label: "Taux d'engagement" },
@@ -39,15 +39,15 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
             {/* LE PROBLÈME */}
             <Section withBorder={false}>
                 <SectionHeader icon={<IconBox animation={LightBulbIcon} />}>
-                    Le problème : personne ne reste sur ton site
+                    Le problème : personne ne reste sur votre site
                 </SectionHeader>
 
                 <Paragraph>
-                    <Strong>54 secondes.</Strong> C&apos;est le temps moyen qu&apos;un visiteur passe sur une page web. 54 secondes pour comprendre ton offre, te faire confiance, et décider de rester. Spoiler : la plupart partent avant.
+                    <Strong>54 secondes.</Strong> C&apos;est le temps moyen qu&apos;un visiteur passe sur une page web. 54 secondes pour comprendre votre offre, vous faire confiance, et décider de rester. Spoiler : la plupart partent avant.
                 </Paragraph>
 
                 <Paragraph>
-                    Le problème, ce n&apos;est pas ton contenu. C&apos;est l&apos;expérience. Un site classique, c&apos;est un document qu&apos;on scroll. L&apos;utilisateur est <Strong>spectateur passif</Strong>. Il défile, survole, et oublie.
+                    Le problème, ce n&apos;est pas votre contenu. C&apos;est l&apos;expérience. Un site classique, c&apos;est un document qu&apos;on scroll. L&apos;utilisateur est <Strong>spectateur passif</Strong>. Il défile, survole, et oublie.
                 </Paragraph>
 
                 <div className="my-8 rounded-xl overflow-hidden border border-white/10">
@@ -61,8 +61,8 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                     <p className="text-center text-zinc-400 text-sm italic mt-4">Le web moderne : joli, mais oubliable en 54 secondes.</p>
                 </div>
 
-                <InfoBox title="Le vrai enjeu pour ton business">
-                    Tu paies pour amener des visiteurs (SEO, pubs, réseaux). Mais si ton site les fait partir en 54 secondes, tu jettes de l&apos;argent par la fenêtre. <Strong>L&apos;attention est devenue la ressource la plus rare.</Strong> Il faut la mériter.
+                <InfoBox title="Le vrai enjeu pour votre business">
+                    Vous payez pour amener des visiteurs (SEO, pubs, réseaux). Mais si votre site les fait partir en 54 secondes, vous jetez de l&apos;argent par la fenêtre. <Strong>L&apos;attention est devenue la ressource la plus rare.</Strong> Il faut la mériter.
                 </InfoBox>
             </Section>
 
@@ -83,7 +83,7 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                 <SectionTitle>Pourquoi ça marche ?</SectionTitle>
 
                 <BulletList items={[
-                    <><Strong>Le cerveau adore le mouvement intentionnel.</Strong> Quand quelque chose bouge en réponse à TON action, tu es captivé. C&apos;est un réflexe biologique.</>,
+                    <><Strong>Le cerveau adore le mouvement intentionnel.</Strong> Quand quelque chose bouge en réponse à VOTRE action, vous êtes captivé. C&apos;est un réflexe biologique.</>,
                     <><Strong>La récompense crée l&apos;addiction.</Strong> Chaque clic déclenche une animation satisfaisante. Le cerveau veut continuer.</>,
                     <><Strong>L&apos;effort crée la valeur.</Strong> Ce qu&apos;on construit soi-même, on s&apos;en souvient. Effet IKEA appliqué au web.</>,
                 ]} />
@@ -99,25 +99,25 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                     <p className="text-center text-zinc-400 text-sm italic mt-4">4 points cliquables. 4 parties du site à débloquer. L&apos;utilisateur devient explorateur.</p>
                 </div>
 
-                <InfoBox title="Ce que ça change pour toi">
-                    Au lieu de prier pour que le visiteur scroll jusqu&apos;à ton bouton d&apos;action, <Strong>tu crées un chemin qu&apos;il VEUT suivre</Strong>. Il ne part pas parce qu&apos;il est curieux de voir ce qui va apparaître ensuite.
+                <InfoBox title="Ce que ça change pour vous">
+                    Au lieu de prier pour que le visiteur scroll jusqu&apos;à votre bouton d&apos;action, <Strong>vous créez un chemin qu&apos;il VEUT suivre</Strong>. Il ne part pas parce qu&apos;il est curieux de voir ce qui va apparaître ensuite.
                 </InfoBox>
             </Section>
 
             {/* LA MAGIE DE L'APPARITION */}
             <Section>
                 <SectionHeader icon={<IconBox animation={RocketIcon} />}>
-                    L&apos;effet &quot;construction sous tes yeux&quot;
+                    L&apos;effet &quot;construction sous vos yeux&quot;
                 </SectionHeader>
 
                 <Paragraph>
-                    Quand le visiteur clique sur un point, l&apos;élément correspondant ne &quot;pop&quot; pas d&apos;un coup. Il <Strong>se construit pixel par pixel</Strong>, comme s&apos;il se matérialisait devant toi. C&apos;est plus lent qu&apos;une apparition classique. Et c&apos;est fait exprès.
+                    Quand le visiteur clique sur un point, l&apos;élément correspondant ne &quot;pop&quot; pas d&apos;un coup. Il <Strong>se construit pixel par pixel</Strong>, comme s&apos;il se matérialisait devant vous. C&apos;est plus lent qu&apos;une apparition classique. Et c&apos;est fait exprès.
                 </Paragraph>
 
                 <SectionTitle>Pourquoi c&apos;est important</SectionTitle>
 
                 <Paragraph>
-                    Une apparition instantanée, ça passe inaperçu. Une construction progressive, <Strong>ça captive le regard</Strong>. Le cerveau suit le mouvement, anticipe la suite, reste concentré. C&apos;est 500 millisecondes de plus où le visiteur regarde TON contenu.
+                    Une apparition instantanée, ça passe inaperçu. Une construction progressive, <Strong>ça captive le regard</Strong>. Le cerveau suit le mouvement, anticipe la suite, reste concentré. C&apos;est 500 millisecondes de plus où le visiteur regarde VOTRE contenu.
                 </Paragraph>
 
                 <div className="my-8 rounded-xl overflow-hidden border border-white/10">
@@ -141,7 +141,7 @@ export default function MagneticWebsiteCaseStudy({ mode = 'page', onClose }: Mag
                 <BulletList items={[
                     "D'abord, une nuée de particules bleues apparaît (le 'chantier')",
                     "Ensuite, le contenu réel 'balaye' de gauche à droite et remplace les particules",
-                    "Résultat : l'élément semble se solidifier devant toi",
+                    "Résultat : l'élément semble se solidifier devant vous",
                 ]} />
 
                 <CodeWindow title="PixelReveal.tsx (extrait)">
@@ -303,7 +303,7 @@ void main() {
 }`}
                 </CodeWindow>
 
-                <InfoBox title="Pourquoi c'est important pour ton business">
+                <InfoBox title="Pourquoi c'est important pour votre business">
                     Cette récompense visuelle n&apos;est pas du &quot;nice to have&quot;. C&apos;est ce qui fait que le visiteur <Strong>veut interagir avec les 4 points</Strong> au lieu de partir. Chaque interaction le garde 10 secondes de plus. 4 interactions = 40 secondes gagnées. C&apos;est énorme.
                 </InfoBox>
             </Section>
@@ -311,7 +311,7 @@ void main() {
             {/* L'ASSEMBLAGE FINAL */}
             <Section>
                 <SectionHeader icon={<IconBox animation={SuccessIcon} />}>
-                    L&apos;assemblage : le site qui naît sous tes yeux
+                    L&apos;assemblage : le site qui naît sous vos yeux
                 </SectionHeader>
 
                 <Paragraph>
@@ -345,7 +345,7 @@ void main() {
                 </div>
 
                 <InfoBox title="L'effet IKEA du web">
-                    C&apos;est prouvé : on valorise davantage ce qu&apos;on a construit soi-même. Même si c&apos;est juste &quot;cliquer sur un point&quot;, le visiteur a le sentiment d&apos;avoir participé. <Strong>Ton site devient SON site.</Strong> Il s&apos;en souviendra.
+                    C&apos;est prouvé : on valorise davantage ce qu&apos;on a construit soi-même. Même si c&apos;est juste &quot;cliquer sur un point&quot;, le visiteur a le sentiment d&apos;avoir participé. <Strong>Votre site devient SON site.</Strong> Il s&apos;en souviendra.
                 </InfoBox>
             </Section>
 
@@ -362,7 +362,7 @@ void main() {
 
                 <SectionTitle>2. La technique au service du business</SectionTitle>
                 <Paragraph>
-                    Les shaders, les animations, le WebGL... tout ça, c&apos;est des outils. Pas des fins en soi. On les utilise pour <Strong>résoudre un vrai problème : capter et garder l&apos;attention</Strong>. Si ça n&apos;améliorait pas tes résultats, on ne le ferait pas.
+                    Les shaders, les animations, le WebGL... tout ça, c&apos;est des outils. Pas des fins en soi. On les utilise pour <Strong>résoudre un vrai problème : capter et garder l&apos;attention</Strong>. Si ça n&apos;améliorait pas vos résultats, on ne le ferait pas.
                 </Paragraph>
 
                 <SectionTitle>3. Le détail fait la différence</SectionTitle>
@@ -371,7 +371,7 @@ void main() {
                 </Paragraph>
 
                 <InfoBox title="Notre philosophie">
-                    On automatise les tâches répétitives pour libérer ce qui fait de toi un humain. On gamifie les expériences pour captiver l&apos;attention. On code ce que les autres jugent &quot;trop complexe&quot;. <Strong>Parce que c&apos;est là que se fait la différence.</Strong>
+                    On automatise les tâches répétitives pour libérer ce qui fait de vous un humain. On gamifie les expériences pour captiver l&apos;attention. On code ce que les autres jugent &quot;trop complexe&quot;. <Strong>Parce que c&apos;est là que se fait la différence.</Strong>
                 </InfoBox>
 
             </Section>
@@ -379,18 +379,18 @@ void main() {
             {/* POUR TON BUSINESS */}
             <Section>
                 <SectionHeader icon={<IconBox animation={TargetIcon} />}>
-                    Ce que ça change concrètement pour toi
+                    Ce que ça change concrètement pour vous
                 </SectionHeader>
 
                 <BulletList items={[
                     <><Strong>Temps sur page x4</Strong> : Les visiteurs restent plus longtemps parce qu&apos;ils veulent voir la suite.</>,
                     <><Strong>Taux de rebond divisé par 2</Strong> : Ils ne partent pas sans avoir exploré.</>,
-                    <><Strong>Mémorabilité maximale</Strong> : Ils se souviennent de ton site parmi les 100 qu&apos;ils ont vus cette semaine.</>,
+                    <><Strong>Mémorabilité maximale</Strong> : Ils se souviennent de votre site parmi les 100 qu&apos;ils ont vus cette semaine.</>,
                     <><Strong>Image premium</Strong> : Un site comme ça, ça dit quelque chose sur ton exigence et ton positionnement.</>,
                 ]} />
 
-                <InfoBox title="La question à te poser">
-                    Ton site actuel, il fait quoi de spécial ? Si la réponse est &quot;rien de particulier&quot;, c&apos;est que tes visiteurs se disent la même chose. Et ils partent.
+                <InfoBox title="La question à vous poser">
+                    Votre site actuel, il fait quoi de spécial ? Si la réponse est &quot;rien de particulier&quot;, c&apos;est que vos visiteurs se disent la même chose. Et ils partent.
                 </InfoBox>
             </Section>
 

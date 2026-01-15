@@ -1,43 +1,65 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export type Theme = "dark" | "light";
 
 export function useSectionTheme(): Theme {
     const [theme, setTheme] = useState<Theme>("dark");
+    const observerRef = useRef<IntersectionObserver | null>(null);
 
     useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                // Find the entry with the largest intersection ratio
-                let maxRatio = 0;
-                let mostVisibleEntry: IntersectionObserverEntry | null = null;
+        const updateTheme = () => {
+            const sections = document.querySelectorAll("[data-theme]");
+            let foundLight = false;
 
-                entries.forEach((entry) => {
-                    if (entry.intersectionRatio > maxRatio) {
-                        maxRatio = entry.intersectionRatio;
-                        mostVisibleEntry = entry;
-                    }
-                });
+            // Navbar typically occupies the top 80-100px
+            const NAVBAR_HEIGHT = 100;
 
-                if (mostVisibleEntry) {
-                    const sectionTheme = (mostVisibleEntry as any).target.getAttribute("data-theme") as Theme;
-                    if (sectionTheme) {
-                        setTheme(sectionTheme);
+            sections.forEach((section) => {
+                const rect = section.getBoundingClientRect();
+                // If any part of the section is within the navbar's vertical zone
+                if (rect.top < NAVBAR_HEIGHT && rect.bottom > 0) {
+                    if (section.getAttribute("data-theme") === "light") {
+                        foundLight = true;
                     }
                 }
-            },
-            {
-                threshold: [0, 0.1, 0.5], // Simplified thresholds
-                rootMargin: "-2% 0px -98% 0px", // Detect strictly at the very top (where navbar is)
-            }
-        );
+            });
 
-        const sections = document.querySelectorAll("[data-theme]");
-        sections.forEach((section) => observer.observe(section));
+            setTheme(foundLight ? "light" : "dark");
+        };
 
-        return () => observer.disconnect();
+        const observer = new IntersectionObserver(updateTheme, {
+            threshold: [0, 0.1, 0.5, 0.9, 1],
+            rootMargin: "0px 0px -90% 0px",
+        });
+
+        const observeSections = () => {
+            const sections = document.querySelectorAll("[data-theme]");
+            sections.forEach((section) => observer.observe(section));
+        };
+
+        observeSections();
+
+        const mutationObserver = new MutationObserver(() => {
+            observeSections();
+            updateTheme(); // Re-check on DOM changes
+        });
+
+        mutationObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        // Also check on scroll for extra safety if needed, 
+        // though IntersectionObserver should handle it.
+        window.addEventListener("scroll", updateTheme, { passive: true });
+
+        return () => {
+            observer.disconnect();
+            mutationObserver.disconnect();
+            window.removeEventListener("scroll", updateTheme);
+        };
     }, []);
 
     return theme;

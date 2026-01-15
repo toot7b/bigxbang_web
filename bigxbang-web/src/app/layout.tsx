@@ -99,7 +99,7 @@ export default function RootLayout({
 }>) {
   return (
     <ViewTransitions>
-      <html lang="fr">
+      <html lang="fr" suppressHydrationWarning>
         <head>
           <Script
             src="https://www.googletagmanager.com/gtag/js?id=G-BFD8HWC88N"

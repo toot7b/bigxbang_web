@@ -216,13 +216,14 @@ export default function CaseStudies({ compact = false }: { compact?: boolean } =
         <div id="case-studies" className="scroll-mt-[100px]">
             <section
                 ref={sectionRef}
+                data-theme="light"
                 className={cn(
                     "relative z-10 w-full min-h-screen bg-white text-black overflow-hidden",
                     compact ? "pt-24 pb-16" : "pt-24 pb-20"
                 )}
             >
                 {/* Theme Trigger */}
-                <div data-theme="light" className="absolute inset-0 pointer-events-none -z-10" />
+
 
                 {/* CONTENT CONTAINER */}
                 <div

@@ -28,7 +28,7 @@ import AnalyticsIcon from "@/../public/icons/Analytics.json";
 const META = {
     slug: "onboarding-automation",
     title: "Automation d'onboarding client",
-    subtitle: "On automatise les tâches répétitives pour libérer ce qui fait de toi un humain : penser, créer, décider.",
+    subtitle: "On automatise les tâches répétitives pour libérer ce qui fait de vous un humain : penser, créer, décider.",
     metrics: [
         { number: "100%", label: "Automatisé" },
         { number: "30s", label: "Temps total d'exécution" },
@@ -57,7 +57,7 @@ export default function OnboardingAutomation({ mode = 'page', onClose }: Onboard
                 </Paragraph>
 
                 <Paragraph>
-                    Bref, <Strong>2 heures de tâches répétitives</Strong> où tu te dis &quot;un robot pourrait faire ça&quot;.
+                    Bref, <Strong>2 heures de tâches répétitives</Strong> où vous vous dites &quot;un robot pourrait faire ça&quot;.
                 </Paragraph>
 
                 <Paragraph>
@@ -118,7 +118,7 @@ export default function OnboardingAutomation({ mode = 'page', onClose }: Onboard
                 <SectionTitle>Étape 1 : Le webhook Stripe (le déclencheur)</SectionTitle>
 
                 <InfoBox title="C'est quoi un webhook ?">
-                    Un webhook, c&apos;est comme une sonnette. Quand un événement se produit (ici, un paiement Stripe), Stripe &quot;sonne&quot; à une URL que tu lui as donnée. Ton système reçoit la notification et peut agir automatiquement.
+                    Un webhook, c&apos;est comme une sonnette. Quand un événement se produit (ici, un paiement Stripe), Stripe &quot;sonne&quot; à une URL que vous lui avez donnée. Votre système reçoit la notification et peut agir automatiquement.
                 </InfoBox>
 
                 <Paragraph>
@@ -212,7 +212,7 @@ L'email doit :
                 </Paragraph>
 
                 <InfoBox title="L'API Notion, c'est quoi ?">
-                    Notion expose une API qui permet à ton code Python de créer/modifier des pages Notion automatiquement. C&apos;est comme si tu cliquais dans l&apos;interface, mais en automatique.
+                    Notion expose une API qui permet à votre code Python de créer/modifier des pages Notion automatiquement. C&apos;est comme si vous cliquiez dans l&apos;interface, mais en automatique.
                 </InfoBox>
 
                 <CodeWindow title="notion_sync.py">
