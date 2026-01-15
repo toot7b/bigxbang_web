@@ -55,6 +55,7 @@ export const metadata: Metadata = {
   description: "Automatisations et solutions logicielles sur mesure.",
 };
 
+import ClientLayout from "@/components/layout/ClientLayout";
 import { ViewTransitions } from "next-view-transitions";
 
 export default function RootLayout({
@@ -66,9 +67,11 @@ export default function RootLayout({
     <ViewTransitions>
       <html lang="fr">
         <body className={cn(jakarta.variable, clash.variable, londrina.variable, londrinaSolid.variable, nunito.variable, space.variable, "antialiased font-sans bg-black text-white")}>
-          <SmoothScroll>
-            {children}
-          </SmoothScroll>
+          <ClientLayout>
+            <SmoothScroll>
+              {children}
+            </SmoothScroll>
+          </ClientLayout>
         </body>
       </html>
     </ViewTransitions>

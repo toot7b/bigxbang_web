@@ -141,7 +141,7 @@ export function MobileManifesto() {
             {/* Header */}
             <div className="flex flex-col items-start relative z-10 mb-16">
                 <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 backdrop-blur-sm mb-6">
-                    <span className="font-mono text-[10px] text-blue-400 uppercase tracking-widest">MANIFESTO</span>
+                    <span className="font-mono text-[10px] text-blue-400 uppercase tracking-widest">LE MANIFESTO</span>
                 </div>
                 <h1 className="font-clash text-4xl font-bold text-white mb-6 leading-[1.1]">
                     Le Signal dans <br /><span className="text-[#306EE8]">le Bruit</span>

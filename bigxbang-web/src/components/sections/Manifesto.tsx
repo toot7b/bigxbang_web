@@ -533,7 +533,7 @@ export default function Manifesto() {
                 {/* HEADLINE (Restored style) */}
                 <div className="text-center max-w-4xl px-4 mx-auto">
                     <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-6">
-                        <span className="font-jakarta text-xs font-medium text-white/80">MANIFESTO</span>
+                        <span className="font-jakarta text-xs font-medium text-white/80">LE MANIFESTO</span>
                     </div>
                     <h1 className="font-clash text-3xl md:text-5xl font-medium text-white mb-4">
                         Le Signal dans le <span className="text-[#306EE8]">Bruit</span>

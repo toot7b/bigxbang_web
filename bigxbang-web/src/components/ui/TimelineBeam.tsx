@@ -41,7 +41,7 @@ export const TimelineBeam = ({ progress, className }: TimelineBeamProps) => {
         height = dims.h;
 
         // Debug
-        console.log("TimelineBeam Mount Dimensions:", width, height);
+
 
         const aspect = width / height;
 

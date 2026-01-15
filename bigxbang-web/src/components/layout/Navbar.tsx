@@ -63,7 +63,7 @@ export default function Navbar({ forceOpaqueMobile = false }: NavbarProps) {
                 </Link>
 
                 {/* RIGHT: CONTROLS */}
-                <div className="pointer-events-auto flex items-center gap-6">
+                <div className="pointer-events-auto flex items-center gap-6 relative">
 
                     {/* Pill Button */}
                     <Link href="/rendez-vous" className="hidden md:block">

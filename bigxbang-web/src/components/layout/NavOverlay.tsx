@@ -48,7 +48,7 @@ export default function NavOverlay({ isOpen, onClose }: { isOpen: boolean; onClo
 
                     {/* CONTENT CONTAINER */}
                     <div className="relative z-10 w-full h-full pointer-events-none flex flex-col overflow-y-auto">
-                        <div className="flex-1 flex flex-col items-center justify-center py-20 min-h-0">
+                        <div className="flex-1 flex flex-col items-center justify-center pt-40 pb-20 min-h-0">
                             {/* LINKS LIST */}
                             <nav className="flex flex-col items-center gap-8 md:gap-4 shrink-0">
                                 {NAV_LINKS.map((link, i) => (

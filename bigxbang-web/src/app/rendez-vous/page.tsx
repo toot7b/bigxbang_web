@@ -33,7 +33,7 @@ export default function RendezVousPage() {
                     <h3 className="font-clash text-xl font-medium text-white mb-2">Vous êtes de la vieille école ?</h3>
                     <p className="font-jakarta text-sm text-white/60">
                         Contactez-nous par téléphone au{" "}
-                        <a href="tel:+33750932625" className="text-white hover:text-[#306EE8] transition-colors">07 50 93 26 25</a>{" "}
+                        <a href="tel:+33743604716" className="text-white hover:text-[#306EE8] transition-colors">07 43 60 47 16</a>{" "}
                         ou par mail à l&apos;adresse{" "}
                         <a href="mailto:thomas.sarazin@bigxbang.studio" className="text-white hover:text-[#306EE8] transition-colors">thomas.sarazin@bigxbang.studio</a>.
                     </p>
