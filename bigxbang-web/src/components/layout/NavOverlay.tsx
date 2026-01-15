@@ -17,7 +17,7 @@ export default function NavOverlay({ isOpen, onClose }: { isOpen: boolean; onClo
     return (
         <AnimatePresence mode="wait">
             {isOpen && (
-                <div className="fixed inset-x-0 top-0 h-[100dvh] z-[100] flex flex-col pointer-events-none">
+                <div className="fixed inset-0 z-[100] flex flex-col pointer-events-none overscroll-none">
                     {/* BACKDROP - Curtain Effect */}
                     <motion.div
                         initial={{ y: "-100%", borderBottomLeftRadius: 50, borderBottomRightRadius: 50 }}
@@ -40,7 +40,7 @@ export default function NavOverlay({ isOpen, onClose }: { isOpen: boolean; onClo
                                 borderBottomRightRadius: { duration: 0.3, ease: "easeOut" }
                             }
                         }}
-                        className="absolute inset-0 bg-[#050505] pointer-events-auto overflow-hidden will-change-transform h-[100dvh]"
+                        className="absolute inset-0 bg-[#050505] pointer-events-auto overflow-hidden will-change-transform"
                         style={{ transform: "translateZ(0)" }}
                     >
                         {/* Internal Blue Glow (Abyss Effect) - Optimized Blur for Mobile */}
@@ -48,7 +48,7 @@ export default function NavOverlay({ isOpen, onClose }: { isOpen: boolean; onClo
                     </motion.div>
 
                     {/* CONTENT CONTAINER */}
-                    <div className="relative z-10 w-full h-[100dvh] pointer-events-none flex flex-col overflow-y-auto">
+                    <div className="relative z-10 w-full h-full pointer-events-none flex flex-col overflow-y-auto overflow-x-hidden">
                         <div className="flex-1 flex flex-col items-center justify-center pt-40 pb-20 min-h-0">
                             {/* LINKS LIST */}
                             <nav className="flex flex-col items-center gap-8 md:gap-4 shrink-0">
