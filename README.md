@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ BigXBang Studio
+# ⚡ BigxBang Studio
 
 ### *Le web n'est pas du papier. Oubliez les vitrines statiques.*
 
@@ -211,7 +211,7 @@ Distribué sous licence **MIT**. Voir [`LICENSE`](LICENSE) pour plus d'informati
 
 <br />
 
-**Conçu et développé par [BigXBang Studio](https://bigxbang.studio)**
+**Conçu et développé par [BigxBang Studio](https://bigxbang.studio)**
 
 [![Website](https://img.shields.io/badge/Website-bigxbang.studio-306EE8?style=for-the-badge)](https://bigxbang.studio)
 [![GitHub](https://img.shields.io/badge/GitHub-toot7b-181717?style=for-the-badge&logo=github)](https://github.com/toot7b)
@@ -222,7 +222,7 @@ Distribué sous licence **MIT**. Voir [`LICENSE`](LICENSE) pour plus d'informati
 
 <div align="center">
 
-# ⚡ BigXBang Studio
+# ⚡ BigxBang Studio
 
 ### *The web is not paper. Forget static showcases.*
 
