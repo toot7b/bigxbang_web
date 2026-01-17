@@ -90,7 +90,6 @@ export const metadata: Metadata = {
 import ClientLayout from "@/components/layout/ClientLayout";
 import { ViewTransitions } from "next-view-transitions";
 import Navbar from "@/components/layout/Navbar";
-import Script from "next/script";
 
 export default function RootLayout({
   children,
@@ -100,21 +99,6 @@ export default function RootLayout({
   return (
     <ViewTransitions>
       <html lang="fr" suppressHydrationWarning>
-        <head>
-          <Script
-            src="https://www.googletagmanager.com/gtag/js?id=G-BFD8HWC88N"
-            strategy="afterInteractive"
-          />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', 'G-BFD8HWC88N');
-            `}
-          </Script>
-        </head>
         <body className={cn(jakarta.variable, clash.variable, londrina.variable, londrinaSolid.variable, nunito.variable, space.variable, "antialiased font-sans bg-black text-white")}>
           <ClientLayout>
             <Navbar />
